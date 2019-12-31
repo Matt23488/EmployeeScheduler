@@ -1,0 +1,87 @@
+﻿@page "/localstorage"
+
+<h1>Local Storage Test</h1>
+
+<h3>Save Test</h3>
+<p>
+    Key: <input type="text" @bind-value="@setKey" />
+    Val: <input type="text" @bind-value="@setValue" />
+</p>
+<button class="btn btn-primary" @onclick="SaveItem">Save Item</button>
+<hr />
+
+<h3>Load Test</h3>
+<p>
+    Key: <input type="text" @bind-value="@loadKey" />
+    @if (loadError)
+    {
+        <span style="color: red;">Key does not exist!</span>
+    }
+    else
+    {
+        <span>@loadValue</span>
+    }
+</p>
+<button class="btn btn-primary" @onclick="LoadItem">Load Item</button>
+<hr />
+
+<h3>Remove Test</h3>
+<p>
+    Key: <input type="text" @bind-value="@removeKey" />
+    @if (removeError)
+    {
+        <span style="color: red;">Key does not exist!</span>
+    }
+    else
+    {
+        <span style="color: green;">@removeSuccessMessage</span>
+    }
+</p>
+<button class="btn btn-primary" @onclick="RemoveItem">Remove Item</button>
+<hr />
+
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@code {
+    private string setKey = "testKey";
+    private string setValue = "testVal";
+
+    private bool loadError = false;
+    private string loadKey = "testKey";
+    private string loadValue = "";
+
+    private bool removeError = false;
+    private string removeKey = "testKey";
+    private string removeSuccessMessage = "";
+
+    private async Task SaveItem()
+    {
+        await localStorage.SetItemAsync(setKey, setValue);
+    }
+
+    private async Task LoadItem()
+    {
+        if (!await localStorage.ContainKeyAsync(loadKey))
+        {
+            loadError = true;
+        }
+        else
+        {
+            loadError = false;
+            loadValue = await localStorage.GetItemAsync<string>(loadKey);
+        }
+    }
+
+    private async Task RemoveItem()
+    {
+        if (!await localStorage.ContainKeyAsync(removeKey))
+        {
+            removeError = true;
+        }
+        else
+        {
+            removeError = false;
+            await localStorage.RemoveItemAsync(removeKey);
+            removeSuccessMessage = "Item removed successfully!";
+        }
+    }
+}

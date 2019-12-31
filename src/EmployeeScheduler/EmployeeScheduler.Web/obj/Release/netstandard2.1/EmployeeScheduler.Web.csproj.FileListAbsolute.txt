@@ -87,3 +87,11 @@ C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\
 C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\obj\Release\netstandard2.1\EmployeeScheduler.Web.pdb
 C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\obj\Release\netstandard2.1\blazor\linker.descriptor.xml
 C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\obj\Release\netstandard2.1\blazor\blazor.boot.json
+C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\bin\Release\netstandard2.1\dist\_framework\_bin\Blazored.LocalStorage.dll
+C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\bin\Release\netstandard2.1\dist\_framework\_bin\EmployeeScheduler.Lib.dll
+C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\bin\Release\netstandard2.1\dist\_framework\_bin\Mono.Security.dll
+C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\bin\Release\netstandard2.1\Blazored.LocalStorage.dll
+C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\bin\Release\netstandard2.1\EmployeeScheduler.Lib.dll
+C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\bin\Release\netstandard2.1\EmployeeScheduler.Lib.pdb
+C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\obj\Release\netstandard2.1\RazorDeclaration\Pages\LocalStorage.razor.g.cs
+C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\obj\Release\netstandard2.1\Razor\Pages\LocalStorage.razor.g.cs

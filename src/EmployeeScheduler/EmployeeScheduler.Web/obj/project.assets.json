@@ -2,6 +2,19 @@
   "version": 3,
   "targets": {
     ".NETStandard,Version=v2.1": {
+      "Blazored.LocalStorage/2.1.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.AspNetCore.Components": "3.0.0",
+          "Microsoft.AspNetCore.Components.Web": "3.0.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/Blazored.LocalStorage.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Blazored.LocalStorage.dll": {}
+        }
+      },
       "Microsoft.AspNetCore.Authorization/3.1.0": {
         "type": "package",
         "dependencies": {
@@ -304,10 +317,32 @@
         "runtime": {
           "lib/netstandard2.0/System.Threading.Tasks.Extensions.dll": {}
         }
+      },
+      "EmployeeScheduler.Lib/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v2.0",
+        "compile": {
+          "bin/placeholder/EmployeeScheduler.Lib.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/EmployeeScheduler.Lib.dll": {}
+        }
       }
     }
   },
   "libraries": {
+    "Blazored.LocalStorage/2.1.1": {
+      "sha512": "C3hls1girWezQy2eVRlngB2gx6CzDn0iWgdgSoa7W6pRf4nK6HOI3MtaWmdNCJQ/bniICIHs+CYvaXqmKx/oLw==",
+      "type": "package",
+      "path": "blazored.localstorage/2.1.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "blazored.localstorage.2.1.1.nupkg.sha512",
+        "blazored.localstorage.nuspec",
+        "lib/netstandard2.0/Blazored.LocalStorage.dll"
+      ]
+    },
     "Microsoft.AspNetCore.Authorization/3.1.0": {
       "sha512": "R/0qFIu1m7jJFD0OuLIjLXC0uYQxFwwW7ylVvGgUPUpOJJK0bKJjfrDu20kY1Yw0hy9ejZYZEdUZHRm3ei0+3w==",
       "type": "package",
@@ -1100,10 +1135,17 @@
         "useSharedDesignerContext.txt",
         "version.txt"
       ]
+    },
+    "EmployeeScheduler.Lib/1.0.0": {
+      "type": "project",
+      "path": "../EmployeeScheduler.Lib/EmployeeScheduler.Lib.csproj",
+      "msbuildProject": "../EmployeeScheduler.Lib/EmployeeScheduler.Lib.csproj"
     }
   },
   "projectFileDependencyGroups": {
     ".NETStandard,Version=v2.1": [
+      "Blazored.LocalStorage >= 2.1.1",
+      "EmployeeScheduler.Lib >= 1.0.0",
       "Microsoft.AspNetCore.Blazor >= 3.1.0-preview4.19579.2",
       "Microsoft.AspNetCore.Blazor.Build >= 3.1.0-preview4.19579.2",
       "Microsoft.AspNetCore.Blazor.DevServer >= 3.1.0-preview4.19579.2",
@@ -1140,7 +1182,11 @@
       },
       "frameworks": {
         "netstandard2.1": {
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Local Projects\\EmployeeScheduler\\src\\EmployeeScheduler\\EmployeeScheduler.Lib\\EmployeeScheduler.Lib.csproj": {
+              "projectPath": "C:\\Local Projects\\EmployeeScheduler\\src\\EmployeeScheduler\\EmployeeScheduler.Lib\\EmployeeScheduler.Lib.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
@@ -1152,6 +1198,10 @@
     "frameworks": {
       "netstandard2.1": {
         "dependencies": {
+          "Blazored.LocalStorage": {
+            "target": "Package",
+            "version": "[2.1.1, )"
+          },
           "Microsoft.AspNetCore.Blazor": {
             "target": "Package",
             "version": "[3.1.0-preview4.19579.2, )"
