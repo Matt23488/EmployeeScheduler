@@ -2,7 +2,7 @@
 using System.Net;
 using System.Net.Mail;
 
-namespace EmployeeScheduler.Lib
+namespace EmployeeScheduler.Lib.BLL
 {
     public static class EmailService
     {

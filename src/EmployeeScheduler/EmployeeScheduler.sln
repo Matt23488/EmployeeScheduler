@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29521.150
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmployeeScheduler.Web", "EmployeeScheduler.Web\EmployeeScheduler.Web.csproj", "{20146320-5FA4-4185-9C56-E9899418BFE2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmployeeScheduler.Lib", "EmployeeScheduler.Lib\EmployeeScheduler.Lib.csproj", "{B371DAD2-4AE0-4FA3-9A5C-50C4C054731F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmployeeScheduler.Lib", "EmployeeScheduler.Lib\EmployeeScheduler.Lib.csproj", "{B371DAD2-4AE0-4FA3-9A5C-50C4C054731F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
