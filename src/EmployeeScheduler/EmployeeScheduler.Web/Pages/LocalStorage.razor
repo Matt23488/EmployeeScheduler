@@ -15,7 +15,7 @@
     Key: <input type="text" @bind-value="@loadKey" />
     @if (loadError)
     {
-        <span style="color: red;">Key does not exist!</span>
+        <span style="color: red;">@loadMessage</span>
     }
     else
     {
@@ -46,6 +46,7 @@
     private string setValue = "testVal";
 
     private bool loadError = false;
+    private string loadMessage = "";
     private string loadKey = "testKey";
     private string loadValue = "";
 
@@ -63,11 +64,20 @@
         if (!await localStorage.ContainKeyAsync(loadKey))
         {
             loadError = true;
+            loadMessage = "Key does not exist!";
         }
         else
         {
             loadError = false;
-            loadValue = await localStorage.GetItemAsync<string>(loadKey);
+            try
+            {
+                loadValue = await localStorage.GetItemAsync<string>(loadKey);
+            }
+            catch (Exception ex)
+            {
+                loadError = true;
+                loadMessage = $"Error retrieving value:\n{ex.Message}";
+            }
         }
     }
 
