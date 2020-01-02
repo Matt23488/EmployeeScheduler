@@ -94,3 +94,5 @@ C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\
 C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\bin\Release\netstandard2.1\EmployeeScheduler.Lib.pdb
 C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\obj\Release\netstandard2.1\RazorDeclaration\Pages\LocalStorage.razor.g.cs
 C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\obj\Release\netstandard2.1\Razor\Pages\LocalStorage.razor.g.cs
+C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\obj\Release\netstandard2.1\RazorDeclaration\Pages\Employee.razor.g.cs
+C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\obj\Release\netstandard2.1\Razor\Pages\Employee.razor.g.cs
