@@ -9,10 +9,10 @@ namespace EmployeeScheduler.Lib.Services
 {
     public interface ISchedulingService
     {
-        Task AddEmployeeAsync(Employee employee);
+        Task<Employee> AddEmployeeAsync(Employee employee);
         Task<Employee> GetEmployeeAsync(int employeeID);
-        Task UpdateEmployeeAsync(Employee employee);
-        Task DeleteEmployeeAsync(int employeeID);
-        Task<List<Employee>> GetEmployeesAsync();
+        Task<Employee> UpdateEmployeeAsync(Employee employee);
+        Task<Employee> DeleteEmployeeAsync(int employeeID);
+        Task<List<Employee>> GetEmployeesAsync(bool includeDeleted);
     }
 }

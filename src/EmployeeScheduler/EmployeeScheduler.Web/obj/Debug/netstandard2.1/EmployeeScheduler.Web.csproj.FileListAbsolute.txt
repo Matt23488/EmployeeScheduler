@@ -77,7 +77,6 @@ C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\
 C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\obj\Debug\netstandard2.1\blazor\linker.descriptor.xml
 C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\obj\Debug\netstandard2.1\blazor\blazor.boot.json
 C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\bin\Debug\netstandard2.1\dist\_framework\_bin\EmployeeScheduler.Lib.dll
-C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\bin\Debug\netstandard2.1\dist\_framework\_bin\Mono.Security.dll
 C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\bin\Debug\netstandard2.1\dist\_framework\_bin\EmployeeScheduler.Lib.pdb
 C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\bin\Debug\netstandard2.1\EmployeeScheduler.Lib.dll
 C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\bin\Debug\netstandard2.1\EmployeeScheduler.Lib.pdb
@@ -97,3 +96,5 @@ C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\
 C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\obj\Debug\netstandard2.1\Razor\Shared\NavMenu.razor.g.cs
 C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\obj\Debug\netstandard2.1\Razor\Shared\SurveyPrompt.razor.g.cs
 C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\obj\Debug\netstandard2.1\Razor\_Imports.razor.g.cs
+C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\obj\Debug\netstandard2.1\RazorDeclaration\Pages\Employee.razor.g.cs
+C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\obj\Debug\netstandard2.1\Razor\Pages\Employee.razor.g.cs

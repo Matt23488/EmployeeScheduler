@@ -1,0 +1,66 @@
+﻿@page "/employee"
+@page "/employee/{ID:int}"
+
+@if (Employee_ == null)
+{
+    <h1 style="color: red;">Employee not found.</h1>
+}
+else
+{
+    <p>
+        First Name:
+        <input type="text" @bind-value="Employee_.FirstName" />
+        <br />
+        Last Name:
+        <input type="text" @bind-value="Employee_.LastName" />
+        <br />
+        @if (PageMode == Mode.Update && !Employee_.Active)
+        {
+            <input type="checkbox" @bind-value="Reactivate" /> @:Make Active
+            <br />
+        }
+        <button @onclick="Save">Save Employee</button>
+        @if (PageMode == Mode.Update && Employee_.Active)
+        {
+            <button @onclick="Delete">Delete Employee</button>
+        }
+    </p>
+}
+
+@inject Lib.Services.ISchedulingService SchedulingService
+@inject Lib.Services.ILogger Logger
+@code {
+    [Parameter]
+    public int ID { get; set; }
+    private Mode PageMode => ID == 0 ? Mode.Insert : Mode.Update;
+
+    public Lib.DTO.Employee Employee_ { get; set; }
+    public bool Reactivate { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (PageMode == Mode.Insert) Employee_ = new Lib.DTO.Employee();
+        else                         Employee_ = await SchedulingService.GetEmployeeAsync(ID);
+    }
+
+    private async Task Save()
+    {
+        if (PageMode == Mode.Insert)
+        {
+            Employee_ = await SchedulingService.AddEmployeeAsync(Employee_);
+            ID = Employee_.ID;
+        }
+        else
+        {
+            Employee_.Active = Reactivate;
+            await SchedulingService.UpdateEmployeeAsync(Employee_);
+        }
+    }
+
+    private async Task Delete()
+    {
+        Employee_ = await SchedulingService.DeleteEmployeeAsync(ID);
+    }
+
+    private enum Mode { Insert = 0, Update }
+}

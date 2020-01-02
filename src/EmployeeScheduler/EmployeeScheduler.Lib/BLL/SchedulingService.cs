@@ -27,45 +27,52 @@ namespace EmployeeScheduler.Lib.BLL
             }
         }
 
-        public async Task AddEmployeeAsync(Employee employee)
+        public async Task<Employee> AddEmployeeAsync(Employee employee)
         {
             var employees = (await _localStorage.GetItemAsync<Employee[]>(KEY_EMPLOYEES)).ToList();
 
-            employee.ID = employees.Count > 0 ? employees.Max(e => e.ID) + 1 : 0;
+            employee.ID = employees.Count > 0 ? employees.Max(e => e.ID) + 1 : 1;
             employee.Active = true;
             employees.Add(employee);
 
             await _localStorage.SetItemAsync(KEY_EMPLOYEES, employees.ToArray());
+            return employee;
         }
 
         public async Task<Employee> GetEmployeeAsync(int employeeID)
         {
             var employees = await _localStorage.GetItemAsync<Employee[]>(KEY_EMPLOYEES);
 
-            return employees.Single(e => e.ID == employeeID);
+            return employees.SingleOrDefault(e => e.ID == employeeID);
         }
 
-        public async Task UpdateEmployeeAsync(Employee employee)
+        public async Task<Employee> UpdateEmployeeAsync(Employee employee)
         {
-            var employees = (await _localStorage.GetItemAsync<Employee[]>(KEY_EMPLOYEES)).ToList();
-            employees.Add(employee);
+            var employees = await _localStorage.GetItemAsync<Employee[]>(KEY_EMPLOYEES);
+            var employeesExceptEditedOne = employees.Where(e => e.ID != employee.ID).ToList();
+            employeesExceptEditedOne.Add(employee);
 
-            await _localStorage.SetItemAsync(KEY_EMPLOYEES, employees.ToArray());
+            await _localStorage.SetItemAsync(KEY_EMPLOYEES, employeesExceptEditedOne.ToArray());
+            return employee;
         }
 
-        public async Task DeleteEmployeeAsync(int employeeID)
+        public async Task<Employee> DeleteEmployeeAsync(int employeeID)
         {
             var employees = await _localStorage.GetItemAsync<Employee[]>(KEY_EMPLOYEES);
             var employee = employees.Single(e => e.ID == employeeID);
             employee.Active = false;
 
             await _localStorage.SetItemAsync(KEY_EMPLOYEES, employees);
+            return employee;
         }
 
-        public async Task<List<Employee>> GetEmployeesAsync()
+        public async Task<List<Employee>> GetEmployeesAsync(bool includeDeleted)
         {
             var employees = await _localStorage.GetItemAsync<Employee[]>(KEY_EMPLOYEES);
-            return employees.Where(e => e.Active).ToList();
+            return (from e in employees
+                    where includeDeleted || e.Active
+                    orderby e.Active descending, e.LastName, e.FirstName
+                    select e).ToList();
         }
     }
 }
