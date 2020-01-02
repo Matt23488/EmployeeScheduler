@@ -41,6 +41,7 @@
 <hr />
 
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject EmployeeScheduler.Lib.Services.ILogger logger
 @code {
     private string setKey = "testKey";
     private string setValue = "testVal";
@@ -56,11 +57,13 @@
 
     private async Task SaveItem()
     {
+        await logger.LogAsync("SaveItem()");
         await localStorage.SetItemAsync(setKey, setValue);
     }
 
     private async Task LoadItem()
     {
+        await logger.LogAsync("LoadItem()");
         if (!await localStorage.ContainKeyAsync(loadKey))
         {
             loadError = true;
@@ -83,6 +86,7 @@
 
     private async Task RemoveItem()
     {
+        await logger.LogAsync("RemoveItem()");
         if (!await localStorage.ContainKeyAsync(removeKey))
         {
             removeError = true;
