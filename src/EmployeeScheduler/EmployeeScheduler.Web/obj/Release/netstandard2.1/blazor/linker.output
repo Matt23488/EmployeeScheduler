@@ -15,7 +15,6 @@ obj\Release\netstandard2.1\blazor\linker\Microsoft.Extensions.Logging.Abstractio
 obj\Release\netstandard2.1\blazor\linker\Microsoft.Extensions.Options.dll
 obj\Release\netstandard2.1\blazor\linker\Microsoft.Extensions.Primitives.dll
 obj\Release\netstandard2.1\blazor\linker\Microsoft.JSInterop.dll
-obj\Release\netstandard2.1\blazor\linker\Mono.Security.dll
 obj\Release\netstandard2.1\blazor\linker\Mono.WebAssembly.Interop.dll
 obj\Release\netstandard2.1\blazor\linker\mscorlib.dll
 obj\Release\netstandard2.1\blazor\linker\System.ComponentModel.DataAnnotations.dll
