@@ -11,7 +11,7 @@ namespace EmployeeScheduler.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddBlazoredLocalStorage();
-            services.AddScoped<ISchedulingService, SchedulingService>();
+            services.AddScoped<ISchedulingService, LocalStorageSchedulingService>();
             services.AddScoped<ILogger, JavaScriptConsoleLogger>();
         }
 
