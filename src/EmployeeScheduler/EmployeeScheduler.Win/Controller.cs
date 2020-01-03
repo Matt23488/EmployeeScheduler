@@ -1,4 +1,6 @@
-﻿using EmployeeScheduler.Win.Utilities;
+﻿using EmployeeScheduler.Lib.Services;
+using EmployeeScheduler.Win.Utilities;
+using EmployeeScheduler.Win.Views;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,29 +11,78 @@ namespace EmployeeScheduler.Win
 {
     public class Controller
     {
-        private readonly Container _container;
+        private readonly IViewContainer _container;
 
-        private Views.ITest1View _test1;
-        private UserControls.Test2 _test2;
+        private IEmployeeView _employeeView;
+        private IEmployeeListView _employeeListView;
 
-        public Controller(Container container)
+        private ISchedulingService _schedulingService;
+
+        public Controller(IViewContainer container, DependencyResolver dependencyResolver)
         {
             _container = container;
 
-            _test1 = DependencyResolver.GetDependency<Views.ITest1View>();
-            _test2 = new UserControls.Test2();
+            ResolveDependencies(dependencyResolver);
+            WireEvents();
 
-            _container.CurrentControl = _test1.Control;
+            //_container.CurrentView = _employeeListView;
+            NavigateToEmployeeList();
+        }
 
-            _test1.TestEvent += (s, e) =>
+        private void ResolveDependencies(DependencyResolver dependencyResolver)
+        {
+            _employeeView = dependencyResolver.GetDependency<IEmployeeView>();
+            _employeeListView = dependencyResolver.GetDependency<IEmployeeListView>();
+
+            _schedulingService = dependencyResolver.GetDependency<ISchedulingService>(); 
+        }
+
+        private void WireEvents()
+        {
+            _employeeListView.AddNewEmployee += (s, e) =>
             {
-                _container.CurrentControl = _test2;
+                _employeeView.EditingMode = EditingMode.Insert;
+                _employeeView.Employee = new Lib.DTO.Employee();
+                _container.CurrentView = _employeeView;
             };
 
-            _test2.TestEvent += (s, e) =>
+            _employeeListView.EditEmployee += (s, e) =>
             {
-                _container.CurrentControl = _test1.Control;
+                _employeeView.EditingMode = EditingMode.Update;
+                _employeeView.Employee = _employeeListView.SelectedEmployee;
+                _container.CurrentView = _employeeView;
             };
+
+            _employeeView.Cancel += async (s, e) =>
+            {
+                await NavigateToEmployeeListAsync();
+            };
+
+            _employeeView.Save += async (s, e) =>
+            {
+                if (_employeeView.EditingMode == EditingMode.Insert)
+                {
+                    _employeeView.Employee = await _schedulingService.AddEmployeeAsync(_employeeView.Employee);
+                    _employeeView.EditingMode = EditingMode.Update;
+                }
+                else if (_employeeView.EditingMode == EditingMode.Update)
+                {
+                    await _schedulingService.UpdateEmployeeAsync(_employeeView.Employee);
+                }
+                await NavigateToEmployeeListAsync();
+            };
+        }
+
+        private void NavigateToEmployeeList()
+        {
+            _employeeListView.Employees = _schedulingService.GetEmployees(includeDeleted: true);
+            _container.CurrentView = _employeeListView;
+        }
+
+        private async Task NavigateToEmployeeListAsync()
+        {
+            _employeeListView.Employees = await _schedulingService.GetEmployeesAsync(includeDeleted: true);
+            _container.CurrentView = _employeeListView;
         }
     }
 }

@@ -1,0 +1,8 @@
+C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Lib\bin\Debug\netstandard2.1\EmployeeScheduler.Lib.deps.json
+C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Lib\bin\Debug\netstandard2.1\EmployeeScheduler.Lib.dll
+C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Lib\bin\Debug\netstandard2.1\EmployeeScheduler.Lib.pdb
+C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Lib\obj\Debug\netstandard2.1\EmployeeScheduler.Lib.csprojAssemblyReference.cache
+C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Lib\obj\Debug\netstandard2.1\EmployeeScheduler.Lib.AssemblyInfoInputs.cache
+C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Lib\obj\Debug\netstandard2.1\EmployeeScheduler.Lib.AssemblyInfo.cs
+C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Lib\obj\Debug\netstandard2.1\EmployeeScheduler.Lib.dll
+C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Lib\obj\Debug\netstandard2.1\EmployeeScheduler.Lib.pdb

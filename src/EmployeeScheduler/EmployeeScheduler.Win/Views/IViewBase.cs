@@ -9,6 +9,6 @@ namespace EmployeeScheduler.Win.Views
 {
     public interface IViewBase
     {
-        Control Control { get; }
+        Control AsControl { get; }
     }
 }

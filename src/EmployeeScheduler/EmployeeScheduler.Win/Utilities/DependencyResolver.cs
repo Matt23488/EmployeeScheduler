@@ -6,35 +6,53 @@ using System.Threading.Tasks;
 
 namespace EmployeeScheduler.Win.Utilities
 {
-    public static class DependencyResolver
+    public class DependencyResolver
     {
-        private static readonly Dictionary<string, Type> _types = new Dictionary<string, Type>();
+        private readonly Dictionary<string, ImplementationData> _types = new Dictionary<string, ImplementationData>();
 
-        public static void RegisterDependency<TTarget, TImplementation>()
+        public void RegisterDependency<TTarget, TImplementation>()
+            where TTarget : class
+            where TImplementation : class, TTarget
+            => RegisterDependency<TTarget, TImplementation>(obj => { });
+
+        public void RegisterDependency<TTarget, TImplementation>(Action<TImplementation> setupFunc)
             where TTarget : class
             where TImplementation : class, TTarget
         {
-            _types[typeof(TTarget).FullName] = typeof(TImplementation);
+            _types[typeof(TTarget).FullName] = new ImplementationData
+            {
+                Type = typeof(TImplementation),
+                SetupFunction = obj => setupFunc((TImplementation)obj)
+            };
         }
 
-        public static TTarget GetDependency<TTarget>() where TTarget : class
+        public TTarget GetDependency<TTarget>() where TTarget : class
             => (TTarget)GetDependency(typeof(TTarget));
 
-        private static object GetDependency(Type target)
+        private object GetDependency(Type target)
         {
             var name = target.FullName;
             if (!_types.ContainsKey(name)) throw new InvalidOperationException($"No dependency of type \"{name}\" was registered.");
 
-            var implementationType = _types[name];
+            var implementationData = _types[name];
 
             var paramValues = new List<object>();
-            var constructor = implementationType.GetConstructors().First();
+            var constructor = implementationData.Type.GetConstructors().First();
             foreach (var parameter in constructor.GetParameters())
             {
                 paramValues.Add(GetDependency(parameter.ParameterType));
             }
 
-            return Activator.CreateInstance(implementationType, paramValues.ToArray());
+            var implementationInstance = Activator.CreateInstance(implementationData.Type, paramValues.ToArray());
+            implementationData.SetupFunction(implementationInstance);
+
+            return implementationInstance;
+        }
+
+        private class ImplementationData
+        {
+            public Type Type { get; set; }
+            public Action<object> SetupFunction { get; set; }
         }
     }
 }

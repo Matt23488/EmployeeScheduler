@@ -98,3 +98,11 @@ C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\
 C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\obj\Debug\netstandard2.1\Razor\_Imports.razor.g.cs
 C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\obj\Debug\netstandard2.1\RazorDeclaration\Pages\Employee.razor.g.cs
 C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\obj\Debug\netstandard2.1\Razor\Pages\Employee.razor.g.cs
+C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\bin\Debug\netstandard2.1\dist\_framework\_bin\Mono.Security.dll
+C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\bin\Debug\netstandard2.1\dist\_framework\_bin\Newtonsoft.Json.dll
+C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\bin\Debug\netstandard2.1\dist\_framework\_bin\System.Data.dll
+C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\bin\Debug\netstandard2.1\dist\_framework\_bin\System.Numerics.dll
+C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\bin\Debug\netstandard2.1\dist\_framework\_bin\System.Runtime.Serialization.dll
+C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\bin\Debug\netstandard2.1\dist\_framework\_bin\System.Xml.dll
+C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\bin\Debug\netstandard2.1\dist\_framework\_bin\System.Xml.Linq.dll
+C:\Local Projects\EmployeeScheduler\src\EmployeeScheduler\EmployeeScheduler.Web\bin\Debug\netstandard2.1\Newtonsoft.Json.dll

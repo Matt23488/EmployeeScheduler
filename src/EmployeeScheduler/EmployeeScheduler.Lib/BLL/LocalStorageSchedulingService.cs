@@ -74,5 +74,30 @@ namespace EmployeeScheduler.Lib.BLL
                     orderby e.Active descending, e.LastName, e.FirstName
                     select e).ToList();
         }
+
+        public List<Employee> GetEmployees(bool includeDeleted)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Employee AddEmployee(Employee employee)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Employee GetEmployee(int employeeID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Employee UpdateEmployee(Employee employee)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Employee DeleteEmployee(int employeeID)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

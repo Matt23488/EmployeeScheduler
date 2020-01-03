@@ -15,13 +15,13 @@ namespace EmployeeScheduler.Win
         [STAThread]
         static void Main()
         {
-            DependencyResolver.RegisterDependency<Lib.Services.ISchedulingService, Lib.BLL.JsonFileSchedulingService>();
-            DependencyResolver.RegisterDependency<Views.ITest1View, UserControls.Test1>();
+            var dependencyResolver = new DependencyResolver();
+            DependencyConfig.RegisterDependencies(dependencyResolver);
 
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Container());
+            Application.Run(new Container(dependencyResolver));
         }
     }
 }

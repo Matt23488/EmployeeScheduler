@@ -1,4 +1,6 @@
-﻿using System;
+﻿using EmployeeScheduler.Win.Utilities;
+using EmployeeScheduler.Win.Views;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -8,26 +10,32 @@ using System.Windows.Forms;
 
 namespace EmployeeScheduler.Win
 {
-    public partial class Container : Form
+    public partial class Container : Form, IViewContainer
     {
         private Controller _controller;
 
-        public Control CurrentControl
+        public IViewBase CurrentView
         {
-            get => Controls.Count > 0 ? Controls[0] : null;
+            get => (Controls.Count > 0 ? Controls[0] : null) as IViewBase;
             set
             {
+                var control = value.AsControl;
                 Controls.Clear();
-                Controls.Add(value);
-                //value.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-                value.Dock = DockStyle.Fill;
+                Controls.Add(control);
+                control.Dock = DockStyle.Fill;
+                Text = control.Text;
             }
         }
 
-        public Container()
+        public Container(DependencyResolver dependencyResolver)
         {
             InitializeComponent();
-            _controller = new Controller(this);
+            _controller = new Controller(this, dependencyResolver);
         }
+    }
+
+    public interface IViewContainer
+    {
+        IViewBase CurrentView { get; set; }
     }
 }

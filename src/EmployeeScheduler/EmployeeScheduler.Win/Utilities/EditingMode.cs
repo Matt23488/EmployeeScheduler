@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EmployeeScheduler.Win.Views
+namespace EmployeeScheduler.Win.Utilities
 {
-    public interface ITest1View : IViewBase
+    public enum EditingMode
     {
-        event EventHandler TestEvent;
+        Insert = 0,
+        Update
     }
 }
