@@ -9,9 +9,9 @@
     </div>
 </div>*@
 
-<input type="time" value="@StartTime.ToShortTimeString()" @oninput="StartTimeChanged" />
+<input type="time" step="900" value="@StartTime.ToString("HH:mm")" @oninput="StartTimeChanged" />
 -
-<input type="time" value="@EndTime.ToShortTimeString()" @oninput="EndTimeChanged" />
+<input type="time" step="900" value="@EndTime.ToString("HH:mm")" @oninput="EndTimeChanged" />
 
 @inject Lib.Services.ILogger Logger
 @code
@@ -28,14 +28,14 @@
     private async Task StartTimeChanged(ChangeEventArgs e)
     {
         await Logger.LogAsync(e.Value.ToString());
-        StartTime = DateTime.Parse(e.Value.ToString());
+        StartTime = DateTime.ParseExact(e.Value.ToString(), "HH:mm:ss", null);
         await OnTimeChanged.InvokeAsync(new TimeRangeEventArgs(StartTime, EndTime));
     }
 
     private async Task EndTimeChanged(ChangeEventArgs e)
     {
         await Logger.LogAsync(e.Value.ToString());
-        EndTime = DateTime.Parse(e.Value.ToString());
+        EndTime = DateTime.ParseExact(e.Value.ToString(), "HH:mm:ss", null);
         await OnTimeChanged.InvokeAsync(new TimeRangeEventArgs(StartTime, EndTime));
     }
 
