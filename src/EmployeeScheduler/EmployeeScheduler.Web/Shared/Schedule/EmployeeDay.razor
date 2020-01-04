@@ -1,0 +1,39 @@
+﻿@using Lib.Extensions
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">@Date.ToShortDateString()</h5>
+        <h6 class="card-subtitle text-muted">@DayString</h6>
+        <table class="table table-borderless">
+            <tbody>
+                @foreach (var employeeDay in EmployeeDays)
+                {
+                    <tr>
+                        <td>@employeeDay.Employee.FormattedName()</td>
+                        <td>@(employeeDay.Day.From.ToShortTimeString()) - @(employeeDay.Day.To.ToShortTimeString())</td>
+                        <td><input type="date" class="form-control datepicker" /></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code 
+{
+    [Parameter]
+    public string DayString { get; set; }
+    [Parameter]
+    public DateTime Date { get; set; }
+    [Parameter]
+    public List<EmployeeDayDTO> EmployeeDays { get; set; }
+
+    public class EmployeeDayDTO
+    {
+        public Lib.DTO.Employee Employee { get; set; }
+        public Lib.DTO.EmployeeSchedule Day { get; set; }
+    }
+    //public Lib.DTO.Employee Employee { get; set; }
+    //public Lib.DTO.EmployeeSchedule Day { get; set; }
+    //public string DayString { get; set; }
+}

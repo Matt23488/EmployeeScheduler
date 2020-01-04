@@ -9,45 +9,56 @@
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th></th>
-                <th>@Schedule_.Date().AddDays(0).ToShortDateString()</th>
-                <th>@Schedule_.Date().AddDays(1).ToShortDateString()</th>
-                <th>@Schedule_.Date().AddDays(2).ToShortDateString()</th>
-                <th>@Schedule_.Date().AddDays(3).ToShortDateString()</th>
-                <th>@Schedule_.Date().AddDays(4).ToShortDateString()</th>
-                <th>@Schedule_.Date().AddDays(5).ToShortDateString()</th>
-                <th>@Schedule_.Date().AddDays(6).ToShortDateString()</th>
-            </tr>
-            <tr>
-                <th></th>
-                <th>Sunday</th>
-                <th>Monday</th>
-                <th>Tuesday</th>
-                <th>Wednesday</th>
-                <th>Thursday</th>
-                <th>Friday</th>
-                <th>Saturday</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var employeeWeek in EmployeeWeeks)
-            {
+    @*<div class="d-none d-md-block">
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>@employeeWeek.Employee.FormattedName()</td>
-                    <td>@(employeeWeek.Sunday.From.ToShortTimeString()) - @(employeeWeek.Sunday.To.ToShortTimeString())</td>
-                    <td>@(employeeWeek.Monday.From.ToShortTimeString()) - @(employeeWeek.Monday.To.ToShortTimeString())</td>
-                    <td>@(employeeWeek.Tuesday.From.ToShortTimeString()) - @(employeeWeek.Tuesday.To.ToShortTimeString())</td>
-                    <td>@(employeeWeek.Wednesday.From.ToShortTimeString()) - @(employeeWeek.Wednesday.To.ToShortTimeString())</td>
-                    <td>@(employeeWeek.Thursday.From.ToShortTimeString()) - @(employeeWeek.Thursday.To.ToShortTimeString())</td>
-                    <td>@(employeeWeek.Friday.From.ToShortTimeString()) - @(employeeWeek.Friday.To.ToShortTimeString())</td>
-                    <td>@(employeeWeek.Saturday.From.ToShortTimeString()) - @(employeeWeek.Saturday.To.ToShortTimeString())</td>
+                    <th></th>
+                    <th>@Schedule_.Date().AddDays(0).ToShortDateString()</th>
+                    <th>@Schedule_.Date().AddDays(1).ToShortDateString()</th>
+                    <th>@Schedule_.Date().AddDays(2).ToShortDateString()</th>
+                    <th>@Schedule_.Date().AddDays(3).ToShortDateString()</th>
+                    <th>@Schedule_.Date().AddDays(4).ToShortDateString()</th>
+                    <th>@Schedule_.Date().AddDays(5).ToShortDateString()</th>
+                    <th>@Schedule_.Date().AddDays(6).ToShortDateString()</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+                <tr>
+                    <th></th>
+                    <th>Sunday</th>
+                    <th>Monday</th>
+                    <th>Tuesday</th>
+                    <th>Wednesday</th>
+                    <th>Thursday</th>
+                    <th>Friday</th>
+                    <th>Saturday</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var employeeWeek in EmployeeWeeks)
+                {
+                    <tr>
+                        <td>@employeeWeek.Employee.FormattedName()</td>
+                        <td>@(employeeWeek.Sunday.From.ToShortTimeString()) - @(employeeWeek.Sunday.To.ToShortTimeString())</td>
+                        <td>@(employeeWeek.Monday.From.ToShortTimeString()) - @(employeeWeek.Monday.To.ToShortTimeString())</td>
+                        <td>@(employeeWeek.Tuesday.From.ToShortTimeString()) - @(employeeWeek.Tuesday.To.ToShortTimeString())</td>
+                        <td>@(employeeWeek.Wednesday.From.ToShortTimeString()) - @(employeeWeek.Wednesday.To.ToShortTimeString())</td>
+                        <td>@(employeeWeek.Thursday.From.ToShortTimeString()) - @(employeeWeek.Thursday.To.ToShortTimeString())</td>
+                        <td>@(employeeWeek.Friday.From.ToShortTimeString()) - @(employeeWeek.Friday.To.ToShortTimeString())</td>
+                        <td>@(employeeWeek.Saturday.From.ToShortTimeString()) - @(employeeWeek.Saturday.To.ToShortTimeString())</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="d-block d-md-none">*@
+        <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay DayString="Sunday" Date="@Schedule_.Date().AddDays(0)" EmployeeDays="@GetDay(w => w.Sunday)" />
+        <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay DayString="Monday" Date="@Schedule_.Date().AddDays(1)" EmployeeDays="@GetDay(w => w.Monday)" />
+        <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay DayString="Tuesday" Date="@Schedule_.Date().AddDays(2)" EmployeeDays="@GetDay(w => w.Tuesday)" />
+        <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay DayString="Wednesday" Date="@Schedule_.Date().AddDays(3)" EmployeeDays="@GetDay(w => w.Wednesday)" />
+        <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay DayString="Thursday" Date="@Schedule_.Date().AddDays(4)" EmployeeDays="@GetDay(w => w.Thursday)" />
+        <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay DayString="Friday" Date="@Schedule_.Date().AddDays(5)" EmployeeDays="@GetDay(w => w.Friday)" />
+        <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay DayString="Saturday" Date="@Schedule_.Date().AddDays(6)" EmployeeDays="@GetDay(w => w.Saturday)" />
+    @*</div>*@
 }
 
 @inject Lib.Services.ISchedulingService Scheduler
@@ -76,6 +87,15 @@ else
 
         // https://stackoverflow.com/questions/58123063/call-method-in-mainlayout-from-a-page-component-in-blazor
         // For how to refresh alerts. Actually, probably need Toast Alerts for this, so this may be moot.
+    }
+
+    public List<Shared.Schedule.EmployeeDay.EmployeeDayDTO> GetDay(Func<EmployeeWeek, Lib.DTO.EmployeeSchedule> accessor)
+    {
+        return EmployeeWeeks.Select(w => new Shared.Schedule.EmployeeDay.EmployeeDayDTO
+        {
+            Employee = w.Employee,
+            Day = accessor(w)
+        }).ToList();
     }
 
     public class EmployeeWeek

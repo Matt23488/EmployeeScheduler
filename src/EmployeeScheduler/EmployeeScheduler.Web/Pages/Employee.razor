@@ -7,17 +7,20 @@
 }
 else
 {
-    <p>
-        First Name:
-        <input type="text" @bind-value="Employee_.FirstName" />
-        <br />
-        Last Name:
-        <input type="text" @bind-value="Employee_.LastName" />
-        <br />
-        <input type="checkbox" @bind="Employee_.Active" /> Active
-        <br />
-        <button @onclick="Save">Save Employee</button>
-    </p>
+    <div class="form-group">
+        <label>First Name:</label>
+        <input type="text" class="form-control" @bind-value="Employee_.FirstName" />
+    </div>
+    <div class="form-group">
+        <label>Last Name:</label>
+        <input type="text" class="form-control" @bind-value="Employee_.LastName" />
+    </div>
+    <div class="form-group form-check">
+        <label class="form-check-label">
+            <input type="checkbox" class="form-check-input" @bind="Employee_.Active" /> Active
+        </label>
+    </div>
+    <button class="btn btn-primary" @onclick="Save">Save Employee</button>
 }
 
 @inject Lib.Services.ISchedulingService SchedulingService
