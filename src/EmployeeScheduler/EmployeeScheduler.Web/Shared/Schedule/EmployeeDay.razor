@@ -4,7 +4,7 @@
     <div class="card-body">
         <h5 class="card-title">@Date.ToShortDateString()</h5>
         <h6 class="card-subtitle text-muted">@DayString</h6>
-        <table class="table table-borderless">
+        @*<table class="table table-borderless">
             <tbody>
                 @foreach (var employeeDay in EmployeeDays)
                 {
@@ -12,13 +12,31 @@
                         <td>@employeeDay.Employee.FormattedName()</td>
                         <td>@(employeeDay.Day.From.ToShortTimeString()) - @(employeeDay.Day.To.ToShortTimeString())</td>
                         <td><input type="date" class="form-control datepicker" /></td>
+                        <td>@employeeDay.Employee.FormattedName()</td>
+                        <td><TimeRangePicker StartTime="employeeDay.Day.From" EndTime="employeeDay.Day.To" /></td>
                     </tr>
                 }
             </tbody>
-        </table>
+        </table>*@
+        @{ var i = 0; }
+        @foreach (var employeeDay in EmployeeDays)
+        {
+            var localDay = employeeDay;
+            var localI = i;
+            var hours = GetTotalHours(i);
+            <div class="row mb-2">
+                <div class="col-sm-3">@employeeDay.Employee.FormattedName()</div>
+                <div class="col-sm-6"><TimeRangePicker OnTimeChanged="e => GetTotalHours(localI, e)" StartTime="employeeDay.Day.From" EndTime="employeeDay.Day.To" /></div>
+                @*<div class="col-sm-6"><TimeRangePicker OnTimeChanged='async () => { hours = GetTotalHours(localI); await Logger.LogAsync("OnTimeChanged"); }' StartTime="employeeDay.Day.From" EndTime="employeeDay.Day.To" /></div>*@
+                <div class="col-sm-3">@HourValues[i]</div>
+                @*<div class="col-sm-3">@hours</div>*@
+            </div>
+            i++;
+        }
     </div>
 </div>
 
+@inject Lib.Services.ILogger Logger
 @code 
 {
     [Parameter]
@@ -27,6 +45,27 @@
     public DateTime Date { get; set; }
     [Parameter]
     public List<EmployeeDayDTO> EmployeeDays { get; set; }
+
+    private string[] HourValues { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        HourValues = EmployeeDays.Select((d, i) => GetTotalHours(i)).ToArray();
+    }
+
+    private async Task GetTotalHours(int index, TimeRangePicker.TimeRangeEventArgs e)
+    {
+        EmployeeDays[index].Day.From = e.StartTime;
+        EmployeeDays[index].Day.To = e.EndTime;
+        await Logger.LogAsync($"{e.StartTime.ToShortTimeString()} {e.EndTime.ToShortTimeString()}");
+        HourValues[index] = (e.EndTime.TimeOfDay - e.StartTime.TimeOfDay).TotalHours.ToString("0.00");
+    }
+
+    private string GetTotalHours(int index)
+    {
+        var day = EmployeeDays[index].Day;
+        return (day.From.TimeOfDay - day.To.TimeOfDay).TotalHours.ToString("0.00");
+    }
 
     public class EmployeeDayDTO
     {

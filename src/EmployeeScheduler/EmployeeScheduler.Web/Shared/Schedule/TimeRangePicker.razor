@@ -1,0 +1,74 @@
+﻿@*<div class="form-inline">
+    <div class="form-group">
+        <label>Start:</label>
+        <input type="time" class="form-control" @bind="StartTime" />
+    </div>
+    <div class="form-group">
+        <label>End:</label>
+        <input type="time" class="form-control" @bind="EndTime" />
+    </div>
+</div>*@
+
+<input type="time" value="@StartTime.ToShortTimeString()" @oninput="StartTimeChanged" />
+-
+<input type="time" value="@EndTime.ToShortTimeString()" @oninput="EndTimeChanged" />
+
+@inject Lib.Services.ILogger Logger
+@code
+{
+    [Parameter]
+    public EventCallback<TimeRangeEventArgs> OnTimeChanged { get; set; }
+
+    [Parameter]
+    public DateTime StartTime { get; set; }
+
+    [Parameter]
+    public DateTime EndTime { get; set; }
+
+    private async Task StartTimeChanged(ChangeEventArgs e)
+    {
+        await Logger.LogAsync(e.Value.ToString());
+        StartTime = DateTime.Parse(e.Value.ToString());
+        await OnTimeChanged.InvokeAsync(new TimeRangeEventArgs(StartTime, EndTime));
+    }
+
+    private async Task EndTimeChanged(ChangeEventArgs e)
+    {
+        await Logger.LogAsync(e.Value.ToString());
+        EndTime = DateTime.Parse(e.Value.ToString());
+        await OnTimeChanged.InvokeAsync(new TimeRangeEventArgs(StartTime, EndTime));
+    }
+
+    public class TimeRangeEventArgs : EventArgs
+    {
+        public DateTime StartTime { get; }
+        public DateTime EndTime { get; }
+
+        public TimeRangeEventArgs(DateTime startTime, DateTime endTime)
+        {
+            StartTime = startTime;
+            EndTime = endTime;
+        }
+    }
+
+    //[Parameter]
+    //public DateTime StartTime
+    //{
+    //    get => _startTime;
+    //    set
+    //    {
+    //        _startTime = value;
+    //        TimeChanged?.Invoke();
+    //    }
+    //}
+    //[Parameter]
+    //public DateTime EndTime
+    //{
+    //    get => _endTime;
+    //    set
+    //    {
+    //        _endTime = value;
+    //        TimeChanged?.Invoke();
+    //    }
+    //}
+}

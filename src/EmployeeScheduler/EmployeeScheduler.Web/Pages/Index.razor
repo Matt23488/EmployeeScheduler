@@ -5,3 +5,18 @@
 Welcome to your new app.
 
 <SurveyPrompt Title="How is Blazor working for you?" />
+<TestComponent @ref="TestComponent" />
+<button @onclick="LogTestInput">Log</button>
+
+@inject Lib.Services.ILogger Logger
+@code
+{
+    public TestComponent TestComponent { get; set; }
+    //public string TestInput { get; set; } = "hello";
+
+    public async Task LogTestInput()
+    {
+        await Logger.LogAsync(TestComponent.Input);
+
+    }
+}
