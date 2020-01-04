@@ -14,33 +14,27 @@ else
         Last Name:
         <input type="text" @bind-value="Employee_.LastName" />
         <br />
-        @if (PageMode == Mode.Update && !Employee_.Active)
-        {
-            <input type="checkbox" @bind-value="Reactivate" /> @:Make Active
-            <br />
-        }
+        <input type="checkbox" @bind="Employee_.Active" /> Active
+        <br />
         <button @onclick="Save">Save Employee</button>
-        @if (PageMode == Mode.Update && Employee_.Active)
-        {
-            <button @onclick="Delete">Delete Employee</button>
-        }
     </p>
 }
 
 @inject Lib.Services.ISchedulingService SchedulingService
+@inject Lib.Services.IAlertService AlertService
 @inject Lib.Services.ILogger Logger
+@inject NavigationManager Nav
 @code {
     [Parameter]
     public int ID { get; set; }
     private Mode PageMode => ID == 0 ? Mode.Insert : Mode.Update;
 
     public Lib.DTO.Employee Employee_ { get; set; }
-    public bool Reactivate { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {
         if (PageMode == Mode.Insert) Employee_ = new Lib.DTO.Employee();
-        else                         Employee_ = await SchedulingService.GetEmployeeAsync(ID);
+        else Employee_ = await SchedulingService.GetEmployeeAsync(ID);
     }
 
     private async Task Save()
@@ -52,14 +46,11 @@ else
         }
         else
         {
-            Employee_.Active = Reactivate;
             await SchedulingService.UpdateEmployeeAsync(Employee_);
         }
-    }
 
-    private async Task Delete()
-    {
-        Employee_ = await SchedulingService.DeleteEmployeeAsync(ID);
+        await AlertService.QueueSuccessAlertAsync("Employee Saved Successfully!");
+        Nav.NavigateTo("/employees");
     }
 
     private enum Mode { Insert = 0, Update }

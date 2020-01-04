@@ -10,6 +10,7 @@
       "EmployeeScheduler.Lib/1.0.0": {
         "dependencies": {
           "Blazored.LocalStorage": "2.1.1",
+          "Blazored.SessionStorage": "1.0.11",
           "Newtonsoft.Json": "12.0.3"
         },
         "runtime": {
@@ -25,6 +26,18 @@
           "lib/netstandard2.0/Blazored.LocalStorage.dll": {
             "assemblyVersion": "2.1.1.0",
             "fileVersion": "2.1.1.0"
+          }
+        }
+      },
+      "Blazored.SessionStorage/1.0.11": {
+        "dependencies": {
+          "Microsoft.AspNetCore.Components": "3.0.0",
+          "Microsoft.AspNetCore.Components.Web": "3.0.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Blazored.SessionStorage.dll": {
+            "assemblyVersion": "1.0.11.0",
+            "fileVersion": "1.0.11.0"
           }
         }
       },
@@ -270,6 +283,13 @@
       "sha512": "sha512-C3hls1girWezQy2eVRlngB2gx6CzDn0iWgdgSoa7W6pRf4nK6HOI3MtaWmdNCJQ/bniICIHs+CYvaXqmKx/oLw==",
       "path": "blazored.localstorage/2.1.1",
       "hashPath": "blazored.localstorage.2.1.1.nupkg.sha512"
+    },
+    "Blazored.SessionStorage/1.0.11": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-qy2Erz2TtzHEYKRnnucLLzJA2Lt6myF3hZ5MAMUbLolE4ukKTJx1+OtxMrT70UA9PKtPThxtsGs2G4I11igi1w==",
+      "path": "blazored.sessionstorage/1.0.11",
+      "hashPath": "blazored.sessionstorage.1.0.11.nupkg.sha512"
     },
     "Microsoft.AspNetCore.Authorization/3.0.0": {
       "type": "package",

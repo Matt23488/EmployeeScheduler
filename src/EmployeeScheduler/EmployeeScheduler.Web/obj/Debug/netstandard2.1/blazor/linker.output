@@ -1,4 +1,5 @@
 obj\Debug\netstandard2.1\blazor\linker\Blazored.LocalStorage.dll
+obj\Debug\netstandard2.1\blazor\linker\Blazored.SessionStorage.dll
 obj\Debug\netstandard2.1\blazor\linker\EmployeeScheduler.Lib.dll
 obj\Debug\netstandard2.1\blazor\linker\EmployeeScheduler.Web.dll
 obj\Debug\netstandard2.1\blazor\linker\Microsoft.AspNetCore.Authorization.dll

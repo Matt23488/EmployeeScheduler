@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Local Projects\\EmployeeScheduler\\src\\EmployeeScheduler\\EmployeeScheduler.Lib\\EmployeeScheduler.Lib.csproj": {}
+    "C:\\repos\\EmployeeScheduler\\src\\EmployeeScheduler\\EmployeeScheduler.Lib\\EmployeeScheduler.Lib.csproj": {}
   },
   "projects": {
-    "C:\\Local Projects\\EmployeeScheduler\\src\\EmployeeScheduler\\EmployeeScheduler.Lib\\EmployeeScheduler.Lib.csproj": {
+    "C:\\repos\\EmployeeScheduler\\src\\EmployeeScheduler\\EmployeeScheduler.Lib\\EmployeeScheduler.Lib.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Local Projects\\EmployeeScheduler\\src\\EmployeeScheduler\\EmployeeScheduler.Lib\\EmployeeScheduler.Lib.csproj",
+        "projectUniqueName": "C:\\repos\\EmployeeScheduler\\src\\EmployeeScheduler\\EmployeeScheduler.Lib\\EmployeeScheduler.Lib.csproj",
         "projectName": "EmployeeScheduler.Lib",
-        "projectPath": "C:\\Local Projects\\EmployeeScheduler\\src\\EmployeeScheduler\\EmployeeScheduler.Lib\\EmployeeScheduler.Lib.csproj",
-        "packagesPath": "C:\\Users\\matthew.bryant\\.nuget\\packages\\",
-        "outputPath": "C:\\Local Projects\\EmployeeScheduler\\src\\EmployeeScheduler\\EmployeeScheduler.Lib\\obj\\",
+        "projectPath": "C:\\repos\\EmployeeScheduler\\src\\EmployeeScheduler\\EmployeeScheduler.Lib\\EmployeeScheduler.Lib.csproj",
+        "packagesPath": "C:\\Users\\matt2\\.nuget\\packages\\",
+        "outputPath": "C:\\repos\\EmployeeScheduler\\src\\EmployeeScheduler\\EmployeeScheduler.Lib\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "C:\\Users\\matthew.bryant\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\matt2\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -25,8 +25,7 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "https://api.nuget.org/v3/index.json": {},
-          "https://websvc.intranet.kytc.ky.gov/KYTCGallery/nuget/": {}
+          "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "netstandard2.1": {
@@ -45,6 +44,10 @@
             "Blazored.LocalStorage": {
               "target": "Package",
               "version": "[2.1.1, )"
+            },
+            "Blazored.SessionStorage": {
+              "target": "Package",
+              "version": "[1.0.11, )"
             },
             "Newtonsoft.Json": {
               "target": "Package",

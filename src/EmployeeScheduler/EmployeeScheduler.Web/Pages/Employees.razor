@@ -1,0 +1,53 @@
+﻿@page "/employees"
+@using Lib.Extensions
+
+<h1>Employee Management</h1>
+
+@if (EmployeeList == null)
+{
+    <p>
+        <em>Loading employees...</em>
+    </p>
+}
+else
+{
+    if (EmployeeList.Count == 0)
+    {
+        <tr>
+            <td colspan="3"><em>No employees. Click below to add one!</em></td>
+        </tr>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Name</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var employee in EmployeeList)
+                {
+                    <tr>
+                        <td><a href="employee/@(employee.ID)">Edit</a></td>
+                        <td>@employee.FormattedName()</td>
+                        <td><em>@(employee.Active ? "" : "Deleted")</em></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    <a href="employee">Add New Employee</a>
+}
+
+@inject Lib.Services.ISchedulingService SchedulingService
+@code {
+    public List<Lib.DTO.Employee> EmployeeList { get; private set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        EmployeeList = await SchedulingService.GetEmployeesAsync(includeDeleted: true);
+    }
+}

@@ -1,4 +1,5 @@
 using Blazored.LocalStorage;
+using Blazored.SessionStorage;
 using EmployeeScheduler.Lib.BLL;
 using EmployeeScheduler.Lib.Services;
 using Microsoft.AspNetCore.Components.Builder;
@@ -11,7 +12,9 @@ namespace EmployeeScheduler.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddBlazoredLocalStorage();
+            services.AddBlazoredSessionStorage();
             services.AddScoped<ISchedulingService, LocalStorageSchedulingService>();
+            services.AddScoped<IAlertService, SessionStorageAlertService>();
             services.AddScoped<ILogger, JavaScriptConsoleLogger>();
         }
 

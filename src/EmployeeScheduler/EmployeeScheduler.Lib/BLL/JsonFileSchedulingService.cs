@@ -128,5 +128,15 @@ namespace EmployeeScheduler.Lib.BLL
                     orderby e.Active descending, e.LastName, e.FirstName
                     select e).ToList();
         }
+
+        public Task<ScheduleWeek> GetCurrentScheduleAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ScheduleWeek> GetScheduleAsync(DateTime dateWithinWeek)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

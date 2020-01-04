@@ -10,6 +10,6 @@ namespace EmployeeScheduler.Lib.DTO
     public class ScheduleDay
     {
         public DateTime Date { get; set; }
-        public List<EmployeeSchedule> EmployeeSchedules { get; set; }
+        public List<EmployeeSchedule> EmployeeSchedules { get; set; } = new List<EmployeeSchedule>();
     }
 }

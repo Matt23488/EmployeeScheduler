@@ -1,0 +1,92 @@
+﻿@page "/schedule"
+@using Lib.Extensions
+
+<h1>Schedule</h1>
+
+@if (Schedule_ == null)
+{
+    <em>Loading...</em>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>@Schedule_.Date().AddDays(0).ToShortDateString()</th>
+                <th>@Schedule_.Date().AddDays(1).ToShortDateString()</th>
+                <th>@Schedule_.Date().AddDays(2).ToShortDateString()</th>
+                <th>@Schedule_.Date().AddDays(3).ToShortDateString()</th>
+                <th>@Schedule_.Date().AddDays(4).ToShortDateString()</th>
+                <th>@Schedule_.Date().AddDays(5).ToShortDateString()</th>
+                <th>@Schedule_.Date().AddDays(6).ToShortDateString()</th>
+            </tr>
+            <tr>
+                <th></th>
+                <th>Sunday</th>
+                <th>Monday</th>
+                <th>Tuesday</th>
+                <th>Wednesday</th>
+                <th>Thursday</th>
+                <th>Friday</th>
+                <th>Saturday</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var employeeWeek in EmployeeWeeks)
+            {
+                <tr>
+                    <td>@employeeWeek.Employee.FormattedName()</td>
+                    <td>@(employeeWeek.Sunday.From.ToShortTimeString()) - @(employeeWeek.Sunday.To.ToShortTimeString())</td>
+                    <td>@(employeeWeek.Monday.From.ToShortTimeString()) - @(employeeWeek.Monday.To.ToShortTimeString())</td>
+                    <td>@(employeeWeek.Tuesday.From.ToShortTimeString()) - @(employeeWeek.Tuesday.To.ToShortTimeString())</td>
+                    <td>@(employeeWeek.Wednesday.From.ToShortTimeString()) - @(employeeWeek.Wednesday.To.ToShortTimeString())</td>
+                    <td>@(employeeWeek.Thursday.From.ToShortTimeString()) - @(employeeWeek.Thursday.To.ToShortTimeString())</td>
+                    <td>@(employeeWeek.Friday.From.ToShortTimeString()) - @(employeeWeek.Friday.To.ToShortTimeString())</td>
+                    <td>@(employeeWeek.Saturday.From.ToShortTimeString()) - @(employeeWeek.Saturday.To.ToShortTimeString())</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@inject Lib.Services.ISchedulingService Scheduler
+@inject IJSRuntime JSRuntime
+@code {
+    public Lib.DTO.ScheduleWeek Schedule_ { get; set; }
+    public List<Lib.DTO.Employee> Employees { get; set; }
+    public List<EmployeeWeek> EmployeeWeeks { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Schedule_ = await Scheduler.GetCurrentScheduleAsync();
+        Employees = await Scheduler.GetEmployeesAsync(includeDeleted: false);
+
+        EmployeeWeeks = Employees.Select(e => new EmployeeWeek
+        {
+            Employee = e,
+            Sunday = Schedule_.Sunday?.SingleOrDefault(d => d.EmployeeID == e.ID) ?? new Lib.DTO.EmployeeSchedule(),
+            Monday = Schedule_.Monday?.SingleOrDefault(d => d.EmployeeID == e.ID) ?? new Lib.DTO.EmployeeSchedule(),
+            Tuesday = Schedule_.Tuesday?.SingleOrDefault(d => d.EmployeeID == e.ID) ?? new Lib.DTO.EmployeeSchedule(),
+            Wednesday = Schedule_.Wednesday?.SingleOrDefault(d => d.EmployeeID == e.ID) ?? new Lib.DTO.EmployeeSchedule(),
+            Thursday = Schedule_.Thursday?.SingleOrDefault(d => d.EmployeeID == e.ID) ?? new Lib.DTO.EmployeeSchedule(),
+            Friday = Schedule_.Friday?.SingleOrDefault(d => d.EmployeeID == e.ID) ?? new Lib.DTO.EmployeeSchedule(),
+            Saturday = Schedule_.Saturday?.SingleOrDefault(d => d.EmployeeID == e.ID) ?? new Lib.DTO.EmployeeSchedule(),
+        }).ToList();
+
+        // https://stackoverflow.com/questions/58123063/call-method-in-mainlayout-from-a-page-component-in-blazor
+        // For how to refresh alerts. Actually, probably need Toast Alerts for this, so this may be moot.
+    }
+
+    public class EmployeeWeek
+    {
+        public Lib.DTO.Employee Employee { get; set; }
+        public Lib.DTO.EmployeeSchedule Sunday { get; set; }
+        public Lib.DTO.EmployeeSchedule Monday { get; set; }
+        public Lib.DTO.EmployeeSchedule Tuesday { get; set; }
+        public Lib.DTO.EmployeeSchedule Wednesday { get; set; }
+        public Lib.DTO.EmployeeSchedule Thursday { get; set; }
+        public Lib.DTO.EmployeeSchedule Friday { get; set; }
+        public Lib.DTO.EmployeeSchedule Saturday { get; set; }
+    }
+}

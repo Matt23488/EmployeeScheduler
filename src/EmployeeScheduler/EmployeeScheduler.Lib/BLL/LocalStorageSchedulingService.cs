@@ -13,6 +13,7 @@ namespace EmployeeScheduler.Lib.BLL
     public class LocalStorageSchedulingService : ISchedulingService
     {
         private const string KEY_EMPLOYEES = "EmployeeScheduler_Employees";
+        private const string KEY_SCHEDULES = "EmployeeScheduler_Schedules";
 
         private readonly ILocalStorageService _localStorage;
 
@@ -21,15 +22,15 @@ namespace EmployeeScheduler.Lib.BLL
             _localStorage = localStorage;
 
             // TODO: Add keys to localStorage if they don't exist
-            if (!syncLocalStorage.ContainKey(KEY_EMPLOYEES))
-            {
-                syncLocalStorage.SetItem(KEY_EMPLOYEES, new Employee[0]);
-            }
+            //if (!syncLocalStorage.ContainKey(KEY_EMPLOYEES))
+            //{
+            //    syncLocalStorage.SetItem(KEY_EMPLOYEES, new Employee[0]);
+            //}
         }
 
         public async Task<Employee> AddEmployeeAsync(Employee employee)
         {
-            var employees = (await _localStorage.GetItemAsync<Employee[]>(KEY_EMPLOYEES)).ToList();
+            var employees = (await _localStorage.GetItemAsync<Employee[]>(KEY_EMPLOYEES))?.ToList() ?? new List<Employee>();
 
             employee.ID = employees.Count > 0 ? employees.Max(e => e.ID) + 1 : 1;
             employee.Active = true;
@@ -41,14 +42,14 @@ namespace EmployeeScheduler.Lib.BLL
 
         public async Task<Employee> GetEmployeeAsync(int employeeID)
         {
-            var employees = await _localStorage.GetItemAsync<Employee[]>(KEY_EMPLOYEES);
+            var employees = await _localStorage.GetItemAsync<Employee[]>(KEY_EMPLOYEES) ?? new Employee[0];
 
             return employees.SingleOrDefault(e => e.ID == employeeID);
         }
 
         public async Task<Employee> UpdateEmployeeAsync(Employee employee)
         {
-            var employees = await _localStorage.GetItemAsync<Employee[]>(KEY_EMPLOYEES);
+            var employees = await _localStorage.GetItemAsync<Employee[]>(KEY_EMPLOYEES) ?? new Employee[0];
             var employeesExceptEditedOne = employees.Where(e => e.ID != employee.ID).ToList();
             employeesExceptEditedOne.Add(employee);
 
@@ -58,7 +59,7 @@ namespace EmployeeScheduler.Lib.BLL
 
         public async Task<Employee> DeleteEmployeeAsync(int employeeID)
         {
-            var employees = await _localStorage.GetItemAsync<Employee[]>(KEY_EMPLOYEES);
+            var employees = await _localStorage.GetItemAsync<Employee[]>(KEY_EMPLOYEES) ?? new Employee[0];
             var employee = employees.Single(e => e.ID == employeeID);
             employee.Active = false;
 
@@ -68,7 +69,7 @@ namespace EmployeeScheduler.Lib.BLL
 
         public async Task<List<Employee>> GetEmployeesAsync(bool includeDeleted)
         {
-            var employees = await _localStorage.GetItemAsync<Employee[]>(KEY_EMPLOYEES);
+            var employees = await _localStorage.GetItemAsync<Employee[]>(KEY_EMPLOYEES) ?? new Employee[0];
             return (from e in employees
                     where includeDeleted || e.Active
                     orderby e.Active descending, e.LastName, e.FirstName
@@ -98,6 +99,22 @@ namespace EmployeeScheduler.Lib.BLL
         public Employee DeleteEmployee(int employeeID)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<ScheduleWeek> GetCurrentScheduleAsync()
+            => await GetScheduleAsync(DateTime.Now);
+
+        public async Task<ScheduleWeek> GetScheduleAsync(DateTime dateWithinWeek)
+        {
+            var sunday = dateWithinWeek.Date.AddDays(-(int)dateWithinWeek.DayOfWeek);
+            var id = sunday.Ticks;
+
+            var schedules = await _localStorage.GetItemAsync<ScheduleWeek[]>(KEY_SCHEDULES) ?? new ScheduleWeek[0];
+
+            return schedules.SingleOrDefault(s => s.ID == id) ?? new ScheduleWeek
+            {
+                ID = id
+            };
         }
     }
 }
