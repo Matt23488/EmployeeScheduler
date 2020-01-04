@@ -50,7 +50,8 @@ else
         }
 
         await AlertService.QueueSuccessAlertAsync("Employee Saved Successfully!");
-        Nav.NavigateTo("employees");
+        Nav.NavigateTo($"{Nav.BaseUri}employees");
+        await Logger.LogAsync(Nav.BaseUri);
     }
 
     private enum Mode { Insert = 0, Update }
