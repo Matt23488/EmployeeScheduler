@@ -2,3 +2,7 @@
 
 /src/EmployeeScheduler/EmployeeScheduler.Win/bin/
 /src/EmployeeScheduler/EmployeeScheduler.Win/obj/
+/src/EmployeeScheduler/EmployeeScheduler.Web/bin/
+/src/EmployeeScheduler/EmployeeScheduler.Web/obj/
+/src/EmployeeScheduler/EmployeeScheduler.Lib/bin/
+/src/EmployeeScheduler/EmployeeScheduler.Lib/obj/
