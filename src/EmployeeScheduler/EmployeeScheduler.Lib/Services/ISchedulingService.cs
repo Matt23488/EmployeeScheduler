@@ -23,7 +23,8 @@ namespace EmployeeScheduler.Lib.Services
 
 
         Task<ScheduleWeek> GetCurrentScheduleAsync();
+        Task<ScheduleWeek> GetScheduleAsync(long scheduleID);
         Task<ScheduleWeek> GetScheduleAsync(DateTime dateWithinWeek);
-
+        Task<ScheduleWeek> SaveScheduleAsync(ScheduleWeek schedule);
     }
 }

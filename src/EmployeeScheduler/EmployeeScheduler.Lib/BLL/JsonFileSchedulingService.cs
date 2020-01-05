@@ -138,5 +138,15 @@ namespace EmployeeScheduler.Lib.BLL
         {
             throw new NotImplementedException();
         }
+
+        public Task<ScheduleWeek> SaveScheduleAsync(ScheduleWeek schedule)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ScheduleWeek> GetScheduleAsync(long scheduleID)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

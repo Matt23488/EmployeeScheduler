@@ -104,6 +104,9 @@ namespace EmployeeScheduler.Lib.BLL
         public async Task<ScheduleWeek> GetCurrentScheduleAsync()
             => await GetScheduleAsync(DateTime.Now);
 
+        public async Task<ScheduleWeek> GetScheduleAsync(long scheduleID)
+            => await GetScheduleAsync(new DateTime(scheduleID));
+
         public async Task<ScheduleWeek> GetScheduleAsync(DateTime dateWithinWeek)
         {
             var sunday = dateWithinWeek.Date.AddDays(-(int)dateWithinWeek.DayOfWeek);
@@ -115,6 +118,15 @@ namespace EmployeeScheduler.Lib.BLL
             {
                 ID = id
             };
+        }
+
+        public async Task<ScheduleWeek> SaveScheduleAsync(ScheduleWeek schedule)
+        {
+            var schedules = await _localStorage.GetItemAsync<ScheduleWeek[]>(KEY_SCHEDULES) ?? new ScheduleWeek[0];
+            var schedulesExceptEditedOne = schedules.Where(s => s.ID != schedule.ID).ToList();
+            schedulesExceptEditedOne.Add(schedule);
+            await _localStorage.SetItemAsync(KEY_SCHEDULES, schedulesExceptEditedOne.ToArray());
+            return schedule;
         }
     }
 }

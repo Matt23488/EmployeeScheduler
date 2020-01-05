@@ -2,22 +2,14 @@
 
 <div class="card">
     <div class="card-body">
-        <h5 class="card-title">@Date.ToShortDateString()</h5>
-        <h6 class="card-subtitle text-muted">@DayString</h6>
-        @*<table class="table table-borderless">
-            <tbody>
-                @foreach (var employeeDay in EmployeeDays)
-                {
-                    <tr>
-                        <td>@employeeDay.Employee.FormattedName()</td>
-                        <td>@(employeeDay.Day.From.ToShortTimeString()) - @(employeeDay.Day.To.ToShortTimeString())</td>
-                        <td><input type="date" class="form-control datepicker" /></td>
-                        <td>@employeeDay.Employee.FormattedName()</td>
-                        <td><TimeRangePicker StartTime="employeeDay.Day.From" EndTime="employeeDay.Day.To" /></td>
-                    </tr>
-                }
-            </tbody>
-        </table>*@
+        <h5 class="card-title">@DayString</h5>
+        <h6 class="card-subtitle text-muted">@Date.ToShortDateString()</h6>
+        <div class="row">
+            <div class="col-sm-3"><strong>Employee</strong></div>
+            <div class="col-sm-3"><strong>Time</strong></div>
+            <div class="col-sm-3"><strong>Lunch</strong></div>
+            <div class="col-sm-3"><strong>Total Hours</strong></div>
+        </div>
         @{ var i = 0; }
         @foreach (var employeeDay in EmployeeDays)
         {
@@ -26,9 +18,18 @@
             var hours = GetTotalHours(i);
             <div class="row mb-2">
                 <div class="col-sm-3">@employeeDay.Employee.FormattedName()</div>
-                <div class="col-sm-6"><TimeRangePicker OnTimeChanged="e => GetTotalHours(localI, e)" StartTime="employeeDay.Day.From" EndTime="employeeDay.Day.To" /></div>
+                <div class="col-sm-3"><TimeRangePicker OnTimeChanged="e => GetTotalHours(localI, e)" StartTime="employeeDay.Day.From" EndTime="employeeDay.Day.To" /></div>
                 @*<div class="col-sm-6"><TimeRangePicker OnTimeChanged='async () => { hours = GetTotalHours(localI); await Logger.LogAsync("OnTimeChanged"); }' StartTime="employeeDay.Day.From" EndTime="employeeDay.Day.To" /></div>*@
-                <div class="col-sm-3">@HourValues[i]</div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <select class="form-control" @bind="LunchTypes[localI]">
+                            <option value="0">None</option>
+                            <option value="1">30 min</option>
+                            <option value="2">1 hr</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-3">@HourValues[localI]</div>
                 @*<div class="col-sm-3">@hours</div>*@
             </div>
             i++;
@@ -48,9 +49,15 @@
 
     private string[] HourValues { get; set; }
 
+    private int[] LunchTypes { get; set; }
+
     protected override async Task OnParametersSetAsync()
     {
         HourValues = EmployeeDays.Select((d, i) => GetTotalHours(i)).ToArray();
+        LunchTypes = EmployeeDays.Select(d => (int)LunchType.Hour).ToArray();
+
+        // Shut up about the SUN!
+        await Task.FromResult(0);
     }
 
     private async Task GetTotalHours(int index, TimeRangePicker.TimeRangeEventArgs e)
@@ -71,6 +78,13 @@
     {
         public Lib.DTO.Employee Employee { get; set; }
         public Lib.DTO.EmployeeSchedule Day { get; set; }
+    }
+
+    private enum LunchType
+    {
+        None = 0,
+        HalfHour,
+        Hour
     }
     //public Lib.DTO.Employee Employee { get; set; }
     //public Lib.DTO.EmployeeSchedule Day { get; set; }
