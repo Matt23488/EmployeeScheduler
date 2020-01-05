@@ -101,15 +101,15 @@ namespace EmployeeScheduler.Lib.BLL
             throw new NotImplementedException();
         }
 
+        public long GetScheduleID(DateTime dateWithinWeek)
+            => dateWithinWeek.Date.AddDays(-(int)dateWithinWeek.DayOfWeek).Ticks;
+
         public async Task<ScheduleWeek> GetCurrentScheduleAsync()
-            => await GetScheduleAsync(DateTime.Now);
+            => await GetScheduleAsync(GetScheduleID(DateTime.Now));
 
         public async Task<ScheduleWeek> GetScheduleAsync(long scheduleID)
-            => await GetScheduleAsync(new DateTime(scheduleID));
-
-        public async Task<ScheduleWeek> GetScheduleAsync(DateTime dateWithinWeek)
         {
-            var sunday = dateWithinWeek.Date.AddDays(-(int)dateWithinWeek.DayOfWeek);
+            var sunday = new DateTime(scheduleID);
             var id = sunday.Ticks;
 
             var schedules = await _localStorage.GetItemAsync<ScheduleWeek[]>(KEY_SCHEDULES) ?? new ScheduleWeek[0];
@@ -122,11 +122,19 @@ namespace EmployeeScheduler.Lib.BLL
 
         public async Task<ScheduleWeek> SaveScheduleAsync(ScheduleWeek schedule)
         {
+            if (IsTooOld(schedule)) return schedule;
+
             var schedules = await _localStorage.GetItemAsync<ScheduleWeek[]>(KEY_SCHEDULES) ?? new ScheduleWeek[0];
-            var schedulesExceptEditedOne = schedules.Where(s => s.ID != schedule.ID).ToList();
+            var schedulesExceptEditedOne = schedules.Where(IsNotTooOld).Where(s => s.ID != schedule.ID).ToList();
             schedulesExceptEditedOne.Add(schedule);
             await _localStorage.SetItemAsync(KEY_SCHEDULES, schedulesExceptEditedOne.ToArray());
             return schedule;
         }
+
+        private bool IsTooOld(ScheduleWeek schedule)
+            => (DateTime.Now - new DateTime(schedule.ID)).TotalDays >= 16 * 7;
+
+        private bool IsNotTooOld(ScheduleWeek schedule)
+            => !IsTooOld(schedule);
     }
 }

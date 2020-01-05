@@ -9,6 +9,7 @@ Welcome to your new app.
 <button @onclick="LogTestInput">Log</button>
 
 @inject Lib.Services.ILogger Logger
+@inject NavigationManager Nav
 @code
 {
     public TestComponent TestComponent { get; set; }
@@ -17,6 +18,10 @@ Welcome to your new app.
     public async Task LogTestInput()
     {
         await Logger.LogAsync(TestComponent.Input);
+    }
 
+    protected override void OnInitialized()
+    {
+        Nav.NavigateTo($"{Nav.BaseUri}schedule");
     }
 }

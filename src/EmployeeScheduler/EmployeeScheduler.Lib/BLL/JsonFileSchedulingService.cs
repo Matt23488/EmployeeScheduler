@@ -148,5 +148,10 @@ namespace EmployeeScheduler.Lib.BLL
         {
             throw new NotImplementedException();
         }
+
+        public long GetScheduleID(DateTime dateWithinWeek)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
