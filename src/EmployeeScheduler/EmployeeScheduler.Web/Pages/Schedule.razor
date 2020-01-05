@@ -24,7 +24,6 @@ else
         <a href="schedule/@(NextWeekID)" class="btn btn-primary">Next Week <i class="oi oi-arrow-right"></i></a>
     </div>
     <div class="clearfix"></div>
-    @*<span class="text-success">Last Saved: @LastSaveString</span>*@
     <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay DayString="Sunday" @ref="Sunday" Date="@Schedule_.Date().AddDays(0)" EmployeeDays="@GetDay(w => w.Sunday)" />
     <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay DayString="Monday" @ref="Monday" Date="@Schedule_.Date().AddDays(1)" EmployeeDays="@GetDay(w => w.Monday)" />
     <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay DayString="Tuesday" @ref="Tuesday" Date="@Schedule_.Date().AddDays(2)" EmployeeDays="@GetDay(w => w.Tuesday)" />
@@ -36,6 +35,7 @@ else
 
 @inject Lib.Services.ILogger Logger
 @inject Lib.Services.ISchedulingService Scheduler
+@inject Lib.Services.IToastService Toast
 @inject IJSRuntime JSRuntime
 @inject NavigationManager Nav
 @code {
@@ -49,10 +49,6 @@ else
     private long PreviousWeekID { get; set; }
     private long NextWeekID { get; set; }
 
-    // TODO: Need a JS library to handle alerts, which I can interop with using a .NET service.
-    //private DateTime LastSave { get; set; }
-    //private string LastSaveString => LastSave.ToString("h:mm:ss tt");
-
     private Shared.Schedule.EmployeeDay Sunday { get; set; }
     private Shared.Schedule.EmployeeDay Monday { get; set; }
     private Shared.Schedule.EmployeeDay Tuesday { get; set; }
@@ -63,10 +59,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        // https://stackoverflow.com/questions/58123063/call-method-in-mainlayout-from-a-page-component-in-blazor
-        // For how to refresh alerts. Actually, probably just gonna keep an icon showing the status
-        // either saved or unsaved, so this will be moot if I decide to do that.
-
         Employees = await Scheduler.GetEmployeesAsync(includeDeleted: true);
 
         if (Employees.Count(e => e.Active) == 0)
@@ -75,6 +67,7 @@ else
             return;
         }
 
+        // TODO: Need a way to stop the timer when the user navigates to another page in the app...
         var timer = new System.Timers.Timer(10000)
         {
             AutoReset = true,
@@ -94,7 +87,6 @@ else
     {
         if (ID == 0) Schedule_ = await Scheduler.GetCurrentScheduleAsync();
         else Schedule_ = await Scheduler.GetScheduleAsync(ID);
-        //LastSave = DateTime.Now;
 
         PreviousWeekID = Scheduler.GetScheduleID(Schedule_.Date().AddDays(-7));
         NextWeekID = Scheduler.GetScheduleID(Schedule_.Date().AddDays(7));
@@ -137,10 +129,7 @@ else
         Schedule_.Saturday = Saturday.EmployeeDays.Select(d => d.Day).ToList();
 
         await Scheduler.SaveScheduleAsync(Schedule_);
-        // TODO: use an alert
-        // Also need a way to stop the timer when the user navigates to another page in the app...
-        await Logger.LogAsync("Schedule saved!");
-        //LastSave = DateTime.Now;
+        await Toast.Show("Schedule saved!", Lib.Services.ToastType.Success);
     }
 
     public class EmployeeWeek

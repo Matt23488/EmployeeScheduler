@@ -8,6 +8,7 @@
 <div class="main">
     <div class="top-row px-4">
         @*<a href="http://blazor.net" target="_blank" class="ml-md-auto">About</a>*@
+        @*<div id="toastArea"></div>*@
     </div>
 
     <div class="content px-4">
@@ -22,6 +23,8 @@
         </ul>
         @Body
     </div>
+
+    <ul id="toastArea" class="list-group"></ul>
 </div>
 
 @inject Lib.Services.IAlertService AlertService

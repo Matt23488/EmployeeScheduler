@@ -1,0 +1,36 @@
+#toastArea {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    padding: 10px;
+}
+
+.toast {
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 5px;
+}
+
+.toast-info {
+    border: 1px solid blue;
+    color: blue;
+    background-color: lightblue;
+}
+
+.toast-success {
+    border: 1px solid green;
+    color: green;
+    background-color: lightgreen;
+}
+
+.toast-warning {
+    border: 1px solid darkkhaki;
+    color: darkkhaki;
+    background-color: khaki;
+}
+
+.toast-error {
+    border: 1px solid red;
+    color: red;
+    background-color: lightpink;
+}

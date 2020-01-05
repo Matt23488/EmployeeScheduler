@@ -18,4 +18,8 @@
     <ProjectReference Include="..\EmployeeScheduler.Lib\EmployeeScheduler.Lib.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="StaticWebHarness\" />
+  </ItemGroup>
+
 </Project>

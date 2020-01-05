@@ -15,6 +15,7 @@ namespace EmployeeScheduler.Web
             services.AddBlazoredSessionStorage();
             services.AddScoped<ISchedulingService, LocalStorageSchedulingService>();
             services.AddScoped<IAlertService, SessionStorageAlertService>();
+            services.AddScoped<IToastService, ToastService>();
             services.AddScoped<ILogger, JavaScriptConsoleLogger>();
         }
 
