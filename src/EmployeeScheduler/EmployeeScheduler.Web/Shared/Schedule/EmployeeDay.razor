@@ -13,6 +13,11 @@
         @{ var i = 0; }
         @foreach (var employeeDay in EmployeeDays)
         {
+            if (!employeeDay.Employee.Active)
+            {
+                i++;
+                continue;
+            }
             var localDay = employeeDay;
             var localI = i;
             var hours = GetTotalHours(i);

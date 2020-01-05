@@ -1,5 +1,6 @@
 ﻿using EmployeeScheduler.Lib.Services;
 using Microsoft.JSInterop;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +21,11 @@ namespace EmployeeScheduler.Lib.BLL
         public async Task LogAsync(string message)
         {
             await _jsRuntime.InvokeAsync<object>("console.log", message);
+        }
+
+        public async Task LogAsync(params object[] stuff)
+        {
+            await _jsRuntime.InvokeAsync<object>("console.log", stuff);
         }
 
         public async Task LogExceptionAsync(Exception ex)

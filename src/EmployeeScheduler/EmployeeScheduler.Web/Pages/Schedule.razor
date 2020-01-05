@@ -9,9 +9,21 @@
 }
 else
 {
-    <h1>Schedule @Schedule_.Date().ToShortDateString() - @Schedule_.Date().AddDays(6).ToShortDateString()</h1>
-    <a href="schedule/@(PreviousWeekID)" class="btn btn-primary"><i class="oi oi-arrow-left"></i> Previous Week</a>
-    <a href="schedule/@(NextWeekID)" class="btn btn-primary">Next Week <i class="oi oi-arrow-right"></i></a>
+    <h1>
+        Schedule @Schedule_.Date().ToString("MMM d") - @Schedule_.Date().AddDays(6).ToString("MMM d")
+        @if (Scheduler.GetScheduleID(DateTime.Now) == Schedule_.ID)
+        {
+            <span class="text-primary">Current</span>
+        }
+    </h1>
+    <div class="float-left">
+        <button class="btn btn-success" @onclick="SaveSchedule"><i class="oi oi-check"></i> Save</button>
+    </div>
+    <div class="float-right">
+        <a href="schedule/@(PreviousWeekID)" class="btn btn-primary"><i class="oi oi-arrow-left"></i> Previous Week</a>
+        <a href="schedule/@(NextWeekID)" class="btn btn-primary">Next Week <i class="oi oi-arrow-right"></i></a>
+    </div>
+    <div class="clearfix"></div>
     @*<span class="text-success">Last Saved: @LastSaveString</span>*@
     <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay DayString="Sunday" @ref="Sunday" Date="@Schedule_.Date().AddDays(0)" EmployeeDays="@GetDay(w => w.Sunday)" />
     <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay DayString="Monday" @ref="Monday" Date="@Schedule_.Date().AddDays(1)" EmployeeDays="@GetDay(w => w.Monday)" />
@@ -25,6 +37,7 @@ else
 @inject Lib.Services.ILogger Logger
 @inject Lib.Services.ISchedulingService Scheduler
 @inject IJSRuntime JSRuntime
+@inject NavigationManager Nav
 @code {
     [Parameter]
     public long ID { get; set; }
@@ -54,6 +67,14 @@ else
         // For how to refresh alerts. Actually, probably just gonna keep an icon showing the status
         // either saved or unsaved, so this will be moot if I decide to do that.
 
+        Employees = await Scheduler.GetEmployeesAsync(includeDeleted: true);
+
+        if (Employees.Count(e => e.Active) == 0)
+        {
+            Nav.NavigateTo($"{Nav.BaseUri}employees");
+            return;
+        }
+
         var timer = new System.Timers.Timer(10000)
         {
             AutoReset = true,
@@ -62,16 +83,7 @@ else
 
         timer.Elapsed += async (s, e) =>
         {
-            Schedule_.Sunday = Sunday.EmployeeDays.Select(d => d.Day).ToList();
-            Schedule_.Monday = Monday.EmployeeDays.Select(d => d.Day).ToList();
-            Schedule_.Tuesday = Tuesday.EmployeeDays.Select(d => d.Day).ToList();
-            Schedule_.Wednesday = Wednesday.EmployeeDays.Select(d => d.Day).ToList();
-            Schedule_.Thursday = Thursday.EmployeeDays.Select(d => d.Day).ToList();
-            Schedule_.Friday = Friday.EmployeeDays.Select(d => d.Day).ToList();
-            Schedule_.Saturday = Saturday.EmployeeDays.Select(d => d.Day).ToList();
-
-            await Scheduler.SaveScheduleAsync(Schedule_);
-            //LastSave = DateTime.Now;
+            await SaveSchedule();
         };
 
         // Shut up about the SUN!
@@ -86,8 +98,6 @@ else
 
         PreviousWeekID = Scheduler.GetScheduleID(Schedule_.Date().AddDays(-7));
         NextWeekID = Scheduler.GetScheduleID(Schedule_.Date().AddDays(7));
-
-        Employees = await Scheduler.GetEmployeesAsync(includeDeleted: false);
 
         EmployeeWeeks = Employees.Select(e => new EmployeeWeek
         {
@@ -114,6 +124,23 @@ else
                 Day = day
             };
         }).ToList();
+    }
+
+    private async Task SaveSchedule()
+    {
+        Schedule_.Sunday = Sunday.EmployeeDays.Select(d => d.Day).ToList();
+        Schedule_.Monday = Monday.EmployeeDays.Select(d => d.Day).ToList();
+        Schedule_.Tuesday = Tuesday.EmployeeDays.Select(d => d.Day).ToList();
+        Schedule_.Wednesday = Wednesday.EmployeeDays.Select(d => d.Day).ToList();
+        Schedule_.Thursday = Thursday.EmployeeDays.Select(d => d.Day).ToList();
+        Schedule_.Friday = Friday.EmployeeDays.Select(d => d.Day).ToList();
+        Schedule_.Saturday = Saturday.EmployeeDays.Select(d => d.Day).ToList();
+
+        await Scheduler.SaveScheduleAsync(Schedule_);
+        // TODO: use an alert
+        // Also need a way to stop the timer when the user navigates to another page in the app...
+        await Logger.LogAsync("Schedule saved!");
+        //LastSave = DateTime.Now;
     }
 
     public class EmployeeWeek

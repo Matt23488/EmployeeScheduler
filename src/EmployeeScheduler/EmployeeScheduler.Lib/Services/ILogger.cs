@@ -9,6 +9,7 @@ namespace EmployeeScheduler.Lib.Services
     public interface ILogger
     {
         Task LogAsync(string message);
+        Task LogAsync(params object[] stuff);
         Task LogExceptionAsync(Exception ex);
     }
 }
