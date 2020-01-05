@@ -18,19 +18,32 @@
             var hours = GetTotalHours(i);
             <div class="row mb-2">
                 <div class="col-sm-3">@employeeDay.Employee.FormattedName()</div>
-                <div class="col-sm-3"><TimeRangePicker OnTimeChanged="e => GetTotalHours(localI, e)" StartTime="employeeDay.Day.From" EndTime="employeeDay.Day.To" /></div>
-                @*<div class="col-sm-6"><TimeRangePicker OnTimeChanged='async () => { hours = GetTotalHours(localI); await Logger.LogAsync("OnTimeChanged"); }' StartTime="employeeDay.Day.From" EndTime="employeeDay.Day.To" /></div>*@
+                <div class="col-sm-3"><TimeRangePicker OnTimeChanged="async e => await GetTotalHours(localI, e)" StartTime="employeeDay.Day.From" EndTime="employeeDay.Day.To" /></div>
                 <div class="col-sm-3">
                     <div class="form-group">
-                        <select class="form-control" @bind="LunchTypes[localI]">
-                            <option value="0">None</option>
-                            <option value="1">30 min</option>
-                            <option value="2">1 hr</option>
+                        <select class="form-control" @onchange="async e => await LunchTypeChanged(localI, e)">
+                            @if (employeeDay.Day.LunchType == 0)
+                            {
+                                <option value="0" selected>None</option>
+                                <option value="1">30 min</option>
+                                <option value="2">1 hr</option>
+                            }
+                            else if (employeeDay.Day.LunchType == 1)
+                            {
+                                <option value="0">None</option>
+                                <option value="1" selected>30 min</option>
+                                <option value="2">1 hr</option>
+                            }
+                            else if (employeeDay.Day.LunchType == 2)
+                            {
+                                <option value="0">None</option>
+                                <option value="1">30 min</option>
+                                <option value="2" selected>1 hr</option>
+                            }
                         </select>
                     </div>
                 </div>
                 <div class="col-sm-3">@HourValues[localI]</div>
-                @*<div class="col-sm-3">@hours</div>*@
             </div>
             i++;
         }
@@ -49,29 +62,50 @@
 
     private string[] HourValues { get; set; }
 
-    private int[] LunchTypes { get; set; }
-
     protected override async Task OnParametersSetAsync()
     {
         HourValues = EmployeeDays.Select((d, i) => GetTotalHours(i)).ToArray();
-        LunchTypes = EmployeeDays.Select(d => (int)LunchType.Hour).ToArray();
 
         // Shut up about the SUN!
         await Task.FromResult(0);
+    }
+
+    private async Task LunchTypeChanged(int index, ChangeEventArgs e)
+    {
+        await Logger.LogAsync(e.Value.ToString());
+        EmployeeDays[index].Day.LunchType = int.Parse(e.Value.ToString());
+        HourValues[index] = GetTotalHours(index);
     }
 
     private async Task GetTotalHours(int index, TimeRangePicker.TimeRangeEventArgs e)
     {
         EmployeeDays[index].Day.From = e.StartTime;
         EmployeeDays[index].Day.To = e.EndTime;
-        await Logger.LogAsync($"{e.StartTime.ToShortTimeString()} {e.EndTime.ToShortTimeString()}");
-        HourValues[index] = (e.EndTime.TimeOfDay - e.StartTime.TimeOfDay).TotalHours.ToString("0.00");
+        var lunchType = (LunchType)EmployeeDays[index].Day.LunchType;
+        var lunchOffset = 0d;
+        switch (lunchType)
+        {
+            case LunchType.HalfHour: lunchOffset = -0.5d; break;
+            case LunchType.Hour:     lunchOffset = -1d;   break;
+        }
+
+        HourValues[index] = (e.EndTime.TimeOfDay - e.StartTime.TimeOfDay).Add(TimeSpan.FromHours(lunchOffset)).TotalHours.ToString("0.00");
+
+        // Shut up about the SUN!
+        await Task.FromResult(0);
     }
 
     private string GetTotalHours(int index)
     {
         var day = EmployeeDays[index].Day;
-        return (day.From.TimeOfDay - day.To.TimeOfDay).TotalHours.ToString("0.00");
+        var lunchType = (LunchType)EmployeeDays[index].Day.LunchType;
+        var lunchOffset = 0d;
+        switch (lunchType)
+        {
+            case LunchType.HalfHour: lunchOffset = -0.5d; break;
+            case LunchType.Hour:     lunchOffset = -1d;   break;
+        }
+        return (day.To.TimeOfDay - day.From.TimeOfDay).Add(TimeSpan.FromHours(lunchOffset)).TotalHours.ToString("0.00");
     }
 
     public class EmployeeDayDTO
@@ -86,7 +120,4 @@
         HalfHour,
         Hour
     }
-    //public Lib.DTO.Employee Employee { get; set; }
-    //public Lib.DTO.EmployeeSchedule Day { get; set; }
-    //public string DayString { get; set; }
 }

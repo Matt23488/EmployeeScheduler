@@ -1,15 +1,4 @@
-﻿@*<div class="form-inline">
-    <div class="form-group">
-        <label>Start:</label>
-        <input type="time" class="form-control" @bind="StartTime" />
-    </div>
-    <div class="form-group">
-        <label>End:</label>
-        <input type="time" class="form-control" @bind="EndTime" />
-    </div>
-</div>*@
-
-<input type="time" step="900" value="@StartTime.ToString("HH:mm")" @oninput="StartTimeChanged" />
+﻿<input type="time" step="900" value="@StartTime.ToString("HH:mm")" @oninput="StartTimeChanged" />
 -
 <input type="time" step="900" value="@EndTime.ToString("HH:mm")" @oninput="EndTimeChanged" />
 
@@ -27,9 +16,6 @@
 
     private async Task StartTimeChanged(ChangeEventArgs e)
     {
-        //await Logger.LogAsync(e.Value.ToString());
-        //var timeString = e.Value.ToString();
-        //StartTime = DateTime.ParseExact(e.Value.ToString(), "HH:mm:ss", null);
         var timeString = e.Value.ToString();
         if (!DateTime.TryParseExact(timeString, "HH:mm:ss", null, System.Globalization.DateTimeStyles.None, out DateTime startTime))
         {
@@ -53,8 +39,6 @@
             }
         }
         EndTime = endTime;
-        //await Logger.LogAsync(e.Value.ToString());
-        //EndTime = DateTime.ParseExact(e.Value.ToString(), "HH:mm:ss", null);
         await OnTimeChanged.InvokeAsync(new TimeRangeEventArgs(StartTime, EndTime));
     }
 
@@ -69,25 +53,4 @@
             EndTime = endTime;
         }
     }
-
-    //[Parameter]
-    //public DateTime StartTime
-    //{
-    //    get => _startTime;
-    //    set
-    //    {
-    //        _startTime = value;
-    //        TimeChanged?.Invoke();
-    //    }
-    //}
-    //[Parameter]
-    //public DateTime EndTime
-    //{
-    //    get => _endTime;
-    //    set
-    //    {
-    //        _endTime = value;
-    //        TimeChanged?.Invoke();
-    //    }
-    //}
 }

@@ -11,5 +11,6 @@ namespace EmployeeScheduler.Lib.DTO
         public int EmployeeID { get; set; }
         public DateTime From { get; set; }
         public DateTime To { get; set; }
+        public int LunchType { get; set; } = 2;
     }
 }
