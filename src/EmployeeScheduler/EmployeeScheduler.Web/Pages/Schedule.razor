@@ -67,7 +67,6 @@ else
             return;
         }
 
-        // TODO: Need a way to stop the timer when the user navigates to another page in the app...
         var timer = new System.Timers.Timer(10000)
         {
             AutoReset = true,
@@ -76,6 +75,12 @@ else
 
         timer.Elapsed += async (s, e) =>
         {
+            if (Nav.Uri != $"{Nav.BaseUri}schedule")
+            {
+                timer.Stop();
+                return;
+            }
+
             await SaveSchedule();
         };
 
