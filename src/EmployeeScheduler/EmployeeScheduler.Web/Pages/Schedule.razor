@@ -73,6 +73,7 @@ else
             Enabled = true
         };
 
+        // TODO: might need to make sure a new timer isn't started if the user refreshes the page.
         timer.Elapsed += async (s, e) =>
         {
             if (Nav.Uri != $"{Nav.BaseUri}schedule")
