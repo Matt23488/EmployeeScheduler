@@ -1,0 +1,92 @@
+﻿
+
+<div class="row mt-2">
+    <div class="col-sm-4">
+        <div class="form-row">
+            <div class="col">
+                <h6 class="text-primary">@DayString</h6>
+            </div>
+            <div class="col">
+                <strong class="@HoursDisplayModifier">
+                    <i class="oi oi-clock"></i>
+                    @Hours.ToString("0.00")
+                </strong>
+            </div>
+            <div class="col">
+                <div class="form-group form-check">
+                    <input type="checkbox" class="form-check-input" checked="@Schedule.IsOff" @onchange="IsOffChanged" />
+                    <label class="form-check-label">No Hours</label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-5">
+        <TimeRangePicker IsValid="HoursIsValid" Disabled="Schedule.IsOff" OnTimeChanged="GetTotalHours" StartTime="Schedule.From" EndTime="Schedule.To"></TimeRangePicker>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            @*<select class="form-control" disabled="@Schedule.IsOff" @onchange="LunchTypeChanged">
+                <option value="0" selected="@(Schedule.LunchType == 0)">No Lunch</option>
+                <option value="1" selected="@(Schedule.LunchType == 1)">30 min Lunch</option>
+                <option value="2" selected="@(Schedule.LunchType == 2)">1 hr Lunch</option>
+            </select>*@
+            <select class="form-control" disabled="@Schedule.IsOff" @bind="Schedule.LunchType">
+                <option value="0">No Lunch</option>
+                <option value="1">30 min Lunch</option>
+                <option value="2">1 hr Lunch</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+@code
+{
+    // TODO: Is this needed? Changes should be made by reference (I would hope)
+    [Parameter]
+    public EventCallback DayChanged { get; set; }
+    [Parameter]
+    public Lib.DTO.EmployeeSchedule Schedule { get; set; }
+    [Parameter]
+    public string DayString { get; set; }
+
+    private double Hours => Schedule.IsOff ? 0d : (Schedule.To.TimeOfDay - Schedule.From.TimeOfDay).TotalHours + LunchModifier;
+    private bool HoursIsValid => Hours >= 0d;
+    private string HoursDisplayModifier => HoursIsValid ? "" : "text-danger";
+    private double LunchModifier
+    {
+        get
+        {
+            switch (Schedule.LunchType)
+            {
+                case 1: return -0.5d;
+                case 2: return -1d;
+            }
+            return 0d;
+        }
+    }
+
+    //private void DayOffChanged(ChangeEventArgs e)
+    //{
+    //    Schedule.IsOff = (bool)e.Value;
+    //}
+
+    //private double LunchModifier(int lunchType)
+    //{
+    //    switch (lunchType)
+    //    {
+
+    //    }
+    //}
+    private async Task IsOffChanged(ChangeEventArgs e)
+    {
+        Schedule.IsOff = (bool)e.Value;
+        await DayChanged.InvokeAsync(this);
+    }
+
+    private async Task GetTotalHours(TimeRangePicker.TimeRangeEventArgs e)
+    {
+        Schedule.From = e.StartTime;
+        Schedule.To = e.EndTime;
+        await DayChanged.InvokeAsync(this);
+    }
+}

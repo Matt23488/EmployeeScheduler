@@ -1,0 +1,51 @@
+﻿@using Lib.Extensions
+
+<div class="card mb-3">
+    <div class="card-header">
+        <h4 class="card-title">
+            <small class="oi oi-person"></small>
+            @Week.Employee.FormattedName()
+            <small class="float-right">
+                <i class="oi oi-clock"></i>
+                @TotalHours.ToString("0.00")
+            </small>
+        </h4>
+    </div>
+    <div class="card-body">
+        <DayRowComponent Schedule="Week.Sunday" DayString="Sunday"></DayRowComponent>
+        <DayRowComponent Schedule="Week.Monday" DayString="Monday"></DayRowComponent>
+        <DayRowComponent Schedule="Week.Tuesday" DayString="Tuesday"></DayRowComponent>
+        <DayRowComponent Schedule="Week.Wednesday" DayString="Wednesday"></DayRowComponent>
+        <DayRowComponent Schedule="Week.Thursday" DayString="Thursday"></DayRowComponent>
+        <DayRowComponent Schedule="Week.Friday" DayString="Friday"></DayRowComponent>
+        <DayRowComponent Schedule="Week.Saturday" DayString="Saturday"></DayRowComponent>
+    </div>
+</div>
+
+@code
+{
+    [Parameter]
+    public Web.Pages.Schedule.EmployeeWeek Week { get; set; }
+
+    private double TotalHours
+        => GetDayHours(Week.Sunday) +
+            GetDayHours(Week.Monday) +
+            GetDayHours(Week.Tuesday) +
+            GetDayHours(Week.Wednesday) +
+            GetDayHours(Week.Thursday) +
+            GetDayHours(Week.Friday) +
+            GetDayHours(Week.Saturday);
+
+    private double GetDayHours(Lib.DTO.EmployeeSchedule day)
+        => day.IsOff ? 0d : ((day.To.TimeOfDay - day.From.TimeOfDay).TotalHours + GetLunchModifier(day));
+
+    private double GetLunchModifier(Lib.DTO.EmployeeSchedule day)
+    {
+        switch (day.LunchType)
+        {
+            case 1: return -0.5d;
+            case 2: return -1d;
+        }
+        return 0d;
+    }
+}

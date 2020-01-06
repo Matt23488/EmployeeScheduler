@@ -25,13 +25,23 @@ else
     </div>
     <div class="clearfix"></div>
     <br />
-    <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay Closed="Schedule_.Sunday.IsClosed" DayString="Sunday" @ref="Sunday" Date="@Schedule_.Date().AddDays(0)" EmployeeDays="@GetDay(w => w.Sunday)" />
-    <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay Closed="Schedule_.Monday.IsClosed" DayString="Monday" @ref="Monday" Date="@Schedule_.Date().AddDays(1)" EmployeeDays="@GetDay(w => w.Monday)" />
-    <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay Closed="Schedule_.Tuesday.IsClosed" DayString="Tuesday" @ref="Tuesday" Date="@Schedule_.Date().AddDays(2)" EmployeeDays="@GetDay(w => w.Tuesday)" />
-    <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay Closed="Schedule_.Wednesday.IsClosed" DayString="Wednesday" @ref="Wednesday" Date="@Schedule_.Date().AddDays(3)" EmployeeDays="@GetDay(w => w.Wednesday)" />
-    <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay Closed="Schedule_.Thursday.IsClosed" DayString="Thursday" @ref="Thursday" Date="@Schedule_.Date().AddDays(4)" EmployeeDays="@GetDay(w => w.Thursday)" />
-    <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay Closed="Schedule_.Friday.IsClosed" DayString="Friday" @ref="Friday" Date="@Schedule_.Date().AddDays(5)" EmployeeDays="@GetDay(w => w.Friday)" />
-    <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay Closed="Schedule_.Saturday.IsClosed" DayString="Saturday" @ref="Saturday" Date="@Schedule_.Date().AddDays(6)" EmployeeDays="@GetDay(w => w.Saturday)" />
+    if (EmployeeView)
+    {
+        foreach (var week in EmployeeWeeks)
+        {
+            <EmployeeScheduler.Web.Shared.Schedule.EmployeeWeekComponent Week="week"></EmployeeScheduler.Web.Shared.Schedule.EmployeeWeekComponent>
+        }
+    }
+    else
+    {
+        <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay Closed="Schedule_.Sunday.IsClosed" DayString="Sunday" @ref="Sunday" Date="@Schedule_.Date().AddDays(0)" EmployeeDays="@GetDay(w => w.Sunday)" />
+        <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay Closed="Schedule_.Monday.IsClosed" DayString="Monday" @ref="Monday" Date="@Schedule_.Date().AddDays(1)" EmployeeDays="@GetDay(w => w.Monday)" />
+        <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay Closed="Schedule_.Tuesday.IsClosed" DayString="Tuesday" @ref="Tuesday" Date="@Schedule_.Date().AddDays(2)" EmployeeDays="@GetDay(w => w.Tuesday)" />
+        <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay Closed="Schedule_.Wednesday.IsClosed" DayString="Wednesday" @ref="Wednesday" Date="@Schedule_.Date().AddDays(3)" EmployeeDays="@GetDay(w => w.Wednesday)" />
+        <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay Closed="Schedule_.Thursday.IsClosed" DayString="Thursday" @ref="Thursday" Date="@Schedule_.Date().AddDays(4)" EmployeeDays="@GetDay(w => w.Thursday)" />
+        <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay Closed="Schedule_.Friday.IsClosed" DayString="Friday" @ref="Friday" Date="@Schedule_.Date().AddDays(5)" EmployeeDays="@GetDay(w => w.Friday)" />
+        <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay Closed="Schedule_.Saturday.IsClosed" DayString="Saturday" @ref="Saturday" Date="@Schedule_.Date().AddDays(6)" EmployeeDays="@GetDay(w => w.Saturday)" />
+    }
 }
 
 @inject Lib.Services.ILogger Logger
@@ -50,7 +60,8 @@ else
     private long PreviousWeekID { get; set; }
     private long NextWeekID { get; set; }
 
-    private bool AutoSave => false;
+    private bool AutoSave => true;
+    private bool EmployeeView => false;
 
     private Shared.Schedule.EmployeeDay Sunday { get; set; }
     private Shared.Schedule.EmployeeDay Monday { get; set; }
