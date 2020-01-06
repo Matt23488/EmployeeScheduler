@@ -4,11 +4,12 @@
     <div class="card-body">
         <h5 class="card-title">@DayString</h5>
         <h6 class="card-subtitle text-muted">@Date.ToShortDateString()</h6>
-        <div class="row">
+        <div class="row d-sm-flex d-none">
             <div class="col-sm-3"><strong>Employee</strong></div>
+            <div class="col-sm-1"><strong>Off</strong></div>
             <div class="col-sm-3"><strong>Time</strong></div>
             <div class="col-sm-3"><strong>Lunch</strong></div>
-            <div class="col-sm-3"><strong>Total Hours</strong></div>
+            <div class="col-sm-2"><strong>Total Hours</strong></div>
         </div>
         @{ var i = 0; }
         @foreach (var employeeDay in EmployeeDays)
@@ -23,7 +24,19 @@
             var hours = GetTotalHours(i);
             <div class="row mb-2">
                 <div class="col-sm-3">@employeeDay.Employee.FormattedName()</div>
-                <div class="col-sm-3"><TimeRangePicker OnTimeChanged="async e => await GetTotalHours(localI, e)" StartTime="employeeDay.Day.From" EndTime="employeeDay.Day.To" /></div>
+                <div class="col-sm-1">
+                    <div class="form-group form-check">
+                        @if (employeeDay.Day.IsOff)
+                        {
+                            <input type="checkbox" class="form-check-input" checked @onchange="async e => await DayOffChangedAsync(localI, e)" />
+                        }
+                        else
+                        {
+                            <input type="checkbox" class="form-check-input" @onchange="async e => await DayOffChangedAsync(localI, e)" />
+                        }
+                    </div>
+                </div>
+                <div class="col-sm-3"><TimeRangePicker Disabled="employeeDay.Day.IsOff" OnTimeChanged="async e => await GetTotalHours(localI, e)" StartTime="employeeDay.Day.From" EndTime="employeeDay.Day.To" /></div>
                 <div class="col-sm-3">
                     <div class="form-group">
                         <select class="form-control" @onchange="async e => await LunchTypeChanged(localI, e)">
@@ -48,7 +61,7 @@
                         </select>
                     </div>
                 </div>
-                <div class="col-sm-3">@HourValues[localI]</div>
+                <div class="col-sm-2">@HourValues[localI]</div>
             </div>
             i++;
         }
@@ -75,6 +88,14 @@
         await Task.FromResult(0);
     }
 
+    private async Task DayOffChangedAsync(int index, ChangeEventArgs e)
+    {
+        EmployeeDays[index].Day.IsOff = (bool)e.Value;
+        await Logger.LogAsync(e.Value);
+
+        HourValues[index] = GetTotalHours(index);
+    }
+
     private async Task LunchTypeChanged(int index, ChangeEventArgs e)
     {
         await Logger.LogAsync(e.Value.ToString());
@@ -84,6 +105,12 @@
 
     private async Task GetTotalHours(int index, TimeRangePicker.TimeRangeEventArgs e)
     {
+        if (EmployeeDays[index].Day.IsOff)
+        {
+            HourValues[index] = "0.00";
+            return;
+        }
+
         EmployeeDays[index].Day.From = e.StartTime;
         EmployeeDays[index].Day.To = e.EndTime;
         var lunchType = (LunchType)EmployeeDays[index].Day.LunchType;
@@ -102,6 +129,8 @@
 
     private string GetTotalHours(int index)
     {
+        if (EmployeeDays[index].Day.IsOff) return "0.00";
+
         var day = EmployeeDays[index].Day;
         var lunchType = (LunchType)EmployeeDays[index].Day.LunchType;
         var lunchOffset = 0d;
@@ -117,6 +146,7 @@
     {
         public Lib.DTO.Employee Employee { get; set; }
         public Lib.DTO.EmployeeSchedule Day { get; set; }
+        //public bool IsOff { get; set; }
     }
 
     private enum LunchType

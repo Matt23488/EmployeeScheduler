@@ -1,6 +1,33 @@
-﻿<input type="time" step="900" value="@StartTime.ToString("HH:mm")" @oninput="StartTimeChanged" />
--
-<input type="time" step="900" value="@EndTime.ToString("HH:mm")" @oninput="EndTimeChanged" />
+﻿@*<input type="time" step="900" value="@StartTime.ToString("HH:mm")" @oninput="StartTimeChanged" />
+    -
+    <input type="time" step="900" value="@EndTime.ToString("HH:mm")" @oninput="EndTimeChanged" />*@
+
+<div class="input-group mb-1">
+    <div class="input-group-prepend">
+        <span class="input-group-text oi oi-sun"></span>
+    </div>
+    @if (Disabled)
+    {
+        <input type="time" step="900" class="form-control" value="@StartTime.ToString("HH:mm")" @oninput="StartTimeChanged" disabled />
+    }
+    else
+    {
+        <input type="time" step="900" class="form-control" value="@StartTime.ToString("HH:mm")" @oninput="StartTimeChanged" />
+    }
+</div>
+<div class="input-group">
+    <div class="input-group-prepend">
+        <span class="input-group-text oi oi-moon"></span>
+    </div>
+    @if (Disabled)
+    {
+        <input type="time" step="900" class="form-control" value="@EndTime.ToString("HH:mm")" @oninput="EndTimeChanged" disabled />
+    }
+    else
+    {
+        <input type="time" step="900" class="form-control" value="@EndTime.ToString("HH:mm")" @oninput="EndTimeChanged" />
+    }
+</div>
 
 @inject Lib.Services.ILogger Logger
 @code
@@ -13,6 +40,9 @@
 
     [Parameter]
     public DateTime EndTime { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
 
     private async Task StartTimeChanged(ChangeEventArgs e)
     {

@@ -9,6 +9,7 @@ namespace EmployeeScheduler.Lib.DTO
     public class EmployeeSchedule
     {
         public int EmployeeID { get; set; }
+        public bool IsOff { get; set; }
         public DateTime From { get; set; }
         public DateTime To { get; set; }
         public int LunchType { get; set; } = 2;
