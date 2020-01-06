@@ -10,7 +10,7 @@
 else
 {
     <h1>
-        Schedule @Schedule_.Date().ToString("MMM d") - @Schedule_.Date().AddDays(6).ToString("MMM d")
+        @Schedule_.Date().ToString("MMM d") - @Schedule_.Date().AddDays(6).ToString("MMM d")
         @if (Scheduler.GetScheduleID(DateTime.Now) == Schedule_.ID)
         {
             <span class="text-primary">Current</span>
@@ -50,6 +50,8 @@ else
     private long PreviousWeekID { get; set; }
     private long NextWeekID { get; set; }
 
+    private bool AutoSave => false;
+
     private Shared.Schedule.EmployeeDay Sunday { get; set; }
     private Shared.Schedule.EmployeeDay Monday { get; set; }
     private Shared.Schedule.EmployeeDay Tuesday { get; set; }
@@ -68,25 +70,26 @@ else
             return;
         }
 
-
-        //return; // TOOD: Remove this!
-        var timer = new System.Timers.Timer(10000)
+        if (AutoSave)
         {
-            AutoReset = true,
-            Enabled = true
-        };
-
-        // TODO: might need to make sure a new timer isn't started if the user refreshes the page.
-        timer.Elapsed += async (s, e) =>
-        {
-            if (Nav.Uri != $"{Nav.BaseUri}schedule")
+            // TODO: might need to make sure a new timer isn't started if the user refreshes the page.
+            var timer = new System.Timers.Timer(10000)
             {
-                timer.Stop();
-                return;
-            }
+                AutoReset = true,
+                Enabled = true
+            };
 
-            await SaveSchedule();
-        };
+            timer.Elapsed += async (s, e) =>
+            {
+                if (Nav.Uri != $"{Nav.BaseUri}schedule")
+                {
+                    timer.Stop();
+                    return;
+                }
+
+                await SaveSchedule();
+            };
+        }
 
         // Shut up about the SUN!
         await Task.FromResult(0);

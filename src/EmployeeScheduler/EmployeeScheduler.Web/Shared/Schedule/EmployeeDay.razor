@@ -1,14 +1,17 @@
 ﻿@using Lib.Extensions
 
 <div class="card mb-1 @CardDynamicCssClass">
-    <div class="card-body">
+    <div class="card-header">
         <h4 class="card-title">
+            <small class="oi oi-calendar"></small>
             @DayString
-            <small class="@CardClosedDynamicCssClass">
+            <small class="float-right">
                 <input type="checkbox" checked="@Closed" @onchange="ClosedChanged" />
                 Closed
             </small>
         </h4>
+    </div>
+    <div class="card-body @CardBodyDynamicCssClass">
         <h5 class="card-subtitle text-muted">@Date.ToShortDateString()</h5>
         @{ var i = 0; }
         @foreach (var employeeDay in EmployeeDays)
@@ -25,8 +28,9 @@
                 <div class="col-sm-4">
                     <div class="form-row">
                         <div class="col">
-                            <h6 class="@EmployeeNameDynamicCssClass">@employeeDay.Employee.FormattedName()</h6>
+                            <h6 class="text-primary">@employeeDay.Employee.FormattedName()</h6>
                         </div>
+                        <div class="col"><strong>@HourValues[localI] hrs</strong></div>
                         <div class="col">
                             <div class="form-group form-check">
                                 <input type="checkbox" class="form-check-input" disabled="@Closed" checked="@employeeDay.Day.IsOff" @onchange="e => DayOffChanged(localI, e)" />
@@ -35,7 +39,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-3"><TimeRangePicker Disabled="Closed || employeeDay.Day.IsOff" OnTimeChanged="async e => await GetTotalHours(localI, e)" StartTime="employeeDay.Day.From" EndTime="employeeDay.Day.To" /></div>
+                <div class="col-sm-5"><TimeRangePicker Disabled="Closed || employeeDay.Day.IsOff" OnTimeChanged="async e => await GetTotalHours(localI, e)" StartTime="employeeDay.Day.From" EndTime="employeeDay.Day.To" /></div>
                 <div class="col-sm-3">
                     <div class="form-group">
                         <select class="form-control" disabled="@Closed" @onchange="async e => await LunchTypeChanged(localI, e)">
@@ -45,7 +49,6 @@
                         </select>
                     </div>
                 </div>
-                <div class="col-sm-2">@HourValues[localI] hrs</div>
             </div>
             i++;
         }
@@ -65,9 +68,8 @@
     public bool Closed { get; set; }
 
     private string[] HourValues { get; set; }
-    private string CardDynamicCssClass => Closed ? "bg-secondary text-white" : "";
-    private string CardClosedDynamicCssClass => Closed ? "" : "text-muted";
-    private string EmployeeNameDynamicCssClass => Closed ? "" : "text-primary";
+    private string CardDynamicCssClass => Closed ? "bg-inactive" : "";
+    private string CardBodyDynamicCssClass => Closed ? "d-none" : "";
 
     protected override async Task OnParametersSetAsync()
     {

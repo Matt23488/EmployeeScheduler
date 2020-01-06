@@ -181,3 +181,7 @@ app {
         display: block;
     }
 }
+
+.bg-inactive {
+    background-color: #ddd;
+}
