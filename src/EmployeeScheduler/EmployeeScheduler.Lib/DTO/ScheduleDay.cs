@@ -9,7 +9,7 @@ namespace EmployeeScheduler.Lib.DTO
     // Maybe a way to denote a closure of some kind
     public class ScheduleDay
     {
-        public DateTime Date { get; set; }
-        public List<EmployeeSchedule> EmployeeSchedules { get; set; } = new List<EmployeeSchedule>();
+        public bool IsClosed { get; set; }
+        public List<EmployeeSchedule> EmployeeSchedules { get; set; }
     }
 }

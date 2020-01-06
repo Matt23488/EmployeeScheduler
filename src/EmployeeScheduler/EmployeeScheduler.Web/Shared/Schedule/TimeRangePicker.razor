@@ -1,32 +1,14 @@
-﻿@*<input type="time" step="900" value="@StartTime.ToString("HH:mm")" @oninput="StartTimeChanged" />
-    -
-    <input type="time" step="900" value="@EndTime.ToString("HH:mm")" @oninput="EndTimeChanged" />*@
-
+﻿<div class="input-group mb-1">
+    <div class="input-group-prepend">
+        <span class="input-group-text"><i class="oi oi-sun"></i></span>
+    </div>
+    <input type="time" step="900" class="form-control" disabled="@Disabled" value="@StartTime.ToString("HH:mm")" @oninput="StartTimeChanged" />
+</div>
 <div class="input-group mb-1">
     <div class="input-group-prepend">
-        <span class="input-group-text oi oi-sun"></span>
+        <span class="input-group-text"><i class="oi oi-moon"></i></span>
     </div>
-    @if (Disabled)
-    {
-        <input type="time" step="900" class="form-control" value="@StartTime.ToString("HH:mm")" @oninput="StartTimeChanged" disabled />
-    }
-    else
-    {
-        <input type="time" step="900" class="form-control" value="@StartTime.ToString("HH:mm")" @oninput="StartTimeChanged" />
-    }
-</div>
-<div class="input-group">
-    <div class="input-group-prepend">
-        <span class="input-group-text oi oi-moon"></span>
-    </div>
-    @if (Disabled)
-    {
-        <input type="time" step="900" class="form-control" value="@EndTime.ToString("HH:mm")" @oninput="EndTimeChanged" disabled />
-    }
-    else
-    {
-        <input type="time" step="900" class="form-control" value="@EndTime.ToString("HH:mm")" @oninput="EndTimeChanged" />
-    }
+    <input type="time" step="900" class="form-control" disabled="@Disabled" value="@EndTime.ToString("HH:mm")" @oninput="EndTimeChanged" />
 </div>
 
 @inject Lib.Services.ILogger Logger

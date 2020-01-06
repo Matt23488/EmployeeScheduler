@@ -1,16 +1,15 @@
 ﻿@using Lib.Extensions
 
-<div class="card">
+<div class="card mb-1 @CardDynamicCssClass">
     <div class="card-body">
-        <h5 class="card-title">@DayString</h5>
-        <h6 class="card-subtitle text-muted">@Date.ToShortDateString()</h6>
-        <div class="row d-sm-flex d-none">
-            <div class="col-sm-3"><strong>Employee</strong></div>
-            <div class="col-sm-1"><strong>Off</strong></div>
-            <div class="col-sm-3"><strong>Time</strong></div>
-            <div class="col-sm-3"><strong>Lunch</strong></div>
-            <div class="col-sm-2"><strong>Total Hours</strong></div>
-        </div>
+        <h4 class="card-title">
+            @DayString
+            <small class="@CardClosedDynamicCssClass">
+                <input type="checkbox" checked="@Closed" @onchange="ClosedChanged" />
+                Closed
+            </small>
+        </h4>
+        <h5 class="card-subtitle text-muted">@Date.ToShortDateString()</h5>
         @{ var i = 0; }
         @foreach (var employeeDay in EmployeeDays)
         {
@@ -22,46 +21,31 @@
             var localDay = employeeDay;
             var localI = i;
             var hours = GetTotalHours(i);
-            <div class="row mb-2">
-                <div class="col-sm-3">@employeeDay.Employee.FormattedName()</div>
-                <div class="col-sm-1">
-                    <div class="form-group form-check">
-                        @if (employeeDay.Day.IsOff)
-                        {
-                            <input type="checkbox" class="form-check-input" checked @onchange="async e => await DayOffChangedAsync(localI, e)" />
-                        }
-                        else
-                        {
-                            <input type="checkbox" class="form-check-input" @onchange="async e => await DayOffChangedAsync(localI, e)" />
-                        }
+            <div class="row mt-2">
+                <div class="col-sm-4">
+                    <div class="form-row">
+                        <div class="col">
+                            <h6 class="@EmployeeNameDynamicCssClass">@employeeDay.Employee.FormattedName()</h6>
+                        </div>
+                        <div class="col">
+                            <div class="form-group form-check">
+                                <input type="checkbox" class="form-check-input" disabled="@Closed" checked="@employeeDay.Day.IsOff" @onchange="e => DayOffChanged(localI, e)" />
+                                <label class="form-check-label">Off</label>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="col-sm-3"><TimeRangePicker Disabled="employeeDay.Day.IsOff" OnTimeChanged="async e => await GetTotalHours(localI, e)" StartTime="employeeDay.Day.From" EndTime="employeeDay.Day.To" /></div>
+                <div class="col-sm-3"><TimeRangePicker Disabled="Closed || employeeDay.Day.IsOff" OnTimeChanged="async e => await GetTotalHours(localI, e)" StartTime="employeeDay.Day.From" EndTime="employeeDay.Day.To" /></div>
                 <div class="col-sm-3">
                     <div class="form-group">
-                        <select class="form-control" @onchange="async e => await LunchTypeChanged(localI, e)">
-                            @if (employeeDay.Day.LunchType == 0)
-                            {
-                                <option value="0" selected>None</option>
-                                <option value="1">30 min</option>
-                                <option value="2">1 hr</option>
-                            }
-                            else if (employeeDay.Day.LunchType == 1)
-                            {
-                                <option value="0">None</option>
-                                <option value="1" selected>30 min</option>
-                                <option value="2">1 hr</option>
-                            }
-                            else if (employeeDay.Day.LunchType == 2)
-                            {
-                                <option value="0">None</option>
-                                <option value="1">30 min</option>
-                                <option value="2" selected>1 hr</option>
-                            }
+                        <select class="form-control" disabled="@Closed" @onchange="async e => await LunchTypeChanged(localI, e)">
+                            <option value="0" selected="@(employeeDay.Day.LunchType == 0)">No Lunch</option>
+                            <option value="1" selected="@(employeeDay.Day.LunchType == 1)">30 min Lunch</option>
+                            <option value="2" selected="@(employeeDay.Day.LunchType == 2)">1 hr Lunch</option>
                         </select>
                     </div>
                 </div>
-                <div class="col-sm-2">@HourValues[localI]</div>
+                <div class="col-sm-2">@HourValues[localI] hrs</div>
             </div>
             i++;
         }
@@ -77,8 +61,13 @@
     public DateTime Date { get; set; }
     [Parameter]
     public List<EmployeeDayDTO> EmployeeDays { get; set; }
+    [Parameter]
+    public bool Closed { get; set; }
 
     private string[] HourValues { get; set; }
+    private string CardDynamicCssClass => Closed ? "bg-secondary text-white" : "";
+    private string CardClosedDynamicCssClass => Closed ? "" : "text-muted";
+    private string EmployeeNameDynamicCssClass => Closed ? "" : "text-primary";
 
     protected override async Task OnParametersSetAsync()
     {
@@ -88,10 +77,10 @@
         await Task.FromResult(0);
     }
 
-    private async Task DayOffChangedAsync(int index, ChangeEventArgs e)
+    private void DayOffChanged(int index, ChangeEventArgs e)
     {
         EmployeeDays[index].Day.IsOff = (bool)e.Value;
-        await Logger.LogAsync(e.Value);
+        //await Logger.LogAsync(e.Value);
 
         HourValues[index] = GetTotalHours(index);
     }
@@ -103,9 +92,19 @@
         HourValues[index] = GetTotalHours(index);
     }
 
+    private void ClosedChanged(ChangeEventArgs e)
+    {
+        Closed = (bool)e.Value;
+
+        for (int i = 0; i < HourValues.Length; i++)
+        {
+            HourValues[i] = GetTotalHours(i);
+        }
+    }
+
     private async Task GetTotalHours(int index, TimeRangePicker.TimeRangeEventArgs e)
     {
-        if (EmployeeDays[index].Day.IsOff)
+        if (Closed || EmployeeDays[index].Day.IsOff)
         {
             HourValues[index] = "0.00";
             return;
@@ -129,7 +128,7 @@
 
     private string GetTotalHours(int index)
     {
-        if (EmployeeDays[index].Day.IsOff) return "0.00";
+        if (Closed || EmployeeDays[index].Day.IsOff) return "0.00";
 
         var day = EmployeeDays[index].Day;
         var lunchType = (LunchType)EmployeeDays[index].Day.LunchType;

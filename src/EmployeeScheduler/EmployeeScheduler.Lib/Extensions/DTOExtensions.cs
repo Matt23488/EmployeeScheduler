@@ -9,10 +9,10 @@ namespace EmployeeScheduler.Lib.Extensions
     public static class DTOExtensions
     {
         public static string FullName(this DTO.Employee employee)
-            => $"{employee.FirstName} {employee.LastName}";
+            => $"{employee.FirstName} {employee.LastName}".TrimEnd();
 
         public static string FormattedName(this DTO.Employee employee)
-            => $"{employee.LastName}, {employee.FirstName}";
+            => $"{employee.LastName}, {employee.FirstName}".TrimStart().TrimStart(", ".ToArray());
 
         public static string CssClass(this DTO.Alert alert)
         {

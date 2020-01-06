@@ -18,12 +18,12 @@ namespace EmployeeScheduler.Lib.DTO
         //public ScheduleDay Thursday { get; set; } = new ScheduleDay();
         //public ScheduleDay Friday { get; set; } = new ScheduleDay();
         //public ScheduleDay Saturday { get; set; } = new ScheduleDay();
-        public List<EmployeeSchedule> Sunday { get; set; }
-        public List<EmployeeSchedule> Monday { get; set; }
-        public List<EmployeeSchedule> Tuesday { get; set; }
-        public List<EmployeeSchedule> Wednesday { get; set; }
-        public List<EmployeeSchedule> Thursday { get; set; }
-        public List<EmployeeSchedule> Friday { get; set; }
-        public List<EmployeeSchedule> Saturday { get; set; }
+        public ScheduleDay Sunday { get; set; } = new ScheduleDay();
+        public ScheduleDay Monday { get; set; } = new ScheduleDay();
+        public ScheduleDay Tuesday { get; set; } = new ScheduleDay();
+        public ScheduleDay Wednesday { get; set; } = new ScheduleDay();
+        public ScheduleDay Thursday { get; set; } = new ScheduleDay();
+        public ScheduleDay Friday { get; set; } = new ScheduleDay();
+        public ScheduleDay Saturday { get; set; } = new ScheduleDay();
     }
 }
