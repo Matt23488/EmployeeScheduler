@@ -135,7 +135,7 @@ else
         Schedule_.Saturday = Saturday.EmployeeDays.Select(d => d.Day).ToList();
 
         await Scheduler.SaveScheduleAsync(Schedule_);
-        await Toast.Show("Schedule saved!", Lib.Services.ToastType.Success);
+        await Toast.ShowAsync("Schedule saved!", Lib.Services.ToastType.Success);
     }
 
     public class EmployeeWeek

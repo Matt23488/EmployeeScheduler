@@ -17,7 +17,7 @@ namespace EmployeeScheduler.Lib.BLL
             _jsRuntime = jsRuntime;
         }
 
-        public async Task Show(string message, ToastType type)
+        public async Task ShowAsync(string message, ToastType type)
         {
             await _jsRuntime.InvokeAsync<object>("window.toast.create", message, (int)type);
         }

@@ -12,15 +12,6 @@
     </div>
 
     <div class="content px-4">
-        <ul class="list-group list-group-flush">
-            @for (int i = 0; i < Alerts.Count; i++)
-            {
-                var alert = Alerts[i];
-                <li class="list-group-item @(alert.CssClass())" @onclick="RemoveAlert(i)">
-                    @(alert.Text)
-                </li>
-            }
-        </ul>
         @Body
     </div>
 

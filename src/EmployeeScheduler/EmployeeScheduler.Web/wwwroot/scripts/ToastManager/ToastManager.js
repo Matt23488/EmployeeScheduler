@@ -1,12 +1,11 @@
 ﻿(function () {
 
-    //const toastArea = document.getElementById('toastArea');
-
     class ToastManager {
         create(message, type) {
             const typeVal = parseInt(type);
 
             const toast = document.createElement('li');
+            toast.classList.add('em-toast');
             toast.classList.add('list-group-item');
             toast.classList.add(getToastTypeCssClass(typeVal));
             toast.innerText = message;
@@ -14,7 +13,7 @@
             const toastArea = document.getElementById('toastArea');
             toastArea.appendChild(toast);
 
-            window.setTimeout(() => toast.remove(), 5000);
+            window.setTimeout(() => toast.remove(), 8010);
             toast.addEventListener('click', e => toast.remove());
         }
     }

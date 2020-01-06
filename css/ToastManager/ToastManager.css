@@ -6,31 +6,11 @@
 }
 
 .em-toast {
-    padding: 10px;
-    border-radius: 5px;
-    margin-top: 5px;
+    animation: fade-out 8s forwards;
 }
 
-.em-toast-info {
-    border: 1px solid blue;
-    color: blue;
-    background-color: lightblue;
-}
-
-.em-toast-success {
-    border: 1px solid green;
-    color: green;
-    background-color: lightgreen;
-}
-
-.em-toast-warning {
-    border: 1px solid darkkhaki;
-    color: darkkhaki;
-    background-color: khaki;
-}
-
-.em-toast-error {
-    border: 1px solid red;
-    color: red;
-    background-color: lightpink;
+@keyframes fade-out {
+    0%    { opacity: 1; }
+    62.5% { opacity: 1; }
+    100%  { opacity: 0; }
 }

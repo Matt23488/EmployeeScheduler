@@ -8,7 +8,7 @@ namespace EmployeeScheduler.Lib.Services
 {
     public interface IToastService
     {
-        Task Show(string message, ToastType type);
+        Task ShowAsync(string message, ToastType type);
     }
 
     public enum ToastType

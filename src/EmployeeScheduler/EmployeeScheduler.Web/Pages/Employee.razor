@@ -24,7 +24,7 @@ else
 }
 
 @inject Lib.Services.ISchedulingService SchedulingService
-@inject Lib.Services.IAlertService AlertService
+@inject Lib.Services.IToastService Toast
 @inject Lib.Services.ILogger Logger
 @inject NavigationManager Nav
 @code {
@@ -52,9 +52,8 @@ else
             await SchedulingService.UpdateEmployeeAsync(Employee_);
         }
 
-        await AlertService.QueueSuccessAlertAsync("Employee Saved Successfully!");
+        await Toast.ShowAsync("Employee Saved Successfully!", Lib.Services.ToastType.Success);
         Nav.NavigateTo($"{Nav.BaseUri}employees");
-        //await Logger.LogAsync(Nav.BaseUri);
     }
 
     private enum Mode { Insert = 0, Update }
