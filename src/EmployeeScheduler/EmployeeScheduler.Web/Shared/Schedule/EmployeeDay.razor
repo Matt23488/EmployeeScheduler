@@ -31,7 +31,7 @@
                             <h6 class="text-primary">@employeeDay.Employee.FormattedName()</h6>
                         </div>
                         <div class="col">
-                            <strong>
+                            <strong class="@HoursDisplayModifier(localI)">
                                 <i class="oi oi-clock"></i>
                                 @HourValues[localI]
                             </strong>
@@ -44,7 +44,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-5"><TimeRangePicker Disabled="Closed || employeeDay.Day.IsOff" OnTimeChanged="async e => await GetTotalHours(localI, e)" StartTime="employeeDay.Day.From" EndTime="employeeDay.Day.To" /></div>
+                <div class="col-sm-5"><TimeRangePicker IsValid="HoursIsValid(localI)" Disabled="Closed || employeeDay.Day.IsOff" OnTimeChanged="async e => await GetTotalHours(localI, e)" StartTime="employeeDay.Day.From" EndTime="employeeDay.Day.To" /></div>
                 <div class="col-sm-3">
                     <div class="form-group">
                         <select class="form-control" disabled="@(Closed || employeeDay.Day.IsOff)" @onchange="async e => await LunchTypeChanged(localI, e)">
@@ -148,11 +148,16 @@
         return (day.To.TimeOfDay - day.From.TimeOfDay).Add(TimeSpan.FromHours(lunchOffset)).TotalHours.ToString("0.00");
     }
 
+    private string HoursDisplayModifier(int index)
+        => HoursIsValid(index) ? "" : "text-danger";
+
+    private bool HoursIsValid(int index)
+        => HourValues[index][0] != '-';
+
     public class EmployeeDayDTO
     {
         public Lib.DTO.Employee Employee { get; set; }
         public Lib.DTO.EmployeeSchedule Day { get; set; }
-        //public bool IsOff { get; set; }
     }
 
     private enum LunchType

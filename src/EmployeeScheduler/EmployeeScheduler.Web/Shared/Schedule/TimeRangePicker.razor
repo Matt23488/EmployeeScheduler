@@ -3,14 +3,14 @@
         <span class="input-group-text"><i class="oi oi-sun"></i></span>
     </div>
     @*<input type="time" step="900" class="form-control" disabled="@Disabled" value="@StartTime.ToString("HH:mm")" @oninput="StartTimeChanged" />*@
-    <TimePicker Disabled="Disabled" Time="StartTime" OnTimeChanged="StartTimeChanged"></TimePicker>
+    <TimePicker IsValid="IsValid" Disabled="Disabled" Time="StartTime" OnTimeChanged="StartTimeChanged"></TimePicker>
 </div>
 <div class="input-group mb-1">
     <div class="input-group-prepend">
         <span class="input-group-text"><i class="oi oi-moon"></i></span>
     </div>
     @*<input type="time" step="900" class="form-control" disabled="@Disabled" value="@EndTime.ToString("HH:mm")" @oninput="EndTimeChanged" />*@
-    <TimePicker Disabled="Disabled" Time="EndTime" OnTimeChanged="EndTimeChanged"></TimePicker>
+    <TimePicker IsValid="IsValid" Disabled="Disabled" Time="EndTime" OnTimeChanged="EndTimeChanged"></TimePicker>
 </div>
 
 @inject Lib.Services.ILogger Logger
@@ -27,6 +27,9 @@
 
     [Parameter]
     public bool Disabled { get; set; }
+
+    [Parameter]
+    public bool IsValid { get; set; }
 
     //private async Task StartTimeChanged(ChangeEventArgs e)
     private async Task StartTimeChanged(DateTime newTime)

@@ -1,8 +1,8 @@
 ﻿@* This is for screens smaller than md. Opting to go with a native time input as it's friendly on most devices. *@
-<input type="time" class="form-control d-md-none" disabled="@Disabled" value="@Time.ToString("HH:mm")" @oninput="MobileTimeChanged" />
+<input type="time" class="form-control d-md-none @ValidationModifier" disabled="@Disabled" value="@Time.ToString("HH:mm")" @oninput="MobileTimeChanged" />
 
 @* This is for screens larger than md. Custom input to allow typing for faster use, as not all browsers handle time inputs well. *@
-<input type="text" class="form-control d-none d-md-block" disabled="@Disabled" value="@CurrentBoundInputValue"
+<input type="text" class="form-control d-none d-md-block @ValidationModifier" disabled="@Disabled" value="@CurrentBoundInputValue"
        @ref="InputElement"
        @onfocus="DesktopFocus"
        @oninput="DesktopInput"
@@ -17,14 +17,18 @@
     [Parameter]
     public bool Disabled { get; set; }
     [Parameter]
+    public bool IsValid { get; set; } // This is used for highlighting the input fields
+    [Parameter]
     public DateTime Time { get; set; }
+
+    private string ValidationModifier => IsValid ? "" : "is-invalid";
 
     private ElementReference InputElement { get; set; }
     private string CurrentBoundInputValue { get; set; }
     private string PreviousInputValue { get; set; }
     private string CurrentInputValue { get; set; }
     private bool Edited { get; set; }
-    private bool Valid { get; set; }
+    private bool CurrentValueIsValid { get; set; } // This is a flag to determine if we should fire the OnTimeChanged event
 
     private static readonly string[] REGEX = new[] { @"\d", @"\d", ":", @"\d", @"\d", " ", "[AaPp]", "M" };
 
@@ -32,7 +36,7 @@
     {
         CurrentBoundInputValue = CurrentInputValue = GetTimeString(Time);
         Edited = false;
-        Valid = true;
+        CurrentValueIsValid = true;
     }
 
     private async Task MobileTimeChanged(ChangeEventArgs e)
@@ -61,7 +65,7 @@
     private async Task DesktopInput(ChangeEventArgs e)
     {
         Edited = true;
-        Valid = false;
+        CurrentValueIsValid = false;
         PreviousInputValue = "";
 
         var newValue = ((string)e.Value).ToUpper();
@@ -87,7 +91,7 @@
                 CurrentInputValue = await JS.InvokeAsync<string>("timePickerHelper.toUpper", InputElement);
 
                 // Firing the event here causes the textbox to go blank onblur. Doesn't affect the values, but it's still a problem.
-                Valid = true;
+                CurrentValueIsValid = true;
                 //Time = DateTime.ParseExact(CurrentInputValue, "hh:mm tt", null);
                 //await OnTimeChanged.InvokeAsync(Time);
                 ////CurrentBoundInputValue = CurrentInputValue;
@@ -99,7 +103,7 @@
 
     private async Task DesktopBlur(FocusEventArgs e)
     {
-        if (Valid)
+        if (CurrentValueIsValid)
         {
             Time = DateTime.ParseExact(CurrentInputValue, "hh:mm tt", null);
             await OnTimeChanged.InvokeAsync(Time);
