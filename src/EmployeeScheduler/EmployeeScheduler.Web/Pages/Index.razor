@@ -5,19 +5,24 @@
 Welcome to your new app.
 
 <SurveyPrompt Title="How is Blazor working for you?" />
-<TestComponent @ref="TestComponent" />
-<button @onclick="LogTestInput">Log</button>
+<input type="text" class="form-control" @bind="TestValue" />
+<button class="btn btn-primary" @onclick="RegExTest">Log</button>
 
 @inject Lib.Services.ILogger Logger
+@inject Lib.Services.IToastService Toast
 @inject NavigationManager Nav
+@inject Microsoft.JSInterop.IJSRuntime JS
 @code
 {
-    public TestComponent TestComponent { get; set; }
-    //public string TestInput { get; set; } = "hello";
+    private string TestValue { get; set; }
 
-    public async Task LogTestInput()
+    private async Task RegExTest()
     {
-        await Logger.LogAsync(TestComponent.Input);
+        if (await JS.InvokeAsync<bool>("timePicker.regExTest", TestValue))
+        {
+            await Toast.ShowAsync("Matches!", Lib.Services.ToastType.Success);
+        }
+        else await Toast.ShowAsync("Doesn't match.", Lib.Services.ToastType.Error);
     }
 
     protected override void OnInitialized()

@@ -2,13 +2,15 @@
     <div class="input-group-prepend">
         <span class="input-group-text"><i class="oi oi-sun"></i></span>
     </div>
-    <input type="time" step="900" class="form-control" disabled="@Disabled" value="@StartTime.ToString("HH:mm")" @oninput="StartTimeChanged" />
+    @*<input type="time" step="900" class="form-control" disabled="@Disabled" value="@StartTime.ToString("HH:mm")" @oninput="StartTimeChanged" />*@
+    <TimePicker Disabled="Disabled" Time="StartTime" OnTimeChanged="StartTimeChanged"></TimePicker>
 </div>
 <div class="input-group mb-1">
     <div class="input-group-prepend">
         <span class="input-group-text"><i class="oi oi-moon"></i></span>
     </div>
-    <input type="time" step="900" class="form-control" disabled="@Disabled" value="@EndTime.ToString("HH:mm")" @oninput="EndTimeChanged" />
+    @*<input type="time" step="900" class="form-control" disabled="@Disabled" value="@EndTime.ToString("HH:mm")" @oninput="EndTimeChanged" />*@
+    <TimePicker Disabled="Disabled" Time="EndTime" OnTimeChanged="EndTimeChanged"></TimePicker>
 </div>
 
 @inject Lib.Services.ILogger Logger
@@ -26,31 +28,35 @@
     [Parameter]
     public bool Disabled { get; set; }
 
-    private async Task StartTimeChanged(ChangeEventArgs e)
+    //private async Task StartTimeChanged(ChangeEventArgs e)
+    private async Task StartTimeChanged(DateTime newTime)
     {
-        var timeString = e.Value.ToString();
-        if (!DateTime.TryParseExact(timeString, "HH:mm:ss", null, System.Globalization.DateTimeStyles.None, out DateTime startTime))
-        {
-            if (!DateTime.TryParseExact(timeString, "HH:mm", null, System.Globalization.DateTimeStyles.None, out startTime))
-            {
-                return;
-            }
-        }
-        StartTime = startTime;
+        //var timeString = e.Value.ToString();
+        //if (!DateTime.TryParseExact(timeString, "HH:mm:ss", null, System.Globalization.DateTimeStyles.None, out DateTime startTime))
+        //{
+        //    if (!DateTime.TryParseExact(timeString, "HH:mm", null, System.Globalization.DateTimeStyles.None, out startTime))
+        //    {
+        //        return;
+        //    }
+        //}
+        //StartTime = startTime;
+        StartTime = newTime;
         await OnTimeChanged.InvokeAsync(new TimeRangeEventArgs(StartTime, EndTime));
     }
 
-    private async Task EndTimeChanged(ChangeEventArgs e)
+    //private async Task EndTimeChanged(ChangeEventArgs e)
+    private async Task EndTimeChanged(DateTime newTime)
     {
-        var timeString = e.Value.ToString();
-        if (!DateTime.TryParseExact(timeString, "HH:mm:ss", null, System.Globalization.DateTimeStyles.None, out DateTime endTime))
-        {
-            if (!DateTime.TryParseExact(timeString, "HH:mm", null, System.Globalization.DateTimeStyles.None, out endTime))
-            {
-                return;
-            }
-        }
-        EndTime = endTime;
+        //var timeString = e.Value.ToString();
+        //if (!DateTime.TryParseExact(timeString, "HH:mm:ss", null, System.Globalization.DateTimeStyles.None, out DateTime endTime))
+        //{
+        //    if (!DateTime.TryParseExact(timeString, "HH:mm", null, System.Globalization.DateTimeStyles.None, out endTime))
+        //    {
+        //        return;
+        //    }
+        //}
+        //EndTime = endTime;
+        EndTime = newTime;
         await OnTimeChanged.InvokeAsync(new TimeRangeEventArgs(StartTime, EndTime));
     }
 

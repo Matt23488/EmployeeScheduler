@@ -47,7 +47,7 @@
                 <div class="col-sm-5"><TimeRangePicker Disabled="Closed || employeeDay.Day.IsOff" OnTimeChanged="async e => await GetTotalHours(localI, e)" StartTime="employeeDay.Day.From" EndTime="employeeDay.Day.To" /></div>
                 <div class="col-sm-3">
                     <div class="form-group">
-                        <select class="form-control" disabled="@Closed" @onchange="async e => await LunchTypeChanged(localI, e)">
+                        <select class="form-control" disabled="@(Closed || employeeDay.Day.IsOff)" @onchange="async e => await LunchTypeChanged(localI, e)">
                             <option value="0" selected="@(employeeDay.Day.LunchType == 0)">No Lunch</option>
                             <option value="1" selected="@(employeeDay.Day.LunchType == 1)">30 min Lunch</option>
                             <option value="2" selected="@(employeeDay.Day.LunchType == 2)">1 hr Lunch</option>

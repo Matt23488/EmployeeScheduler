@@ -13,7 +13,7 @@ else
         @Schedule_.Date().ToString("MMM d") - @Schedule_.Date().AddDays(6).ToString("MMM d")
         @if (Scheduler.GetScheduleID(DateTime.Now) == Schedule_.ID)
         {
-            <span class="text-primary">Current</span>
+            <small class="text-primary">Current</small>
         }
     </h1>
     <div class="float-left">
