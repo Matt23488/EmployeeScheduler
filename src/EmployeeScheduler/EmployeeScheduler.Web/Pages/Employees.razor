@@ -13,31 +13,27 @@ else
 {
     if (EmployeeList.Count == 0)
     {
-        <tr>
-            <td colspan="3"><em>No employees. Click below to add one!</em></td>
-        </tr>
+        <p class="text-info">
+            <em>No employees. Click below to add one!</em>
+        </p>
     }
     else
     {
-        <table class="table">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>Name</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var employee in EmployeeList)
-                {
-                    <tr>
-                        <td><a href="employee/@(employee.ID)">Edit</a></td>
-                        <td>@employee.FormattedName()</td>
-                        <td><em>@(employee.Active ? "" : "Deleted")</em></td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+        <div class="list-group mb-3">
+            @foreach (var employee in EmployeeList)
+            {
+                <a href="employee/@employee.ID" class="list-group-item list-group-item-action @(employee.Active ? "" : "list-group-item-secondary")">
+                    <i class="oi oi-person"></i>
+                    @employee.FormattedName()
+                    @if (!employee.Active)
+                    {
+                        <div class="text-danger float-right">
+                            <i class="oi oi-ban"></i>
+                        </div>
+                    }
+                </a>
+            }
+        </div>
     }
     <a class="btn btn-primary" href="employee"><span class="oi oi-plus"></span> Add New Employee</a>
 }

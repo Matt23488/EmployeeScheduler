@@ -7,18 +7,23 @@
 }
 else
 {
-    <div class="form-group">
-        <label>First Name:</label>
-        <input type="text" class="form-control" @bind-value="Employee_.FirstName" />
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="firstNameLabel">First Name</span>
+        </div>
+        <input type="text" class="form-control" @bind="Employee_.FirstName" aria-label="First Name" aria-describedby="firstNameLabel" />
     </div>
-    <div class="form-group">
-        <label>Last Name:</label>
-        <input type="text" class="form-control" @bind-value="Employee_.LastName" />
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="lastNameLabel">Last Name</span>
+        </div>
+        <input type="text" class="form-control" @bind="Employee_.LastName" aria-label="Last Name" aria-describedby="lastNameLabel" />
     </div>
-    <div class="form-group form-check">
-        <label class="form-check-label">
-            <input type="checkbox" class="form-check-input" @bind="Employee_.Active" /> Active
-        </label>
+    <div class="form-group mb-3">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" @bind="Employee_.Active" />
+            <label class="form-check-label">Active</label>
+        </div>
     </div>
     <button class="btn btn-primary" @onclick="Save">Save Employee</button>
 }

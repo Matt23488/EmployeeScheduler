@@ -1,6 +1,6 @@
 ﻿@using Lib.Extensions
 
-<div class="card mb-1 @CardDynamicCssClass">
+<div class="card mb-3 @CardDynamicCssClass">
     <div class="card-header">
         <h4 class="card-title">
             <small class="oi oi-calendar"></small>
@@ -30,7 +30,12 @@
                         <div class="col">
                             <h6 class="text-primary">@employeeDay.Employee.FormattedName()</h6>
                         </div>
-                        <div class="col"><strong>@HourValues[localI] hrs</strong></div>
+                        <div class="col">
+                            <strong>
+                                <i class="oi oi-clock"></i>
+                                @HourValues[localI]
+                            </strong>
+                        </div>
                         <div class="col">
                             <div class="form-group form-check">
                                 <input type="checkbox" class="form-check-input" disabled="@Closed" checked="@employeeDay.Day.IsOff" @onchange="e => DayOffChanged(localI, e)" />
