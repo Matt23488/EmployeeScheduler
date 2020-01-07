@@ -5,8 +5,11 @@
 Welcome to your new app.
 
 <SurveyPrompt Title="How is Blazor working for you?" />
-<input type="text" class="form-control" @bind="TestValue" />
-<button class="btn btn-primary" @onclick="RegExTest">Log</button>
+<div class="btn-group-toggle" data-toggle="buttons">
+    <label class="btn btn-outline-primary">
+        <input type="checkbox"> Checked
+    </label>
+</div>
 
 @inject Lib.Services.ILogger Logger
 @inject Lib.Services.IToastService Toast
@@ -14,16 +17,6 @@ Welcome to your new app.
 @inject Microsoft.JSInterop.IJSRuntime JS
 @code
 {
-    private string TestValue { get; set; }
-
-    private async Task RegExTest()
-    {
-        if (await JS.InvokeAsync<bool>("timePicker.regExTest", TestValue))
-        {
-            await Toast.ShowAsync("Matches!", Lib.Services.ToastType.Success);
-        }
-        else await Toast.ShowAsync("Doesn't match.", Lib.Services.ToastType.Error);
-    }
 
     protected override void OnInitialized()
     {

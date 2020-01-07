@@ -13,10 +13,7 @@
                 </strong>
             </div>
             <div class="col">
-                <div class="form-group form-check @IsOffColorModifier">
-                    <input type="checkbox" class="form-check-input" disabled="@Closed" checked="@(Schedule.IsOff || Closed)" @onchange="IsOffChanged" />
-                    <label class="form-check-label">No Hours</label>
-                </div>
+                <ToggleButton Class="btn-sm btn-outline-dark mb-3" Text="No Hours" Checked="Schedule.IsOff || Closed" Disabled="Closed" OnChange="IsOffChanged"></ToggleButton>
             </div>
         </div>
     </div>

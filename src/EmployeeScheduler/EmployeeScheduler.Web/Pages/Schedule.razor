@@ -24,7 +24,7 @@ else
             <div class="input-group">
                 <div class="input-group-prepend">
                     <span class="input-group-text">
-                        Group
+                        <i class="oi oi-eye"></i>
                     </span>
                 </div>
                 <select class="custom-select" @bind="ViewMode">
@@ -73,7 +73,8 @@ else
     private long PreviousWeekID { get; set; }
     private long NextWeekID { get; set; }
 
-    private bool AutoSave => false;
+    private bool AutoSave => true;
+
     private int ViewMode { get; set; }
 
     private List<bool> DayClosures => new List<bool>

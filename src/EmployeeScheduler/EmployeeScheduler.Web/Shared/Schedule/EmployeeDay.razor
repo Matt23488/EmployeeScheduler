@@ -3,13 +3,12 @@
 <div class="card mb-3 @CardDynamicCssClass">
     <div class="card-header @HeaderBorderModifier">
         <div class="row">
-            <div class="col text-left">
+            <div class="col text-left pt-1">
                 <i class="oi oi-calendar"></i>
                 <strong>@DayString</strong>
             </div>
-            <div class="col text-right form-check">
-                <input type="checkbox" class="form-check-input" checked="@Closed" @onchange="ClosedChanged" />
-                <label class="form-check-label">Closed</label>
+            <div class="col text-right">
+                <ToggleButton Class="btn-sm btn-outline-dark" Text="Closed" Checked="@Closed" OnChange="ClosedChanged"></ToggleButton>
             </div>
         </div>
     </div>
@@ -38,11 +37,8 @@
                                 @HourValues[localI]
                             </strong>
                         </div>
-                        <div class="col">
-                            <div class="form-group form-check">
-                                <input type="checkbox" class="form-check-input" disabled="@Closed" checked="@employeeDay.Day.IsOff" @onchange="e => DayOffChanged(localI, e)" />
-                                <label class="form-check-label">Off</label>
-                            </div>
+                        <div class="col text-right">
+                            <ToggleButton Class="btn-sm btn-outline-dark mb-3" Text="No Hours" Disabled="@Closed" Checked="@localDay.Day.IsOff" OnChange="e => DayOffChanged(localI, e)"></ToggleButton>
                         </div>
                     </div>
                 </div>
