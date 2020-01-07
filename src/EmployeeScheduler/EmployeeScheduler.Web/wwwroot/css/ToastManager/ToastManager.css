@@ -6,7 +6,7 @@
 }
 
 .em-toast {
-    animation: fade-out 8s forwards;
+    animation: fade-out 6s forwards ease-in;
 }
 
 @keyframes fade-out {

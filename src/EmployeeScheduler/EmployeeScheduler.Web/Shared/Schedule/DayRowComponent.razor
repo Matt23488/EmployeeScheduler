@@ -1,35 +1,36 @@
-﻿
-
-<div class="row mt-2">
-    <div class="col-md-4">
-        <div class="form-row">
-            <div class="col">
-                <h6 class="@DayNameColorModifier">@DayString</h6>
+﻿@if (!Closed)
+{
+    <div class="row mt-2">
+        <div class="col-md-4">
+            <div class="form-row">
+                <div class="col">
+                    <h6 class="text-info">@DayString</h6>
+                </div>
+                <div class="col">
+                    <strong class="@HoursColorModifier">
+                        <i class="oi oi-clock"></i>
+                        @Hours.ToString("0.00")
+                    </strong>
+                </div>
+                <div class="col">
+                    <ToggleButton Class="btn-sm btn-outline-dark mb-3" Text="No Hours" Checked="Schedule.IsOff || Closed" Disabled="Closed" OnChange="IsOffChanged"></ToggleButton>
+                </div>
             </div>
-            <div class="col">
-                <strong class="@HoursColorModifier">
-                    <i class="oi oi-clock"></i>
-                    @Hours.ToString("0.00")
-                </strong>
-            </div>
-            <div class="col">
-                <ToggleButton Class="btn-sm btn-outline-dark mb-3" Text="No Hours" Checked="Schedule.IsOff || Closed" Disabled="Closed" OnChange="IsOffChanged"></ToggleButton>
+        </div>
+        <div class="col-md-5">
+            <TimeRangePicker IsValid="HoursIsValid" Disabled="Schedule.IsOff || Closed" OnTimeChanged="GetTotalHours" StartTime="Schedule.From" EndTime="Schedule.To"></TimeRangePicker>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <select class="form-control" disabled="@(Schedule.IsOff || Closed)" @onchange="LunchTypeChanged">
+                    <option value="0" selected="@(Schedule.LunchType == 0)">No Lunch</option>
+                    <option value="1" selected="@(Schedule.LunchType == 1)">30 min Lunch</option>
+                    <option value="2" selected="@(Schedule.LunchType == 2)">1 hr Lunch</option>
+                </select>
             </div>
         </div>
     </div>
-    <div class="col-md-5">
-        <TimeRangePicker IsValid="HoursIsValid" Disabled="Schedule.IsOff || Closed" OnTimeChanged="GetTotalHours" StartTime="Schedule.From" EndTime="Schedule.To"></TimeRangePicker>
-    </div>
-    <div class="col-md-3">
-        <div class="form-group">
-            <select class="form-control" disabled="@(Schedule.IsOff || Closed)" @onchange="LunchTypeChanged">
-                <option value="0" selected="@(Schedule.LunchType == 0)">No Lunch</option>
-                <option value="1" selected="@(Schedule.LunchType == 1)">30 min Lunch</option>
-                <option value="2" selected="@(Schedule.LunchType == 2)">1 hr Lunch</option>
-            </select>
-        </div>
-    </div>
-</div>
+}
 
 @code
 {
@@ -45,12 +46,10 @@
     [Parameter]
     public bool Closed { get; set; }
 
-    private double Hours => (Schedule.IsOff || Closed) ? 0d : (Schedule.To.TimeOfDay - Schedule.From.TimeOfDay).TotalHours + LunchModifier;
+    private double Hours => Schedule.IsOff ? 0d : (Schedule.To.TimeOfDay - Schedule.From.TimeOfDay).TotalHours + LunchModifier;
     private bool HoursIsValid => Hours >= 0d;
-    private string DayNameColorModifier => Closed ? "text-secondary" : "text-info";
-    private string IsOffColorModifier => Closed ? "text-secondary" : "";
     private string HoursColorModifier
-        => Closed || Schedule.IsOff
+        => Schedule.IsOff
         ? "text-secondary"
         : (HoursIsValid ? "" : "text-danger");
     private double LunchModifier

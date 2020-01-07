@@ -1,0 +1,50 @@
+﻿<div class="btn-group btn-group-toggle" data-toggle="buttons">
+    @foreach (var data in ButtonDatas)
+    {
+        var localData = data;
+        <label class="btn @Class @ActiveClass(localData.Key)">
+            <input type="radio" name="@RadioGroupName" id="radioButtonGroup-@RadioGroupName-@localData.Key" checked="@(localData.Key == Value)" @onchange="() => RadioChecked(localData.Key)" />
+            @if (localData.Value.IsIcon)
+            {
+                <i class="@localData.Value.Value"></i>
+            }
+            else
+            {
+                @:@localData.Value.Value
+            }
+        </label>
+    }
+</div>
+
+@code
+{
+    [Parameter]
+    public EventCallback<int> ValueChanged { get; set; }
+
+    [Parameter]
+    public int Value { get; set; }
+
+    [Parameter]
+    public string RadioGroupName { get; set; }
+
+    [Parameter]
+    public Dictionary<int, ButtonData> ButtonDatas { get; set; }
+
+    [Parameter]
+    public string Class { get; set; }
+
+    private async Task RadioChecked(int newValue)
+    {
+        Value = newValue;
+        await ValueChanged.InvokeAsync(Value);
+    }
+
+    private string ActiveClass(int value)
+        => value == Value ? "active" : "";
+
+    public class ButtonData
+    {
+        public bool IsIcon { get; set; }
+        public string Value { get; set; }
+    }
+}

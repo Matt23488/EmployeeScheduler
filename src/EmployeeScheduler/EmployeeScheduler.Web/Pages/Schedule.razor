@@ -18,24 +18,14 @@ else
     </h1>
     <div class="row mb-3">
         <div class="col text-left">
-            <button class="btn btn-success" @onclick="SaveSchedule"><i class="oi oi-check"></i> Save</button>
+            <button class="btn btn-outline-success" @onclick="SaveSchedule"><i class="oi oi-check"></i> Save</button>
         </div>
         <div class="col text-center">
-            <div class="input-group">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">
-                        <i class="oi oi-eye"></i>
-                    </span>
-                </div>
-                <select class="custom-select" @bind="ViewMode">
-                    <option value="0">Day</option>
-                    <option value="1">Employee</option>
-                </select>
-            </div>
+            <RadioButtonGroup Class="btn-outline-dark" RadioGroupName="ViewMode" Value="ViewMode" ButtonDatas="ViewModeData" ValueChanged="val => ViewMode = val"></RadioButtonGroup>
         </div>
         <div class="col text-right">
-            <a href="schedule/@(PreviousWeekID)" class="btn btn-primary"><i class="oi oi-arrow-left"></i></a>
-            <a href="schedule/@(NextWeekID)" class="btn btn-primary"><i class="oi oi-arrow-right"></i></a>
+            <a href="schedule/@(PreviousWeekID)" class="btn btn-outline-primary"><i class="oi oi-arrow-left"></i></a>
+            <a href="schedule/@(NextWeekID)" class="btn btn-outline-primary"><i class="oi oi-arrow-right"></i></a>
         </div>
     </div>
     @if (ViewMode == 1)
@@ -78,7 +68,7 @@ else
     private int ViewMode { get; set; }
 
     private List<bool> DayClosures => new List<bool>
-    {
+{
         Schedule_.Sunday.IsClosed,
         Schedule_.Monday.IsClosed,
         Schedule_.Tuesday.IsClosed,
@@ -86,6 +76,12 @@ else
         Schedule_.Thursday.IsClosed,
         Schedule_.Friday.IsClosed,
         Schedule_.Saturday.IsClosed
+    };
+
+    private readonly Dictionary<int, RadioButtonGroup.ButtonData> ViewModeData = new Dictionary<int, RadioButtonGroup.ButtonData>
+    {
+        { 0, new RadioButtonGroup.ButtonData { IsIcon = true, Value = "oi oi-calendar" } },
+        { 1, new RadioButtonGroup.ButtonData { IsIcon = true, Value = "oi oi-person" } }
     };
 
     private Shared.Schedule.EmployeeDay Sunday { get; set; }
@@ -114,12 +110,12 @@ else
                 AutoReset = true,
                 Enabled = true
             };
-
             timer.Elapsed += async (s, e) =>
             {
                 if (!Nav.Uri.StartsWith($"{Nav.BaseUri}schedule"))
                 {
-                    timer.Stop();
+                //await Logger.LogAsync("Stopping timer. Nav.Uri:", Nav.Uri);
+                timer.Stop();
                     return;
                 }
 
