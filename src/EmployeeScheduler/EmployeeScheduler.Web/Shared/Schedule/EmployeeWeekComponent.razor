@@ -2,42 +2,47 @@
 
 <div class="card mb-3">
     <div class="card-header">
-        <h4 class="card-title">
-            <small class="oi oi-person"></small>
-            @Week.Employee.FormattedName()
-            <small class="float-right">
+        <div class="row">
+            <div class="col text-left">
+                <i class="oi oi-person"></i>
+                <strong>@Week.Employee.FormattedName()</strong>
+            </div>
+            <div class="col text-right">
                 <i class="oi oi-clock"></i>
                 @TotalHours.ToString("0.00")
-            </small>
-        </h4>
+            </div>
+        </div>
     </div>
     <div class="card-body">
-        <DayRowComponent Schedule="Week.Sunday" DayString="Sunday"></DayRowComponent>
-        <DayRowComponent Schedule="Week.Monday" DayString="Monday"></DayRowComponent>
-        <DayRowComponent Schedule="Week.Tuesday" DayString="Tuesday"></DayRowComponent>
-        <DayRowComponent Schedule="Week.Wednesday" DayString="Wednesday"></DayRowComponent>
-        <DayRowComponent Schedule="Week.Thursday" DayString="Thursday"></DayRowComponent>
-        <DayRowComponent Schedule="Week.Friday" DayString="Friday"></DayRowComponent>
-        <DayRowComponent Schedule="Week.Saturday" DayString="Saturday"></DayRowComponent>
+        <DayRowComponent DayChanged="DoNothing" Closed="DayClosures[0]" Schedule="Week.Sunday" DayString="Sunday"></DayRowComponent>
+        <DayRowComponent DayChanged="DoNothing" Closed="DayClosures[1]" Schedule="Week.Monday" DayString="Monday"></DayRowComponent>
+        <DayRowComponent DayChanged="DoNothing" Closed="DayClosures[2]" Schedule="Week.Tuesday" DayString="Tuesday"></DayRowComponent>
+        <DayRowComponent DayChanged="DoNothing" Closed="DayClosures[3]" Schedule="Week.Wednesday" DayString="Wednesday"></DayRowComponent>
+        <DayRowComponent DayChanged="DoNothing" Closed="DayClosures[4]" Schedule="Week.Thursday" DayString="Thursday"></DayRowComponent>
+        <DayRowComponent DayChanged="DoNothing" Closed="DayClosures[5]" Schedule="Week.Friday" DayString="Friday"></DayRowComponent>
+        <DayRowComponent DayChanged="DoNothing" Closed="DayClosures[6]" Schedule="Week.Saturday" DayString="Saturday"></DayRowComponent>
     </div>
 </div>
 
+@inject Lib.Services.ILogger Logger
 @code
 {
     [Parameter]
     public Web.Pages.Schedule.EmployeeWeek Week { get; set; }
+    [Parameter]
+    public List<bool> DayClosures { get; set; }
 
     private double TotalHours
-        => GetDayHours(Week.Sunday) +
-            GetDayHours(Week.Monday) +
-            GetDayHours(Week.Tuesday) +
-            GetDayHours(Week.Wednesday) +
-            GetDayHours(Week.Thursday) +
-            GetDayHours(Week.Friday) +
-            GetDayHours(Week.Saturday);
+        => GetDayHours(Week.Sunday, 0) +
+            GetDayHours(Week.Monday, 1) +
+            GetDayHours(Week.Tuesday, 2) +
+            GetDayHours(Week.Wednesday, 3) +
+            GetDayHours(Week.Thursday, 4) +
+            GetDayHours(Week.Friday, 5) +
+            GetDayHours(Week.Saturday, 6);
 
-    private double GetDayHours(Lib.DTO.EmployeeSchedule day)
-        => day.IsOff ? 0d : ((day.To.TimeOfDay - day.From.TimeOfDay).TotalHours + GetLunchModifier(day));
+    private double GetDayHours(Lib.DTO.EmployeeSchedule day, int index)
+        => (day.IsOff || DayClosures[index]) ? 0d : ((day.To.TimeOfDay - day.From.TimeOfDay).TotalHours + GetLunchModifier(day));
 
     private double GetLunchModifier(Lib.DTO.EmployeeSchedule day)
     {
@@ -48,4 +53,8 @@
         }
         return 0d;
     }
+
+    // This is only here because Blazor won't notice the various days within `Week`
+    // have changed if I don't handle an event from the DayRowComponent
+    private void DoNothing() { }
 }

@@ -13,23 +13,36 @@ else
         @Schedule_.Date().ToString("MMM d") - @Schedule_.Date().AddDays(6).ToString("MMM d")
         @if (Scheduler.GetScheduleID(DateTime.Now) == Schedule_.ID)
         {
-            <small class="text-primary">Current</small>
+            <small class="text-info">Current</small>
         }
     </h1>
-    <div class="float-left">
-        <button class="btn btn-success" @onclick="SaveSchedule"><i class="oi oi-check"></i> Save</button>
+    <div class="row mb-3">
+        <div class="col text-left">
+            <button class="btn btn-success" @onclick="SaveSchedule"><i class="oi oi-check"></i> Save</button>
+        </div>
+        <div class="col text-center">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">
+                        Group
+                    </span>
+                </div>
+                <select class="custom-select" @bind="ViewMode">
+                    <option value="0">Day</option>
+                    <option value="1">Employee</option>
+                </select>
+            </div>
+        </div>
+        <div class="col text-right">
+            <a href="schedule/@(PreviousWeekID)" class="btn btn-primary"><i class="oi oi-arrow-left"></i></a>
+            <a href="schedule/@(NextWeekID)" class="btn btn-primary"><i class="oi oi-arrow-right"></i></a>
+        </div>
     </div>
-    <div class="float-right">
-        <a href="schedule/@(PreviousWeekID)" class="btn btn-primary"><i class="oi oi-arrow-left"></i></a>
-        <a href="schedule/@(NextWeekID)" class="btn btn-primary"><i class="oi oi-arrow-right"></i></a>
-    </div>
-    <div class="clearfix"></div>
-    <br />
-    if (EmployeeView)
+    @if (ViewMode == 1)
     {
         foreach (var week in EmployeeWeeks)
         {
-            <EmployeeScheduler.Web.Shared.Schedule.EmployeeWeekComponent Week="week"></EmployeeScheduler.Web.Shared.Schedule.EmployeeWeekComponent>
+            <EmployeeScheduler.Web.Shared.Schedule.EmployeeWeekComponent DayClosures="DayClosures" Week="week"></EmployeeScheduler.Web.Shared.Schedule.EmployeeWeekComponent>
         }
     }
     else
@@ -60,8 +73,19 @@ else
     private long PreviousWeekID { get; set; }
     private long NextWeekID { get; set; }
 
-    private bool AutoSave => true;
-    private bool EmployeeView => false;
+    private bool AutoSave => false;
+    private int ViewMode { get; set; }
+
+    private List<bool> DayClosures => new List<bool>
+    {
+        Schedule_.Sunday.IsClosed,
+        Schedule_.Monday.IsClosed,
+        Schedule_.Tuesday.IsClosed,
+        Schedule_.Wednesday.IsClosed,
+        Schedule_.Thursday.IsClosed,
+        Schedule_.Friday.IsClosed,
+        Schedule_.Saturday.IsClosed
+    };
 
     private Shared.Schedule.EmployeeDay Sunday { get; set; }
     private Shared.Schedule.EmployeeDay Monday { get; set; }
@@ -92,7 +116,7 @@ else
 
             timer.Elapsed += async (s, e) =>
             {
-                if (Nav.Uri != $"{Nav.BaseUri}schedule")
+                if (!Nav.Uri.StartsWith($"{Nav.BaseUri}schedule"))
                 {
                     timer.Stop();
                     return;

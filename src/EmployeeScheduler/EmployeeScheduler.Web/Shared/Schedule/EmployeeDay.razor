@@ -1,15 +1,17 @@
 ﻿@using Lib.Extensions
 
 <div class="card mb-3 @CardDynamicCssClass">
-    <div class="card-header">
-        <h4 class="card-title">
-            <small class="oi oi-calendar"></small>
-            @DayString
-            <small class="float-right">
-                <input type="checkbox" checked="@Closed" @onchange="ClosedChanged" />
-                Closed
-            </small>
-        </h4>
+    <div class="card-header @HeaderBorderModifier">
+        <div class="row">
+            <div class="col text-left">
+                <i class="oi oi-calendar"></i>
+                <strong>@DayString</strong>
+            </div>
+            <div class="col text-right form-check">
+                <input type="checkbox" class="form-check-input" checked="@Closed" @onchange="ClosedChanged" />
+                <label class="form-check-label">Closed</label>
+            </div>
+        </div>
     </div>
     <div class="card-body @CardBodyDynamicCssClass">
         <h5 class="card-subtitle text-muted">@Date.ToShortDateString()</h5>
@@ -25,13 +27,13 @@
             var localI = i;
             var hours = GetTotalHours(i);
             <div class="row mt-2">
-                <div class="col-sm-4">
+                <div class="col-md-4">
                     <div class="form-row">
                         <div class="col">
-                            <h6 class="text-primary">@employeeDay.Employee.FormattedName()</h6>
+                            <h6 class="@EmployeeNameColorModifier(localI)">@employeeDay.Employee.FormattedName()</h6>
                         </div>
                         <div class="col">
-                            <strong class="@HoursDisplayModifier(localI)">
+                            <strong class="@HoursColorModifier(localI)">
                                 <i class="oi oi-clock"></i>
                                 @HourValues[localI]
                             </strong>
@@ -44,8 +46,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-5"><TimeRangePicker IsValid="HoursIsValid(localI)" Disabled="Closed || employeeDay.Day.IsOff" OnTimeChanged="async e => await GetTotalHours(localI, e)" StartTime="employeeDay.Day.From" EndTime="employeeDay.Day.To" /></div>
-                <div class="col-sm-3">
+                <div class="col-md-5"><TimeRangePicker IsValid="HoursIsValid(localI)" Disabled="Closed || employeeDay.Day.IsOff" OnTimeChanged="async e => await GetTotalHours(localI, e)" StartTime="employeeDay.Day.From" EndTime="employeeDay.Day.To" /></div>
+                <div class="col-md-3">
                     <div class="form-group">
                         <select class="form-control" disabled="@(Closed || employeeDay.Day.IsOff)" @onchange="async e => await LunchTypeChanged(localI, e)">
                             <option value="0" selected="@(employeeDay.Day.LunchType == 0)">No Lunch</option>
@@ -75,6 +77,7 @@
     private string[] HourValues { get; set; }
     private string CardDynamicCssClass => Closed ? "bg-inactive" : "";
     private string CardBodyDynamicCssClass => Closed ? "d-none" : "";
+    private string HeaderBorderModifier => Closed ? "border-0" : "";
 
     protected override async Task OnParametersSetAsync()
     {
@@ -148,11 +151,16 @@
         return (day.To.TimeOfDay - day.From.TimeOfDay).Add(TimeSpan.FromHours(lunchOffset)).TotalHours.ToString("0.00");
     }
 
-    private string HoursDisplayModifier(int index)
-        => HoursIsValid(index) ? "" : "text-danger";
-
     private bool HoursIsValid(int index)
         => HourValues[index][0] != '-';
+
+    private string EmployeeNameColorModifier(int index)
+        => EmployeeDays[index].Day.IsOff ? "text-secondary" : "text-info";
+
+    private string HoursColorModifier(int index)
+        => EmployeeDays[index].Day.IsOff
+        ? "text-secondary"
+        : (HoursIsValid(index) ? "" : "text-danger");
 
     public class EmployeeDayDTO
     {
