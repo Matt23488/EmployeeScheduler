@@ -17,18 +17,21 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-5">
-            <TimeRangePicker IsValid="HoursIsValid" Disabled="Schedule.IsOff || Closed" OnTimeChanged="GetTotalHours" StartTime="Schedule.From" EndTime="Schedule.To"></TimeRangePicker>
-        </div>
-        <div class="col-md-3">
-            <div class="form-group">
-                <select class="form-control" disabled="@(Schedule.IsOff || Closed)" @onchange="LunchTypeChanged">
-                    <option value="0" selected="@(Schedule.LunchType == 0)">No Lunch</option>
-                    <option value="1" selected="@(Schedule.LunchType == 1)">30 min Lunch</option>
-                    <option value="2" selected="@(Schedule.LunchType == 2)">1 hr Lunch</option>
-                </select>
+        @if (!Schedule.IsOff)
+        {
+            <div class="col-md-5">
+                <TimeRangePicker IsValid="HoursIsValid" Disabled="Schedule.IsOff || Closed" OnTimeChanged="GetTotalHours" StartTime="Schedule.From" EndTime="Schedule.To"></TimeRangePicker>
             </div>
-        </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <select class="form-control" disabled="@(Schedule.IsOff || Closed)" @onchange="LunchTypeChanged">
+                        <option value="0" selected="@(Schedule.LunchType == 0)">No Lunch</option>
+                        <option value="1" selected="@(Schedule.LunchType == 1)">30 min Lunch</option>
+                        <option value="2" selected="@(Schedule.LunchType == 2)">1 hr Lunch</option>
+                    </select>
+                </div>
+            </div>
+        }
     </div>
 }
 else
