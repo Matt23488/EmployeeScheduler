@@ -9,6 +9,6 @@ namespace EmployeeScheduler.Lib.DTO
     public class ScheduleDay
     {
         public bool IsClosed { get; set; }
-        public List<EmployeeSchedule> EmployeeSchedules { get; set; }
+        public List<EmployeeSchedule> EmployeeSchedules { get; set; } = new List<EmployeeSchedule>();
     }
 }

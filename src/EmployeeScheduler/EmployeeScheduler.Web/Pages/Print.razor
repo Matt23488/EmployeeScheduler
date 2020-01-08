@@ -24,17 +24,25 @@
                         @foreach (var week in EmployeeWeeks)
                         {
                             <tr>
-                                <td>@week.Employee.FormattedName()</td>
-                                <td>@GetEmployeeHours(week, i)</td>
+                                <td class="text-primary">@week.Employee.FormattedName()</td>
+                                <td>@GetEmployeeHours(week)</td>
                                 @for (int j = 0; j < 7; j++)
                                 {
-                                    @if (week.Days[j].IsOff || DayClosures[GetDayIndexFromOffset(j)])
+                                    if (DayClosures[GetDayIndexFromOffset(j)])
+                                    {
+                                        <td class="font-italic">Closed</td>
+                                    }
+                                    else if (week.Days[GetDayIndexFromOffset(j)].IsOff)
                                     {
                                         <td></td>
                                     }
                                     else
                                     {
-                                        <td>@week.Days[j].From.ToString("hh:mm tt") - @week.Days[j].To.ToString("hh:mm tt")</td>
+                                        <td>
+                                            @week.Days[GetDayIndexFromOffset(j)].From.ToString("h:mm tt") - @week.Days[GetDayIndexFromOffset(j)].To.ToString("h:mm tt")
+                                            <br />
+                                            <span class="text-info">@GetLunchString(week.Days[GetDayIndexFromOffset(j)])</span>
+                                        </td>
                                     }
                                 }
                             </tr>
@@ -72,7 +80,7 @@
         EmployeeWeeks = Employees.Select(e => new Schedule.EmployeeWeek
         {
             Employee = e,
-            Days = Schedule.Days.Select((d, i) => d.EmployeeSchedules?.SingleOrDefault(s => s.EmployeeID == e.ID) ?? e.TypicalSchedule[i]).ToList()
+            Days = Schedule.Days.Select((d, i) => d.EmployeeSchedules.SingleOrDefault(s => s.EmployeeID == e.ID) ?? e.TypicalSchedule[i]).ToList()
         }).ToList();
     }
 
@@ -84,13 +92,27 @@
         ? 0d
         : (day.LunchType == 1 ? -0.5d : -1d);
 
-    private string GetEmployeeHours(Schedule.EmployeeWeek week, int index)
-    {
-        return week.Days.Select(d => (d.IsOff || DayClosures[GetDayIndexFromOffset(index)]) ? 0d : (d.To.TimeOfDay - d.From.TimeOfDay).TotalHours + GetLunchOffset(d)).Sum().ToString("0.00");
-    }
+    private string GetLunchString(Lib.DTO.EmployeeSchedule day)
+        => day.LunchType == 0
+        ? "No Lunch"
+        : (day.LunchType == 1 ? "Half-Hour Lunch" : "Hour Lunch");
+
+    private string GetEmployeeHours(Schedule.EmployeeWeek week)
+        => week.Days.Select((day, i) =>
+        {
+            if (day.IsOff || DayClosures[i]) return 0d;
+            else return (day.To.TimeOfDay - day.From.TimeOfDay).TotalHours + GetLunchOffset(day);
+        }).Sum().ToString("0.00");
 
     private string GetTotalHours()
+    => Schedule.Days.SelectMany(day =>
     {
-        return Schedule.Days.SelectMany(d => d.IsClosed ? Enumerable.Empty<Lib.DTO.EmployeeSchedule>() : d.EmployeeSchedules).Select(d => d.IsOff ? 0d : (d.To.TimeOfDay - d.From.TimeOfDay).TotalHours + GetLunchOffset(d)).Sum().ToString("0.00");
-    }
+        if (day.IsClosed) return Enumerable.Empty<Lib.DTO.EmployeeSchedule>();
+        else return day.EmployeeSchedules;
+    })
+    .Select(schedule =>
+    {
+        if (schedule.IsOff) return 0d;
+        else return (schedule.To.TimeOfDay - schedule.From.TimeOfDay).TotalHours + GetLunchOffset(schedule);
+    }).Sum().ToString("0.00");
 }
