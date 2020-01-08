@@ -120,8 +120,8 @@ else
         if (ID == 0) Schedule_ = await Scheduler.GetCurrentScheduleAsync();
         else Schedule_ = await Scheduler.GetScheduleAsync(ID);
 
-        PreviousWeekID = await Scheduler.GetScheduleIDAsync(Schedule_.Date().AddDays(-7));
-        NextWeekID = await Scheduler.GetScheduleIDAsync(Schedule_.Date().AddDays(7));
+        PreviousWeekID = await Scheduler.GetScheduleIDAsync(Schedule_.Date().AddDays(-1));
+        NextWeekID = await Scheduler.GetScheduleIDAsync(Schedule_.Date().AddDays(8));
         IsCurrentWeek = await Scheduler.GetScheduleIDAsync(DateTime.Now) == Schedule_.ID;
         WeekStartDay = await Scheduler.GetWeekStartAsync();
 

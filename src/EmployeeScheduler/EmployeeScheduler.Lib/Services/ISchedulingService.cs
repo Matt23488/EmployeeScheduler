@@ -32,5 +32,8 @@ namespace EmployeeScheduler.Lib.Services
 
         Task SetWeekStartAsync(int dayIndex);
         Task<int> GetWeekStartAsync();
+
+        Task SetTimeZoneOffsetAsync(int offset);
+        Task<int> GetTimeZoneOffsetAsync();
     }
 }

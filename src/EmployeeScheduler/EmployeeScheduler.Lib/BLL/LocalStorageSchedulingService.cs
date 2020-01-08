@@ -9,21 +9,21 @@ using System.Threading.Tasks;
 
 namespace EmployeeScheduler.Lib.BLL
 {
-    // Might should do some error checking in these methods...
     public class LocalStorageSchedulingService : ISchedulingService
     {
         private const string KEY_EMPLOYEES = "EmployeeScheduler_Employees";
         private const string KEY_SCHEDULES = "EmployeeScheduler_Schedules";
         private const string KEY_WEEK_START = "EmployeeScheduler_WeekStart";
-        // TODO: Make this configurable on the settings page
-        private int TIMEZONE_OFFSET = -5;
+        private const string KEY_TIMEZONE_OFFSET = "EmployeeScheduler_TimeZoneOffset";
 
         private readonly ILocalStorageService _localStorage;
+        private readonly ISyncLocalStorageService _syncLocalStorage;
         private readonly ILogger _logger;
 
-        public LocalStorageSchedulingService(ILocalStorageService localStorage, ILogger logger)
+        public LocalStorageSchedulingService(ILocalStorageService localStorage, ISyncLocalStorageService syncLocalStorage, ILogger logger)
         {
             _localStorage = localStorage;
+            _syncLocalStorage = syncLocalStorage;
             _logger = logger;
         }
 
@@ -102,7 +102,7 @@ namespace EmployeeScheduler.Lib.BLL
 
         public async Task<long> GetScheduleIDAsync(DateTime dateWithinWeek)
         {
-            var fixedDate = dateWithinWeek.AddHours(TIMEZONE_OFFSET);
+            var fixedDate = dateWithinWeek.ToUniversalTime().AddHours(await GetTimeZoneOffsetAsync());
             var weekStartDay = await _localStorage.GetItemAsync<int>(KEY_WEEK_START);
             var dayOffset = weekStartDay - (int)fixedDate.Date.DayOfWeek;
 
@@ -138,7 +138,7 @@ namespace EmployeeScheduler.Lib.BLL
         }
 
         private bool IsTooOld(ScheduleWeek schedule)
-            => (DateTime.Now.AddHours(TIMEZONE_OFFSET) - new DateTime(schedule.ID)).TotalDays >= 16 * 7;
+            => (DateTime.Now.ToUniversalTime().AddHours(_syncLocalStorage.GetItem<int>(KEY_TIMEZONE_OFFSET)) - new DateTime(schedule.ID)).TotalDays >= 16 * 7;
 
         private bool IsNotTooOld(ScheduleWeek schedule)
             => !IsTooOld(schedule);
@@ -152,5 +152,11 @@ namespace EmployeeScheduler.Lib.BLL
 
         public async Task<int> GetWeekStartAsync()
             => await _localStorage.GetItemAsync<int>(KEY_WEEK_START);
+
+        public async Task SetTimeZoneOffsetAsync(int offset)
+            => await _localStorage.SetItemAsync(KEY_TIMEZONE_OFFSET, offset);
+
+        public async Task<int> GetTimeZoneOffsetAsync()
+            => await _localStorage.GetItemAsync<int>(KEY_TIMEZONE_OFFSET);
     }
 }

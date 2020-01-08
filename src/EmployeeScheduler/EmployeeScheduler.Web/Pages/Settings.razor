@@ -2,9 +2,11 @@
 
 <h1>Settings</h1>
 
-<div class="form-group">
-    <label>Week Start Day:</label>
-    <select class="form-control" @onchange="WeekStartDayChanged">
+<div class="input-group mb-3">
+    <div class="input-group-prepend">
+        <label class="input-group-text">Week Start</label>
+    </div>
+    <select class="custom-select" @onchange="WeekStartDayChanged">
         <option value="0" selected="@(WeekStartDay == 0)">Sunday</option>
         <option value="1" selected="@(WeekStartDay == 1)">Monday</option>
         <option value="2" selected="@(WeekStartDay == 2)">Tuesday</option>
@@ -15,15 +17,24 @@
     </select>
 </div>
 
+<div class="input-group mb-3">
+    <div class="input-group-prepend">
+        <label class="input-group-text">Time Zone</label>
+    </div>
+    <input type="number" class="form-control" value="@TimeZoneOffset" @onchange="TimeZoneChanged" />
+</div>
+
 @inject Lib.Services.ISchedulingService Scheduler
 @inject Lib.Services.IToastService Toast
 @code
 {
     private int WeekStartDay { get; set; }
+    private int TimeZoneOffset { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
         WeekStartDay = await Scheduler.GetWeekStartAsync();
+        TimeZoneOffset = await Scheduler.GetTimeZoneOffsetAsync();
     }
 
     private async Task WeekStartDayChanged(ChangeEventArgs e)
@@ -31,5 +42,12 @@
         WeekStartDay = Convert.ToInt32(e.Value);
         await Scheduler.SetWeekStartAsync(WeekStartDay);
         await Toast.ShowAsync("Week Start Day updated successfully!", Lib.Services.ToastType.Success);
+    }
+
+    private async Task TimeZoneChanged(ChangeEventArgs e)
+    {
+        TimeZoneOffset = (int)(Convert.ToSingle(e.Value));
+        await Scheduler.SetTimeZoneOffsetAsync(TimeZoneOffset);
+        await Toast.ShowAsync("Time Zone Offset updated successfully!", Lib.Services.ToastType.Success);
     }
 }

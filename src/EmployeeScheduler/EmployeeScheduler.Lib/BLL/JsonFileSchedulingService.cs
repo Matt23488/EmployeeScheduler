@@ -173,5 +173,15 @@ namespace EmployeeScheduler.Lib.BLL
         {
             throw new NotImplementedException();
         }
+
+        public Task SetTimeZoneOffsetAsync(int offset)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int> GetTimeZoneOffsetAsync()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
