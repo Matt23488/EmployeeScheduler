@@ -9,9 +9,20 @@ namespace EmployeeScheduler.Lib.DTO
     public class Employee
     {
         public int ID { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public string FirstName { get; set; } = "";
+        public string LastName { get; set; } = "";
         public string EmailAddress { get; set; }
         public bool Active { get; set; } = true;
+
+        public List<EmployeeSchedule> TypicalSchedule { get; set; } = new List<EmployeeSchedule>
+        {
+            new EmployeeSchedule(),
+            new EmployeeSchedule(),
+            new EmployeeSchedule(),
+            new EmployeeSchedule(),
+            new EmployeeSchedule(),
+            new EmployeeSchedule(),
+            new EmployeeSchedule()
+        };
     }
 }

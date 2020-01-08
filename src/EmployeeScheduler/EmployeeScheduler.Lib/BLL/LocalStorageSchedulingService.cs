@@ -9,23 +9,22 @@ using System.Threading.Tasks;
 
 namespace EmployeeScheduler.Lib.BLL
 {
-    // Might should do some error checking in these methods...
     public class LocalStorageSchedulingService : ISchedulingService
     {
         private const string KEY_EMPLOYEES = "EmployeeScheduler_Employees";
         private const string KEY_SCHEDULES = "EmployeeScheduler_Schedules";
+        private const string KEY_WEEK_START = "EmployeeScheduler_WeekStart";
+        private const string KEY_TIMEZONE_OFFSET = "EmployeeScheduler_TimeZoneOffset";
 
         private readonly ILocalStorageService _localStorage;
+        private readonly ISyncLocalStorageService _syncLocalStorage;
+        private readonly ILogger _logger;
 
-        public LocalStorageSchedulingService(ILocalStorageService localStorage, ISyncLocalStorageService syncLocalStorage)
+        public LocalStorageSchedulingService(ILocalStorageService localStorage, ISyncLocalStorageService syncLocalStorage, ILogger logger)
         {
             _localStorage = localStorage;
-
-            // TODO: Add keys to localStorage if they don't exist
-            //if (!syncLocalStorage.ContainKey(KEY_EMPLOYEES))
-            //{
-            //    syncLocalStorage.SetItem(KEY_EMPLOYEES, new Employee[0]);
-            //}
+            _syncLocalStorage = syncLocalStorage;
+            _logger = logger;
         }
 
         public async Task<Employee> AddEmployeeAsync(Employee employee)
@@ -101,22 +100,29 @@ namespace EmployeeScheduler.Lib.BLL
             throw new NotImplementedException();
         }
 
-        public long GetScheduleID(DateTime dateWithinWeek)
-            => dateWithinWeek.Date.AddDays(-(int)dateWithinWeek.DayOfWeek).Ticks;
+        public async Task<long> GetScheduleIDAsync(DateTime dateWithinWeek)
+        {
+            var fixedDate = dateWithinWeek.ToUniversalTime().AddHours(await GetTimeZoneOffsetAsync());
+            var weekStartDay = await _localStorage.GetItemAsync<int>(KEY_WEEK_START);
+            var dayOffset = weekStartDay - (int)fixedDate.Date.DayOfWeek;
+
+            if (dayOffset > 0) dayOffset -= 7;
+
+            return fixedDate.Date.AddDays(dayOffset).Ticks;
+        }
 
         public async Task<ScheduleWeek> GetCurrentScheduleAsync()
-            => await GetScheduleAsync(GetScheduleID(DateTime.Now));
+            => await GetScheduleAsync(await GetScheduleIDAsync(DateTime.Now));
 
         public async Task<ScheduleWeek> GetScheduleAsync(long scheduleID)
         {
-            var sunday = new DateTime(scheduleID);
-            var id = sunday.Ticks;
+            var startDay = new DateTime(scheduleID);
 
             var schedules = await _localStorage.GetItemAsync<ScheduleWeek[]>(KEY_SCHEDULES) ?? new ScheduleWeek[0];
 
-            return schedules.SingleOrDefault(s => s.ID == id) ?? new ScheduleWeek
+            return schedules.SingleOrDefault(s => s.ID == scheduleID) ?? new ScheduleWeek
             {
-                ID = id
+                ID = scheduleID
             };
         }
 
@@ -132,9 +138,25 @@ namespace EmployeeScheduler.Lib.BLL
         }
 
         private bool IsTooOld(ScheduleWeek schedule)
-            => (DateTime.Now - new DateTime(schedule.ID)).TotalDays >= 16 * 7;
+            => (DateTime.Now.ToUniversalTime().AddHours(_syncLocalStorage.GetItem<int>(KEY_TIMEZONE_OFFSET)) - new DateTime(schedule.ID)).TotalDays >= 16 * 7;
 
         private bool IsNotTooOld(ScheduleWeek schedule)
             => !IsTooOld(schedule);
+
+        private static readonly string[] DAY_NAMES = new [] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
+        public string GetDayOfWeek(int dayIndex)
+            => DAY_NAMES[dayIndex % 7];
+
+        public async Task SetWeekStartAsync(int dayIndex)
+            => await _localStorage.SetItemAsync(KEY_WEEK_START, dayIndex);
+
+        public async Task<int> GetWeekStartAsync()
+            => await _localStorage.GetItemAsync<int>(KEY_WEEK_START);
+
+        public async Task SetTimeZoneOffsetAsync(int offset)
+            => await _localStorage.SetItemAsync(KEY_TIMEZONE_OFFSET, offset);
+
+        public async Task<int> GetTimeZoneOffsetAsync()
+            => await _localStorage.GetItemAsync<int>(KEY_TIMEZONE_OFFSET);
     }
 }

@@ -22,10 +22,18 @@ namespace EmployeeScheduler.Lib.Services
         List<Employee> GetEmployees(bool includeDeleted);
 
 
-        long GetScheduleID(DateTime dateWithinWeek);
+        Task<long> GetScheduleIDAsync(DateTime dateWithinWeek);
         Task<ScheduleWeek> GetCurrentScheduleAsync();
         Task<ScheduleWeek> GetScheduleAsync(long scheduleID);
         //Task<ScheduleWeek> GetScheduleAsync(DateTime dateWithinWeek);
         Task<ScheduleWeek> SaveScheduleAsync(ScheduleWeek schedule);
+
+        string GetDayOfWeek(int dayIndex);
+
+        Task SetWeekStartAsync(int dayIndex);
+        Task<int> GetWeekStartAsync();
+
+        Task SetTimeZoneOffsetAsync(int offset);
+        Task<int> GetTimeZoneOffsetAsync();
     }
 }
