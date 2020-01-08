@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace EmployeeScheduler.Lib.DTO
 {
-    // Maybe a way to denote a closure of some kind
     public class ScheduleDay
     {
         public bool IsClosed { get; set; }

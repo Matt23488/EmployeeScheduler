@@ -1,45 +1,49 @@
 ﻿@using Lib.Extensions
 
-<div class="card mb-3">
-    <div class="card-header">
-        <div class="row">
-            <div class="col text-left">
-                <i class="oi oi-person"></i>
-                <strong>@Week.Employee.FormattedName()</strong>
-            </div>
-            <div class="col text-right">
-                <i class="oi oi-clock"></i>
-                @TotalHours.ToString("0.00")
+@if (Week != null)
+{
+    <div class="card mb-3">
+        <div class="card-header">
+            <div class="row">
+                @if (ShowName)
+                {
+                    <div class="col text-left">
+                        <i class="oi oi-person"></i>
+                        <strong>@Week.Employee.FormattedName()</strong>
+                    </div>
+                }
+                <div class="col text-right">
+                    <i class="oi oi-clock"></i>
+                    @TotalHours.ToString("0.00")
+                </div>
             </div>
         </div>
+        <div class="card-body">
+            <DayRowComponent DayChanged="DoNothing" Closed="DayClosures[GetDayIndexFromOffset(0)]" Schedule="Week.Days[GetDayIndexFromOffset(0)]" DayString="@Scheduler.GetDayOfWeek(WeekStartDay + 0)" />
+            <DayRowComponent DayChanged="DoNothing" Closed="DayClosures[GetDayIndexFromOffset(1)]" Schedule="Week.Days[GetDayIndexFromOffset(1)]" DayString="@Scheduler.GetDayOfWeek(WeekStartDay + 1)" />
+            <DayRowComponent DayChanged="DoNothing" Closed="DayClosures[GetDayIndexFromOffset(2)]" Schedule="Week.Days[GetDayIndexFromOffset(2)]" DayString="@Scheduler.GetDayOfWeek(WeekStartDay + 2)" />
+            <DayRowComponent DayChanged="DoNothing" Closed="DayClosures[GetDayIndexFromOffset(3)]" Schedule="Week.Days[GetDayIndexFromOffset(3)]" DayString="@Scheduler.GetDayOfWeek(WeekStartDay + 3)" />
+            <DayRowComponent DayChanged="DoNothing" Closed="DayClosures[GetDayIndexFromOffset(4)]" Schedule="Week.Days[GetDayIndexFromOffset(4)]" DayString="@Scheduler.GetDayOfWeek(WeekStartDay + 4)" />
+            <DayRowComponent DayChanged="DoNothing" Closed="DayClosures[GetDayIndexFromOffset(5)]" Schedule="Week.Days[GetDayIndexFromOffset(5)]" DayString="@Scheduler.GetDayOfWeek(WeekStartDay + 5)" />
+            <DayRowComponent DayChanged="DoNothing" Closed="DayClosures[GetDayIndexFromOffset(6)]" Schedule="Week.Days[GetDayIndexFromOffset(6)]" DayString="@Scheduler.GetDayOfWeek(WeekStartDay + 6)" />
+        </div>
     </div>
-    <div class="card-body">
-        <DayRowComponent DayChanged="DoNothing" Closed="DayClosures[0]" Schedule="Week.Sunday" DayString="Sunday"></DayRowComponent>
-        <DayRowComponent DayChanged="DoNothing" Closed="DayClosures[1]" Schedule="Week.Monday" DayString="Monday"></DayRowComponent>
-        <DayRowComponent DayChanged="DoNothing" Closed="DayClosures[2]" Schedule="Week.Tuesday" DayString="Tuesday"></DayRowComponent>
-        <DayRowComponent DayChanged="DoNothing" Closed="DayClosures[3]" Schedule="Week.Wednesday" DayString="Wednesday"></DayRowComponent>
-        <DayRowComponent DayChanged="DoNothing" Closed="DayClosures[4]" Schedule="Week.Thursday" DayString="Thursday"></DayRowComponent>
-        <DayRowComponent DayChanged="DoNothing" Closed="DayClosures[5]" Schedule="Week.Friday" DayString="Friday"></DayRowComponent>
-        <DayRowComponent DayChanged="DoNothing" Closed="DayClosures[6]" Schedule="Week.Saturday" DayString="Saturday"></DayRowComponent>
-    </div>
-</div>
+}
 
 @inject Lib.Services.ILogger Logger
+@inject Lib.Services.ISchedulingService Scheduler
 @code
 {
     [Parameter]
     public Web.Pages.Schedule.EmployeeWeek Week { get; set; }
     [Parameter]
-    public List<bool> DayClosures { get; set; }
+    public int WeekStartDay { get; set; }
+    [Parameter]
+    public List<bool> DayClosures { get; set; } = new List<bool> { false, false, false, false, false, false, false };
+    [Parameter]
+    public bool ShowName { get; set; } = true;
 
-    private double TotalHours
-        => GetDayHours(Week.Sunday, 0) +
-            GetDayHours(Week.Monday, 1) +
-            GetDayHours(Week.Tuesday, 2) +
-            GetDayHours(Week.Wednesday, 3) +
-            GetDayHours(Week.Thursday, 4) +
-            GetDayHours(Week.Friday, 5) +
-            GetDayHours(Week.Saturday, 6);
+    private double TotalHours => Week.Days.Select(GetDayHours).Sum();
 
     private double GetDayHours(Lib.DTO.EmployeeSchedule day, int index)
         => (day.IsOff || DayClosures[index]) ? 0d : ((day.To.TimeOfDay - day.From.TimeOfDay).TotalHours + GetLunchModifier(day));
@@ -53,6 +57,9 @@
         }
         return 0d;
     }
+
+    private int GetDayIndexFromOffset(int offset)
+        => (WeekStartDay + offset) % 7;
 
     // This is only here because Blazor won't notice the various days within `Week`
     // have changed if I don't handle an event from the DayRowComponent

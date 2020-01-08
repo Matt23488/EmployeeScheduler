@@ -153,5 +153,25 @@ namespace EmployeeScheduler.Lib.BLL
         {
             throw new NotImplementedException();
         }
+
+        public Task<long> GetScheduleIDAsync(DateTime dateWithinWeek)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetDayOfWeek(int dayIndex)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SetWeekStartAsync(int dayIndex)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int> GetWeekStartAsync()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

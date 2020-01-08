@@ -11,7 +11,7 @@ else
 {
     <h1>
         @Schedule_.Date().ToString("MMM d") - @Schedule_.Date().AddDays(6).ToString("MMM d")
-        @if (Scheduler.GetScheduleID(DateTime.Now) == Schedule_.ID)
+        @if (IsCurrentWeek)
         {
             <small class="text-info">Current</small>
         }
@@ -32,18 +32,18 @@ else
     {
         foreach (var week in EmployeeWeeks)
         {
-            <EmployeeScheduler.Web.Shared.Schedule.EmployeeWeekComponent DayClosures="DayClosures" Week="week"></EmployeeScheduler.Web.Shared.Schedule.EmployeeWeekComponent>
+            <EmployeeScheduler.Web.Shared.Schedule.EmployeeWeekComponent WeekStartDay="WeekStartDay" DayClosures="DayClosures" Week="week"></EmployeeScheduler.Web.Shared.Schedule.EmployeeWeekComponent>
         }
     }
     else
     {
-        <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay Closed="Schedule_.Sunday.IsClosed" DayString="Sunday" @ref="Sunday" Date="@Schedule_.Date().AddDays(0)" EmployeeDays="@GetDay(w => w.Sunday)" />
-        <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay Closed="Schedule_.Monday.IsClosed" DayString="Monday" @ref="Monday" Date="@Schedule_.Date().AddDays(1)" EmployeeDays="@GetDay(w => w.Monday)" />
-        <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay Closed="Schedule_.Tuesday.IsClosed" DayString="Tuesday" @ref="Tuesday" Date="@Schedule_.Date().AddDays(2)" EmployeeDays="@GetDay(w => w.Tuesday)" />
-        <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay Closed="Schedule_.Wednesday.IsClosed" DayString="Wednesday" @ref="Wednesday" Date="@Schedule_.Date().AddDays(3)" EmployeeDays="@GetDay(w => w.Wednesday)" />
-        <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay Closed="Schedule_.Thursday.IsClosed" DayString="Thursday" @ref="Thursday" Date="@Schedule_.Date().AddDays(4)" EmployeeDays="@GetDay(w => w.Thursday)" />
-        <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay Closed="Schedule_.Friday.IsClosed" DayString="Friday" @ref="Friday" Date="@Schedule_.Date().AddDays(5)" EmployeeDays="@GetDay(w => w.Friday)" />
-        <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay Closed="Schedule_.Saturday.IsClosed" DayString="Saturday" @ref="Saturday" Date="@Schedule_.Date().AddDays(6)" EmployeeDays="@GetDay(w => w.Saturday)" />
+        <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay Closed="Schedule_.Days[GetDayIndexFromOffset(0)].IsClosed" DayString="@Scheduler.GetDayOfWeek(WeekStartDay + 0)" @ref="DayComponents[GetDayIndexFromOffset(0)]" Date="@Schedule_.Date().AddDays(0)" EmployeeDays="@GetDay(w => w.Days[GetDayIndexFromOffset(0)])" />
+        <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay Closed="Schedule_.Days[GetDayIndexFromOffset(1)].IsClosed" DayString="@Scheduler.GetDayOfWeek(WeekStartDay + 1)" @ref="DayComponents[GetDayIndexFromOffset(1)]" Date="@Schedule_.Date().AddDays(1)" EmployeeDays="@GetDay(w => w.Days[GetDayIndexFromOffset(1)])" />
+        <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay Closed="Schedule_.Days[GetDayIndexFromOffset(2)].IsClosed" DayString="@Scheduler.GetDayOfWeek(WeekStartDay + 2)" @ref="DayComponents[GetDayIndexFromOffset(2)]" Date="@Schedule_.Date().AddDays(2)" EmployeeDays="@GetDay(w => w.Days[GetDayIndexFromOffset(2)])" />
+        <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay Closed="Schedule_.Days[GetDayIndexFromOffset(3)].IsClosed" DayString="@Scheduler.GetDayOfWeek(WeekStartDay + 3)" @ref="DayComponents[GetDayIndexFromOffset(3)]" Date="@Schedule_.Date().AddDays(3)" EmployeeDays="@GetDay(w => w.Days[GetDayIndexFromOffset(3)])" />
+        <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay Closed="Schedule_.Days[GetDayIndexFromOffset(4)].IsClosed" DayString="@Scheduler.GetDayOfWeek(WeekStartDay + 4)" @ref="DayComponents[GetDayIndexFromOffset(4)]" Date="@Schedule_.Date().AddDays(4)" EmployeeDays="@GetDay(w => w.Days[GetDayIndexFromOffset(4)])" />
+        <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay Closed="Schedule_.Days[GetDayIndexFromOffset(5)].IsClosed" DayString="@Scheduler.GetDayOfWeek(WeekStartDay + 5)" @ref="DayComponents[GetDayIndexFromOffset(5)]" Date="@Schedule_.Date().AddDays(5)" EmployeeDays="@GetDay(w => w.Days[GetDayIndexFromOffset(5)])" />
+        <EmployeeScheduler.Web.Shared.Schedule.EmployeeDay Closed="Schedule_.Days[GetDayIndexFromOffset(6)].IsClosed" DayString="@Scheduler.GetDayOfWeek(WeekStartDay + 6)" @ref="DayComponents[GetDayIndexFromOffset(6)]" Date="@Schedule_.Date().AddDays(6)" EmployeeDays="@GetDay(w => w.Days[GetDayIndexFromOffset(6)])" />
     }
 }
 
@@ -56,9 +56,10 @@ else
     [Parameter]
     public long ID { get; set; }
 
-    public Lib.DTO.ScheduleWeek Schedule_ { get; set; }
-    public List<Lib.DTO.Employee> Employees { get; set; }
-    public List<EmployeeWeek> EmployeeWeeks { get; set; }
+    private Lib.DTO.ScheduleWeek Schedule_ { get; set; }
+    private List<Lib.DTO.Employee> Employees { get; set; }
+    private List<EmployeeWeek> EmployeeWeeks { get; set; }
+    private int WeekStartDay { get; set; }
 
     private long PreviousWeekID { get; set; }
     private long NextWeekID { get; set; }
@@ -67,30 +68,17 @@ else
 
     private int ViewMode { get; set; }
 
-    private List<bool> DayClosures => new List<bool>
-{
-        Schedule_.Sunday.IsClosed,
-        Schedule_.Monday.IsClosed,
-        Schedule_.Tuesday.IsClosed,
-        Schedule_.Wednesday.IsClosed,
-        Schedule_.Thursday.IsClosed,
-        Schedule_.Friday.IsClosed,
-        Schedule_.Saturday.IsClosed
-    };
+    private bool IsCurrentWeek { get; set; }
+
+    private List<bool> DayClosures => Schedule_.Days.Select(d => d.IsClosed).ToList();
 
     private readonly Dictionary<int, RadioButtonGroup.ButtonData> ViewModeData = new Dictionary<int, RadioButtonGroup.ButtonData>
-    {
+{
         { 0, new RadioButtonGroup.ButtonData { IsIcon = true, Value = "oi oi-calendar" } },
         { 1, new RadioButtonGroup.ButtonData { IsIcon = true, Value = "oi oi-person" } }
     };
 
-    private Shared.Schedule.EmployeeDay Sunday { get; set; }
-    private Shared.Schedule.EmployeeDay Monday { get; set; }
-    private Shared.Schedule.EmployeeDay Tuesday { get; set; }
-    private Shared.Schedule.EmployeeDay Wednesday { get; set; }
-    private Shared.Schedule.EmployeeDay Thursday { get; set; }
-    private Shared.Schedule.EmployeeDay Friday { get; set; }
-    private Shared.Schedule.EmployeeDay Saturday { get; set; }
+    private Shared.Schedule.EmployeeDay[] DayComponents { get; set; } = new Shared.Schedule.EmployeeDay[7];
 
     protected override async Task OnInitializedAsync()
     {
@@ -114,8 +102,8 @@ else
             {
                 if (!Nav.Uri.StartsWith($"{Nav.BaseUri}schedule"))
                 {
-                //await Logger.LogAsync("Stopping timer. Nav.Uri:", Nav.Uri);
-                timer.Stop();
+                    //await Logger.LogAsync("Stopping timer. Nav.Uri:", Nav.Uri);
+                    timer.Stop();
                     return;
                 }
 
@@ -132,19 +120,15 @@ else
         if (ID == 0) Schedule_ = await Scheduler.GetCurrentScheduleAsync();
         else Schedule_ = await Scheduler.GetScheduleAsync(ID);
 
-        PreviousWeekID = Scheduler.GetScheduleID(Schedule_.Date().AddDays(-7));
-        NextWeekID = Scheduler.GetScheduleID(Schedule_.Date().AddDays(7));
+        PreviousWeekID = await Scheduler.GetScheduleIDAsync(Schedule_.Date().AddDays(-7));
+        NextWeekID = await Scheduler.GetScheduleIDAsync(Schedule_.Date().AddDays(7));
+        IsCurrentWeek = await Scheduler.GetScheduleIDAsync(DateTime.Now) == Schedule_.ID;
+        WeekStartDay = await Scheduler.GetWeekStartAsync();
 
         EmployeeWeeks = Employees.Select(e => new EmployeeWeek
         {
             Employee = e,
-            Sunday = Schedule_.Sunday.EmployeeSchedules?.SingleOrDefault(d => d.EmployeeID == e.ID) ?? new Lib.DTO.EmployeeSchedule(),
-            Monday = Schedule_.Monday.EmployeeSchedules?.SingleOrDefault(d => d.EmployeeID == e.ID) ?? new Lib.DTO.EmployeeSchedule(),
-            Tuesday = Schedule_.Tuesday.EmployeeSchedules?.SingleOrDefault(d => d.EmployeeID == e.ID) ?? new Lib.DTO.EmployeeSchedule(),
-            Wednesday = Schedule_.Wednesday.EmployeeSchedules?.SingleOrDefault(d => d.EmployeeID == e.ID) ?? new Lib.DTO.EmployeeSchedule(),
-            Thursday = Schedule_.Thursday.EmployeeSchedules?.SingleOrDefault(d => d.EmployeeID == e.ID) ?? new Lib.DTO.EmployeeSchedule(),
-            Friday = Schedule_.Friday.EmployeeSchedules?.SingleOrDefault(d => d.EmployeeID == e.ID) ?? new Lib.DTO.EmployeeSchedule(),
-            Saturday = Schedule_.Saturday.EmployeeSchedules?.SingleOrDefault(d => d.EmployeeID == e.ID) ?? new Lib.DTO.EmployeeSchedule(),
+            Days = Schedule_.Days.Select((d, i) => d.EmployeeSchedules?.SingleOrDefault(s => s.EmployeeID == e.ID) ?? e.TypicalSchedule[i]).ToList()
         }).ToList();
     }
 
@@ -164,35 +148,22 @@ else
 
     private async Task SaveSchedule()
     {
-        Schedule_.Sunday.EmployeeSchedules = Sunday.EmployeeDays.Select(d => d.Day).ToList();
-        Schedule_.Monday.EmployeeSchedules = Monday.EmployeeDays.Select(d => d.Day).ToList();
-        Schedule_.Tuesday.EmployeeSchedules = Tuesday.EmployeeDays.Select(d => d.Day).ToList();
-        Schedule_.Wednesday.EmployeeSchedules = Wednesday.EmployeeDays.Select(d => d.Day).ToList();
-        Schedule_.Thursday.EmployeeSchedules = Thursday.EmployeeDays.Select(d => d.Day).ToList();
-        Schedule_.Friday.EmployeeSchedules = Friday.EmployeeDays.Select(d => d.Day).ToList();
-        Schedule_.Saturday.EmployeeSchedules = Saturday.EmployeeDays.Select(d => d.Day).ToList();
-
-        Schedule_.Sunday.IsClosed = Sunday.Closed;
-        Schedule_.Monday.IsClosed = Monday.Closed;
-        Schedule_.Tuesday.IsClosed = Tuesday.Closed;
-        Schedule_.Wednesday.IsClosed = Wednesday.Closed;
-        Schedule_.Thursday.IsClosed = Thursday.Closed;
-        Schedule_.Friday.IsClosed = Friday.Closed;
-        Schedule_.Saturday.IsClosed = Saturday.Closed;
+        for (int i = 0; i < 7; i++)
+        {
+            Schedule_.Days[i].EmployeeSchedules = DayComponents[i].EmployeeDays.Select(d => d.Day).ToList();
+            Schedule_.Days[i].IsClosed = DayComponents[i].Closed;
+        }
 
         await Scheduler.SaveScheduleAsync(Schedule_);
         await Toast.ShowAsync("Schedule saved!", Lib.Services.ToastType.Success);
     }
 
+    private int GetDayIndexFromOffset(int offset)
+        => (WeekStartDay + offset) % 7;
+
     public class EmployeeWeek
     {
         public Lib.DTO.Employee Employee { get; set; }
-        public Lib.DTO.EmployeeSchedule Sunday { get; set; }
-        public Lib.DTO.EmployeeSchedule Monday { get; set; }
-        public Lib.DTO.EmployeeSchedule Tuesday { get; set; }
-        public Lib.DTO.EmployeeSchedule Wednesday { get; set; }
-        public Lib.DTO.EmployeeSchedule Thursday { get; set; }
-        public Lib.DTO.EmployeeSchedule Friday { get; set; }
-        public Lib.DTO.EmployeeSchedule Saturday { get; set; }
+        public List<Lib.DTO.EmployeeSchedule> Days { get; set; }
     }
 }

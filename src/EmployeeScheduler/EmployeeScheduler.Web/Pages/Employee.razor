@@ -7,6 +7,7 @@
 }
 else
 {
+    <button class="btn btn-primary" @onclick="Save">Save Employee</button>
     <div class="input-group mb-3">
         <div class="input-group-prepend">
             <span class="input-group-text" id="firstNameLabel">First Name</span>
@@ -25,7 +26,7 @@ else
             <label class="form-check-label">Active</label>
         </div>
     </div>
-    <button class="btn btn-primary" @onclick="Save">Save Employee</button>
+    <EmployeeScheduler.Web.Shared.Schedule.EmployeeWeekComponent ShowName="false" WeekStartDay="WeekStartDay" Week="EmployeeWeek" />
 }
 
 @inject Lib.Services.ISchedulingService SchedulingService
@@ -37,12 +38,21 @@ else
     public int ID { get; set; }
     private Mode PageMode => ID == 0 ? Mode.Insert : Mode.Update;
 
-    public Lib.DTO.Employee Employee_ { get; set; }
+    private Lib.DTO.Employee Employee_ { get; set; }
+    private int WeekStartDay { get; set; }
+    private Schedule.EmployeeWeek EmployeeWeek { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
         if (PageMode == Mode.Insert) Employee_ = new Lib.DTO.Employee();
         else Employee_ = await SchedulingService.GetEmployeeAsync(ID);
+
+        WeekStartDay = await SchedulingService.GetWeekStartAsync();
+        EmployeeWeek = new Schedule.EmployeeWeek
+        {
+            Employee = Employee_,
+            Days = Employee_.TypicalSchedule
+        };
     }
 
     private async Task Save()
