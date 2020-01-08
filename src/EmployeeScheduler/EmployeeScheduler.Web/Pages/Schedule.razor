@@ -9,30 +9,37 @@
 }
 else
 {
-    <h1>
-        @Schedule_.Date().ToString("MMM d") - @Schedule_.Date().AddDays(6).ToString("MMM d")
-        @if (IsCurrentWeek)
-        {
-            <small class="text-info">Current</small>
-        }
-    </h1>
-    <div class="row mb-3">
-        <div class="col text-left">
-            <button class="btn btn-outline-success" @onclick="SaveSchedule"><i class="oi oi-check"></i> Save</button>
-        </div>
-        <div class="col text-center">
-            <RadioButtonGroup Class="btn-outline-dark" RadioGroupName="ViewMode" Value="ViewMode" ButtonDatas="ViewModeData" ValueChanged="val => ViewMode = val"></RadioButtonGroup>
-        </div>
-        <div class="col text-right">
-            <a href="schedule/@(PreviousWeekID)" class="btn btn-outline-primary"><i class="oi oi-arrow-left"></i></a>
-            <a href="schedule/@(NextWeekID)" class="btn btn-outline-primary"><i class="oi oi-arrow-right"></i></a>
+    <div class="sticky-top bg-white pb-3 mb-3 border-bottom">
+        <h1>
+            @Schedule_.Date().ToString("MMM d") - @Schedule_.Date().AddDays(6).ToString("MMM d")
+            @if (IsCurrentWeek)
+            {
+                <small class="text-info">Current</small>
+            }
+        </h1>
+        <div class="row mb-3">
+            <div class="col text-left">
+                <div class="btn-group" role="group" aria-label="Save/Print">
+                    <button class="btn btn-outline-success" @onclick="async () => await SaveSchedule(true)"><i class="oi oi-check"></i> Save</button>
+                    <button class="btn btn-outline-dark" @onclick="PrintSchedule"><i class="oi oi-print"></i></button>
+                </div>
+            </div>
+            <div class="col text-center">
+                <RadioButtonGroup Class="btn-outline-dark" RadioGroupName="ViewMode" Value="ViewMode" ButtonDatas="ViewModeData" ValueChanged="ViewChanged"></RadioButtonGroup>
+            </div>
+            <div class="col text-right">
+                <div class="btn-group" role="group" aria-label="Week Navigation">
+                    <button class="btn btn-outline-primary" @onclick="NavigatePreviousWeek"><i class="oi oi-arrow-left"></i></button>
+                    <button class="btn btn-outline-primary" @onclick="NavigateNextWeek"><i class="oi oi-arrow-right"></i></button>
+                </div>
+            </div>
         </div>
     </div>
     @if (ViewMode == 1)
     {
         foreach (var week in EmployeeWeeks)
         {
-            <EmployeeScheduler.Web.Shared.Schedule.EmployeeWeekComponent WeekStartDay="WeekStartDay" DayClosures="DayClosures" Week="week"></EmployeeScheduler.Web.Shared.Schedule.EmployeeWeekComponent>
+            <EmployeeScheduler.Web.Shared.Schedule.EmployeeWeekComponent WeekStartDay="WeekStartDay" DayClosures="DayClosures" Week="week" />
         }
     }
     else
@@ -146,7 +153,7 @@ else
         }).ToList();
     }
 
-    private async Task SaveSchedule()
+    private async Task SaveSchedule(bool showToast = true)
     {
         for (int i = 0; i < 7; i++)
         {
@@ -155,11 +162,41 @@ else
         }
 
         await Scheduler.SaveScheduleAsync(Schedule_);
-        await Toast.ShowAsync("Schedule saved!", Lib.Services.ToastType.Success);
+
+        if (showToast) await Toast.ShowAsync("Schedule saved!", Lib.Services.ToastType.Success);
+    }
+
+    private async Task ViewChanged(int val)
+    {
+        await SaveSchedule(false);
+        ViewMode = val;
+    }
+
+    private async Task PrintSchedule()
+    {
+        await SaveSchedule(false);
+        Nav.NavigateTo($"{Nav.BaseUri}print/{Schedule_.ID}");
+    }
+
+    private async Task NavigatePreviousWeek()
+    {
+        await SaveSchedule(false);
+        Nav.NavigateTo($"{Nav.BaseUri}schedule/{PreviousWeekID}");
+    }
+
+    private async Task NavigateNextWeek()
+    {
+        await SaveSchedule(false);
+        Nav.NavigateTo($"{Nav.BaseUri}schedule/{NextWeekID}");
     }
 
     private int GetDayIndexFromOffset(int offset)
         => (WeekStartDay + offset) % 7;
+
+    private async Task ScheduleChanged()
+    {
+        await Logger.LogAsync("Schedule.ScheduleChanged()");
+    }
 
     public class EmployeeWeek
     {

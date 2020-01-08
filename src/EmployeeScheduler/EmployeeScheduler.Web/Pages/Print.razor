@@ -1,0 +1,118 @@
+﻿@page "/print"
+@page "/print/{ID:long}"
+@layout RawLayout
+@using Lib.Extensions
+
+@if (EmployeeWeeks != null)
+{
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Hours</th>
+                            @for (int j = 0; j < 7; j++)
+                            {
+                                <th>@Scheduler.GetDayOfWeek(GetDayIndexFromOffset(j))</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{ var i = 0; }
+                        @foreach (var week in EmployeeWeeks)
+                        {
+                            <tr>
+                                <td class="text-primary">@week.Employee.FormattedName()</td>
+                                <td>@GetEmployeeHours(week)</td>
+                                @for (int j = 0; j < 7; j++)
+                                {
+                                    if (DayClosures[GetDayIndexFromOffset(j)])
+                                    {
+                                        <td class="font-italic">Closed</td>
+                                    }
+                                    else if (week.Days[GetDayIndexFromOffset(j)].IsOff)
+                                    {
+                                        <td></td>
+                                    }
+                                    else
+                                    {
+                                        <td>
+                                            @week.Days[GetDayIndexFromOffset(j)].From.ToString("h:mm tt") - @week.Days[GetDayIndexFromOffset(j)].To.ToString("h:mm tt")
+                                            <br />
+                                            <span class="text-info">@GetLunchString(week.Days[GetDayIndexFromOffset(j)])</span>
+                                        </td>
+                                    }
+                                }
+                            </tr>
+                            i++;
+                        }
+                        <tr>
+                            <td>Total Hours:</td>
+                            <td>@GetTotalHours()</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+@inject Lib.Services.ISchedulingService Scheduler
+@code
+{
+    [Parameter]
+    public long ID { get; set; }
+
+    private List<Lib.DTO.Employee> Employees { get; set; }
+    private Lib.DTO.ScheduleWeek Schedule { get; set; }
+    private int WeekStartDay { get; set; }
+    private List<Schedule.EmployeeWeek> EmployeeWeeks { get; set; }
+    private List<bool> DayClosures => Schedule.Days.Select(d => d.IsClosed).ToList();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Employees = await Scheduler.GetEmployeesAsync(includeDeleted: true);
+        if (ID == 0) Schedule = await Scheduler.GetCurrentScheduleAsync();
+        else Schedule = await Scheduler.GetScheduleAsync(ID);
+        WeekStartDay = await Scheduler.GetWeekStartAsync();
+        EmployeeWeeks = Employees.Select(e => new Schedule.EmployeeWeek
+        {
+            Employee = e,
+            Days = Schedule.Days.Select((d, i) => d.EmployeeSchedules.SingleOrDefault(s => s.EmployeeID == e.ID) ?? e.TypicalSchedule[i]).ToList()
+        }).ToList();
+    }
+
+    private int GetDayIndexFromOffset(int offset)
+        => (WeekStartDay + offset) % 7;
+
+    private double GetLunchOffset(Lib.DTO.EmployeeSchedule day)
+        => day.LunchType == 0
+        ? 0d
+        : (day.LunchType == 1 ? -0.5d : -1d);
+
+    private string GetLunchString(Lib.DTO.EmployeeSchedule day)
+        => day.LunchType == 0
+        ? "No Lunch"
+        : (day.LunchType == 1 ? "Half-Hour Lunch" : "Hour Lunch");
+
+    private string GetEmployeeHours(Schedule.EmployeeWeek week)
+        => week.Days.Select((day, i) =>
+        {
+            if (day.IsOff || DayClosures[i]) return 0d;
+            else return (day.To.TimeOfDay - day.From.TimeOfDay).TotalHours + GetLunchOffset(day);
+        }).Sum().ToString("0.00");
+
+    private string GetTotalHours()
+    => Schedule.Days.SelectMany(day =>
+    {
+        if (day.IsClosed) return Enumerable.Empty<Lib.DTO.EmployeeSchedule>();
+        else return day.EmployeeSchedules;
+    })
+    .Select(schedule =>
+    {
+        if (schedule.IsOff) return 0d;
+        else return (schedule.To.TimeOfDay - schedule.From.TimeOfDay).TotalHours + GetLunchOffset(schedule);
+    }).Sum().ToString("0.00");
+}
