@@ -4,12 +4,10 @@
 
 Welcome to your new app.
 
-<SurveyPrompt Title="How is Blazor working for you?" />
-<div class="btn-group-toggle" data-toggle="buttons">
-    <label class="btn btn-outline-primary">
-        <input type="checkbox"> Checked
-    </label>
-</div>
+@*<SurveyPrompt Title="How is Blazor working for you?" />*@
+
+<button class="btn btn-outline-primary" @onclick="CallApi">Call Api</button>
+<p>@ResponseValue</p>
 
 @inject Lib.Services.ILogger Logger
 @inject Lib.Services.IToastService Toast
@@ -17,9 +15,67 @@ Welcome to your new app.
 @inject Microsoft.JSInterop.IJSRuntime JS
 @code
 {
+    private const string URL = "https://localhost:44378/weatherforecast";
+    public string ResponseValue{ get; set; }
+
+    private async Task CallApi()
+    {
+        //var request = System.Net.WebRequest.Create(URL);
+        //request.Method = "POST";
+
+        //using var response = await request.GetResponseAsync();
+        //using var stream = response.GetResponseStream();
+        //using var reader = new System.IO.StreamReader(stream);
+        //ResponseValue = await reader.ReadToEndAsync();
+        /*
+            fetch('', {
+                method: 'POST',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }) 
+
+         */
+        try
+        {
+            // This isn't working. Hopefully this article helps.
+            // https://joonasw.net/view/csharp-await-and-js-promises-in-blazor
+            var obj = new Newtonsoft.Json.Linq.JObject();
+            obj.Add("method", "POST");
+            obj.Add("cache", "no-cache");
+
+            var headers = new Newtonsoft.Json.Linq.JObject();
+            headers.Add("Content-Type", "application/json");
+            obj.Add("headers", headers);
+
+            //var obj = new
+            //{
+            //    Method = "POST",
+            //    Cache = "no-cache"
+            //};
+            //var s = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+
+
+            ResponseValue = await JS.InvokeAsync<string>("wrappedFetch", URL, obj.ToString());
+        }
+        catch (Exception ex)
+        {
+            await Logger.LogExceptionAsync(ex);
+        }
+
+    }
+
+    private class FetchObject
+    {
+        public string Method { get; set; }
+        public string Cache { get; set; }
+        //public Dictionary<string, string> Headers { get; set; }
+        public string Body { get; set; }
+    }
 
     protected override void OnInitialized()
     {
-        Nav.NavigateTo($"{Nav.BaseUri}schedule");
+        //Nav.NavigateTo($"{Nav.BaseUri}schedule");
     }
 }
