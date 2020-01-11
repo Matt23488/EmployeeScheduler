@@ -7,7 +7,30 @@ Welcome to your new app.
 @*<SurveyPrompt Title="How is Blazor working for you?" />*@
 
 <button class="btn btn-outline-primary" @onclick="CallApi">Call Api</button>
-<p>@ResponseValue</p>
+@if (ResponseValue != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>&deg;C</th>
+                <th>&deg;F</th>
+                <th>Summary</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var response in ResponseValue)
+            {
+                <tr>
+                    <td>@response.date.ToShortDateString()</td>
+                    <td>@response.temperatureC &deg;C</td>
+                    <td>@response.temperatureF &deg;F</td>
+                    <td>@response.summary</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 
 @inject Lib.Services.ILogger Logger
 @inject Lib.Services.IToastService Toast
@@ -16,48 +39,22 @@ Welcome to your new app.
 @code
 {
     private const string URL = "https://localhost:44378/weatherforecast";
-    public string ResponseValue{ get; set; }
+    private  WeatherForecast[] ResponseValue { get; set; }
 
     private async Task CallApi()
     {
-        //var request = System.Net.WebRequest.Create(URL);
-        //request.Method = "POST";
-
-        //using var response = await request.GetResponseAsync();
-        //using var stream = response.GetResponseStream();
-        //using var reader = new System.IO.StreamReader(stream);
-        //ResponseValue = await reader.ReadToEndAsync();
-        /*
-            fetch('', {
-                method: 'POST',
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            }) 
-
-         */
         try
         {
-            // This isn't working. Hopefully this article helps.
-            // https://joonasw.net/view/csharp-await-and-js-promises-in-blazor
             var obj = new Newtonsoft.Json.Linq.JObject();
-            obj.Add("method", "POST");
+            obj.Add("method", "GET");
             obj.Add("cache", "no-cache");
 
             var headers = new Newtonsoft.Json.Linq.JObject();
             headers.Add("Content-Type", "application/json");
             obj.Add("headers", headers);
 
-            //var obj = new
-            //{
-            //    Method = "POST",
-            //    Cache = "no-cache"
-            //};
-            //var s = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
 
-
-            ResponseValue = await JS.InvokeAsync<string>("wrappedFetch", URL, obj.ToString());
+            ResponseValue = await JS.InvokeAsync<WeatherForecast[]>("wrappedFetch", URL, obj.ToString());
         }
         catch (Exception ex)
         {
@@ -66,12 +63,12 @@ Welcome to your new app.
 
     }
 
-    private class FetchObject
+    private class WeatherForecast
     {
-        public string Method { get; set; }
-        public string Cache { get; set; }
-        //public Dictionary<string, string> Headers { get; set; }
-        public string Body { get; set; }
+        public DateTime date { get; set; }
+        public double temperatureC { get; set; }
+        public double temperatureF { get; set; }
+        public string summary { get; set; }
     }
 
     protected override void OnInitialized()

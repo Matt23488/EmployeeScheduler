@@ -9,7 +9,7 @@
     //})
 
     window.wrappedFetch = function (url, obj) {
-        return fetch(url, JSON.parse(obj));
+        return fetch(url, JSON.parse(obj)).then(r => r.json());
     };
 
 })();
