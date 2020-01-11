@@ -46,8 +46,9 @@ Welcome to your new app.
         try
         {
             var obj = new Newtonsoft.Json.Linq.JObject();
-            obj.Add("method", "GET");
+            obj.Add("method", "POST");
             obj.Add("cache", "no-cache");
+            obj.Add("body", "{\"password\":\"AdminPassword\"}");
 
             var headers = new Newtonsoft.Json.Linq.JObject();
             headers.Add("Content-Type", "application/json");

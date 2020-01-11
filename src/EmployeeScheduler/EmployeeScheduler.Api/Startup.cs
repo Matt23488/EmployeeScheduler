@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EmployeeScheduler.Lib.BLL;
+using EmployeeScheduler.Lib.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -38,6 +40,13 @@ namespace EmployeeScheduler.Api
 
                     builder.WithHeaders("Content-Type");
                 });
+            });
+
+            services.AddScoped<IPasswordValidationService, PasswordValidationService>(factory =>
+            {
+                var service = new PasswordValidationService(Configuration.GetValue<string>("AdminPassword"), Configuration.GetValue<string>("UserPassword"));
+
+                return service;
             });
         }
 

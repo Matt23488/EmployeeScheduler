@@ -20,6 +20,10 @@ namespace EmployeeScheduler.Api
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    webBuilder.ConfigureAppConfiguration(configBuilder =>
+                    {
+                        configBuilder.AddJsonFile("secrets.json");
+                    });
                     webBuilder.UseStartup<Startup>();
                 });
     }
