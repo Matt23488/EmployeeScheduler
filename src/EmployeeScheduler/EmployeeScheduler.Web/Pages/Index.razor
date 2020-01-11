@@ -39,7 +39,7 @@ Welcome to your new app.
 @code
 {
     private const string URL = "https://localhost:44378/weatherforecast";
-    private  WeatherForecast[] ResponseValue { get; set; }
+    private WeatherForecast[] ResponseValue { get; set; }
 
     private async Task CallApi()
     {
@@ -54,13 +54,28 @@ Welcome to your new app.
             obj.Add("headers", headers);
 
 
-            ResponseValue = await JS.InvokeAsync<WeatherForecast[]>("wrappedFetch", URL, obj.ToString());
+            //ResponseValue = await JS.InvokeAsync<WeatherForecast[]>("wrappedFetch", URL, obj.ToString());
+            var result = await JS.InvokeAsync<FetchResult>("wrappedFetch", URL, obj.ToString());
+            if (result.status == 200)
+            {
+                ResponseValue = Newtonsoft.Json.JsonConvert.DeserializeObject<WeatherForecast[]>(result.json);
+            }
+            else
+            {
+                await Logger.LogAsync(Newtonsoft.Json.JsonConvert.DeserializeObject<FetchError>(result.json));
+            }
         }
         catch (Exception ex)
         {
             await Logger.LogExceptionAsync(ex);
         }
 
+    }
+
+    private class FetchResult
+    {
+        public int status { get; set; }
+        public string json { get; set; }
     }
 
     private class WeatherForecast
@@ -70,6 +85,16 @@ Welcome to your new app.
         public double temperatureF { get; set; }
         public string summary { get; set; }
     }
+
+
+    public class FetchError
+    {
+        public string type { get; set; }
+        public string title { get; set; }
+        public int status { get; set; }
+        public string traceId { get; set; }
+    }
+
 
     protected override void OnInitialized()
     {

@@ -11,10 +11,12 @@ namespace EmployeeScheduler.Lib.DAL
     public class SchedulerContext : DbContext
     {
         public DbSet<Employee> Employees { get; set; }
+        public DbSet<EmployeeSchedule> EmployeeSchedules { get; set; }
+        public DbSet<ScheduleDay> ScheduleDays { get; set; }
+        public DbSet<ScheduleWeek> ScheduleWeeks { get; set; }
+        public DbSet<Token> Tokens { get; set; }
 
 
-        //    protected override void OnConfiguring(DbContextOptionsBuilder options)
-        //        => options.UseSqlite("Data Source=blogging.db");
         protected override void OnConfiguring(DbContextOptionsBuilder options)
             => options.UseSqlite("Data Source=test.db");
     }
@@ -57,30 +59,12 @@ namespace EmployeeScheduler.Lib.DAL
         public long ScheduleWeekID { get; set; }
         public List<ScheduleDay> Days { get; set; } = new List<ScheduleDay>();
     }
-    //public class BloggingContext : DbContext
-    //{
-    //    public DbSet<Blog> Blogs { get; set; }
-    //    public DbSet<Post> Posts { get; set; }
 
-    //    protected override void OnConfiguring(DbContextOptionsBuilder options)
-    //        => options.UseSqlite("Data Source=blogging.db");
-    //}
-
-    //public class Blog
-    //{
-    //    public int BlogId { get; set; }
-    //    public string Url { get; set; }
-
-    //    public List<Post> Posts { get; } = new List<Post>();
-    //}
-
-    //public class Post
-    //{
-    //    public int PostId { get; set; }
-    //    public string Title { get; set; }
-    //    public string Content { get; set; }
-
-    //    public int BlogId { get; set; }
-    //    public Blog Blog { get; set; }
-    //}
+    public class Token
+    {
+        public int TokenID { get; set; }
+        public string TokenValue { get; set; }
+        public string IpAddress { get; set; }
+        public DateTime Expires { get; set; }
+    }
 }
