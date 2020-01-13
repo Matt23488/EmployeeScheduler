@@ -42,9 +42,9 @@ namespace EmployeeScheduler.Api
                 });
             });
 
-            services.AddScoped<IPasswordValidationService, PasswordValidationService>(factory =>
+            services.AddScoped<IAuthService, SqliteAuthService>(factory =>
             {
-                var service = new PasswordValidationService(Configuration.GetValue<string>("AdminPassword"), Configuration.GetValue<string>("UserPassword"));
+                var service = new SqliteAuthService(Configuration.GetValue<string>("AdminPassword"), Configuration.GetValue<string>("UserPassword"));
 
                 return service;
             });

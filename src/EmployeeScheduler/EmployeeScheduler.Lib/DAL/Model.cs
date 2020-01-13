@@ -32,6 +32,7 @@ namespace EmployeeScheduler.Lib.DAL
 
     public class EmployeeSchedule
     {
+        public int EmployeeScheduleID { get; set; }
         public bool IsOff { get; set; }
         public DateTime From { get; set; }
         public DateTime To { get; set; }
@@ -62,9 +63,15 @@ namespace EmployeeScheduler.Lib.DAL
 
     public class Token
     {
+        public const int ROLE_ADMIN = 0;
+        public const int ROLE_USER = 1;
         public int TokenID { get; set; }
+        //public string Role { get; set; }
+        public int Role { get; set; }
         public string TokenValue { get; set; }
         public string IpAddress { get; set; }
         public DateTime Expires { get; set; }
     }
+
+    // TODO: A table to track IPs that send incorrect passwords
 }

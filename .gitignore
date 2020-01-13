@@ -10,3 +10,4 @@
 /src/EmployeeScheduler/EmployeeScheduler.Api/obj/
 /src/EmployeeScheduler/.vs/
 /**/secrets.json
+/**/test.db

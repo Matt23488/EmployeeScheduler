@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EmployeeScheduler.Api.Filters;
 using EmployeeScheduler.Lib.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -18,9 +19,9 @@ namespace EmployeeScheduler.Api.Controllers
         };
 
         private readonly ILogger<WeatherForecastController> _logger;
-        private readonly IPasswordValidationService _passwordService;
+        private readonly IAuthService _passwordService;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger, IPasswordValidationService passwordService)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, IAuthService passwordService)
         {
             _logger = logger;
             _passwordService = passwordService;
@@ -44,10 +45,10 @@ namespace EmployeeScheduler.Api.Controllers
         }
 
         [HttpPost]
-        public IActionResult Get([FromBody]string password)
+        [RequiresToken]
+        public async Task<IActionResult> Get(RequestData data)
         {
-            // TODO: This isn't getting hit, I'm doing something wrong.
-            if (!_passwordService.AdminPasswordIsValid(password)) return Unauthorized();
+            //if (!_passwordService.AdminPasswordIsValid(data.password)) return Unauthorized();
 
             var rng = new Random();
             return Ok(Enumerable.Range(1, 5).Select(index => new WeatherForecast
@@ -57,6 +58,11 @@ namespace EmployeeScheduler.Api.Controllers
                 Summary = Summaries[rng.Next(Summaries.Length)]
             })
             .ToArray());
+        }
+
+        public class RequestData
+        {
+            public string password { get; set; }
         }
     }
 }

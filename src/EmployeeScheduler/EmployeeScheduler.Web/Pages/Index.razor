@@ -49,8 +49,10 @@ Welcome to your new app.
             obj.Add("method", "POST");
             obj.Add("cache", "no-cache");
             obj.Add("body", "{\"password\":\"AdminPassword\"}");
+            //obj.Add("body", "AdminPassword");
 
             var headers = new Newtonsoft.Json.Linq.JObject();
+            headers.Add("Accept", "application/json");
             headers.Add("Content-Type", "application/json");
             obj.Add("headers", headers);
 
@@ -71,6 +73,11 @@ Welcome to your new app.
             await Logger.LogExceptionAsync(ex);
         }
 
+    }
+
+    private class RequestData
+    {
+        public string password { get; set; }
     }
 
     private class FetchResult
