@@ -36,7 +36,7 @@ namespace EmployeeScheduler.Api
                 options.AddPolicy(MyAllowSpecificOrigins, builder =>
                 {
                     builder.WithOrigins("https://localhost:44314",
-                                        "https://matt12388.github.io");
+                                        "https://matt23488.github.io");
 
                     builder.WithHeaders("Content-Type");
                     builder.WithHeaders("authentication-token");
