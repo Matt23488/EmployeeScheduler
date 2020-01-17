@@ -63,14 +63,21 @@ namespace EmployeeScheduler.Lib.DAL
 
     public class Token
     {
-        public const int ROLE_ADMIN = 0;
-        public const int ROLE_USER = 1;
+        //public const int ROLE_ADMIN = 0;
+        //public const int ROLE_USER = 1;
         public int TokenID { get; set; }
         //public string Role { get; set; }
-        public int Role { get; set; }
+        public int Role { get; set; } // Maybe use the enum
         public string TokenValue { get; set; }
         public string IpAddress { get; set; }
         public DateTime Expires { get; set; }
+    }
+
+    public enum Roles
+    {
+        None = -1,
+        Admin = 0,
+        User = 1
     }
 
     // TODO: A table to track IPs that send incorrect passwords

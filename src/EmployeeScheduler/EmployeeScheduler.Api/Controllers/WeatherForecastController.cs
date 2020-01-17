@@ -45,7 +45,7 @@ namespace EmployeeScheduler.Api.Controllers
         }
 
         [HttpPost]
-        [RequiresToken]
+        [RequiresToken(Lib.DAL.Roles.User, Lib.DAL.Roles.Admin)]
         public async Task<IActionResult> Get(RequestData data)
         {
             //if (!_passwordService.AdminPasswordIsValid(data.password)) return Unauthorized();

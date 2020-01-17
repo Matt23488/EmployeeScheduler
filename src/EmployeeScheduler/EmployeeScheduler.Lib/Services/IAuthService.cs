@@ -8,7 +8,7 @@ namespace EmployeeScheduler.Lib.Services
 {
     public interface IAuthService
     {
-        Task<DAL.Token> GetTokenAsync(string ipAddress, string password);
-        Task<bool> ValidateTokenAsync(string ipAddress, string token);
+        Task<string> GetTokenAsync(string ipAddress, string password);
+        Task<bool> ValidateTokenAsync(string ipAddress, string token, params DAL.Roles[] roles);
     }
 }

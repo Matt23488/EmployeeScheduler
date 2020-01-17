@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EmployeeScheduler.Lib.Migrations
 {
     [DbContext(typeof(SchedulerContext))]
-    [Migration("20200113014218_setup")]
-    partial class setup
+    [Migration("20200117150043_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

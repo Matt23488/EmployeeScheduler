@@ -20,32 +20,36 @@ namespace EmployeeScheduler.Lib.BLL
             _userPassword = userPassword;
         }
 
-        public async Task<Token> GetTokenAsync(string ipAddress, string password)
+        public async Task<string> GetTokenAsync(string ipAddress, string password)
         {
-            var type = -1;
-            if (AdminPasswordIsValid(password)) type = 0;
-            else if (UserPasswordIsValid(password)) type = 1;
+            var type = Roles.None;
+            if (AdminPasswordIsValid(password)) type = Roles.Admin;
+            else if (UserPasswordIsValid(password)) type = Roles.User;
             else return null;
 
+            var expiration = DateTime.Now.AddSeconds(_tokenLifeInSeconds);
             var data = new Dictionary<string, object>
             {
-                { "type", type }
+                { "type", (int)type },
+                { "expires", expiration.Ticks }
             };
 
             var tokenValue = Jwt.JsonWebToken.Encode(data, password, Jwt.JwtHashAlgorithm.HS256);
-            var token = new Token
-            {
-                IpAddress = ipAddress,
-                Role = type,
-                TokenValue = tokenValue,
-                Expires = DateTime.Now.AddSeconds(_tokenLifeInSeconds)
-            };
 
-            using var context = new SchedulerContext();
-            context.Tokens.Add(token);
-            await context.SaveChangesAsync();
+            // TODO: Figure out how Sqlite works
+            //var token = new Token
+            //{
+            //    IpAddress = ipAddress,
+            //    Role = (int)type,
+            //    TokenValue = tokenValue,
+            //    Expires = expiration
+            //};
 
-            return token;
+            //using var context = new SchedulerContext();
+            //context.Tokens.Add(token);
+            //await context.SaveChangesAsync();
+
+            return tokenValue;
         }
 
         private bool AdminPasswordIsValid(string password)
@@ -54,16 +58,56 @@ namespace EmployeeScheduler.Lib.BLL
         private bool UserPasswordIsValid(string password)
             => _userPassword == password;
 
-        public async Task<bool> ValidateTokenAsync(string ipAddress, string token)
+        public async Task<bool> ValidateTokenAsync(string ipAddress, string token, params Roles[] roles)
         {
-            using var context = new SchedulerContext();
+            // TODO: Figure out how Sqlite works
+            //using var context = new SchedulerContext();
+            //var existingToken = context.Tokens.SingleOrDefault(t => t.TokenValue == token && t.IpAddress == ipAddress);
+            //if (existingToken == null) return false;
 
-            var existingToken = context.Tokens.SingleOrDefault(t => t.TokenValue == token && t.IpAddress == ipAddress);
-            //var existingToken = context.Tokens.AsAsyncEnumerable().
+            foreach (var role in roles)
+            {
+                var password = GetPasswordForRole(role);
+                try
+                {
+                    if (ValidateToken(token, password, role)) return true;
+                }
+                catch { }
+            }
 
-            if (existingToken == null) return false;
+            return false;
+        }
 
-            // TODO: Decode token and do validation
+        private string GetPasswordForRole(Roles role)
+        {
+            switch (role)
+            {
+                case Roles.Admin: return _adminPassword;
+                case Roles.User: return _userPassword;
+                default: throw new ArgumentOutOfRangeException(nameof(role));
+            }
+        }
+
+        private bool ValidateToken(string token, string password, Roles role)
+        {
+            var data = default(Dictionary<string, object>);
+            try
+            {
+                data = Jwt.JsonWebToken.DecodeToObject<Dictionary<string, object>>(token, password);
+            }
+            catch
+            {
+                return false;
+            }
+
+            if (!data.ContainsKey("type")) return false;
+            if (!data.ContainsKey("expires")) return false;
+
+            var type = Convert.ToInt32(data["type"]);
+            if (type != (int)role) return false;
+
+            var expires = Convert.ToInt64(data["expires"]);
+            if (expires < DateTime.Now.Ticks) return false;
 
             return true;
         }
