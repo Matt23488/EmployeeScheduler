@@ -26,25 +26,20 @@
             obj.Add("method", "POST");
             obj.Add("cache", "no-cache");
             obj.Add("body", $"{{\"password\":\"{Password}\"}}");
-            //obj.Add("body", "AdminPassword");
 
             var headers = new Newtonsoft.Json.Linq.JObject();
             headers.Add("Accept", "application/json");
             headers.Add("Content-Type", "application/json");
-            //headers.Add("authentication-token", await LocalStorage.GetItemAsync<string>("EmployeeScheduler_token"));
             obj.Add("headers", headers);
 
 
-            //ResponseValue = await JS.InvokeAsync<WeatherForecast[]>("wrappedFetch", URL, obj.ToString());
             var result = await JS.InvokeAsync<FetchResult>("wrappedFetch", URL, obj.ToString());
             if (result.status == 200)
             {
-                //ResponseValue = Newtonsoft.Json.JsonConvert.DeserializeObject<WeatherForecast[]>(result.json);
-                //await Logger.LogAsync(result.json);
-                //await Logger.LogAsync(Newtonsoft.Json.JsonConvert.DeserializeObject<string>(result.json));
                 await LocalStorage.SetItemAsync("EmployeeScheduler_token", Newtonsoft.Json.JsonConvert.DeserializeObject<string>(result.json));
                 Nav.NavigateTo($"{Nav.BaseUri}");
             }
+            // TODO: Validation message
             //else if (result.status == 401)
             //{
             //    await Logger.LogAsync(Newtonsoft.Json.JsonConvert.DeserializeObject<FetchError>(result.json));
