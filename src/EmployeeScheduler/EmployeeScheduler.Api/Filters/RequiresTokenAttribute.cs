@@ -37,6 +37,8 @@ namespace EmployeeScheduler.Api.Filters
                 context.Result = new UnauthorizedResult();
                 return;
             }
+
+            await next();
         }
     }
 }

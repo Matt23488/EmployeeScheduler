@@ -28,12 +28,10 @@ namespace EmployeeScheduler.Api.Controllers
         }
 
         [HttpGet]
+        [RequiresToken(Lib.DAL.Roles.User, Lib.DAL.Roles.Admin)]
         //public IEnumerable<WeatherForecast> Get()
         public IActionResult Get()
         {
-            // This should give 401
-            //return Unauthorized();
-
             var rng = new Random();
             return Ok(Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
@@ -44,25 +42,18 @@ namespace EmployeeScheduler.Api.Controllers
             .ToArray());
         }
 
-        [HttpPost]
-        [RequiresToken(Lib.DAL.Roles.User, Lib.DAL.Roles.Admin)]
-        public async Task<IActionResult> Get(RequestData data)
-        {
-            //if (!_passwordService.AdminPasswordIsValid(data.password)) return Unauthorized();
-
-            var rng = new Random();
-            return Ok(Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            })
-            .ToArray());
-        }
-
-        public class RequestData
-        {
-            public string password { get; set; }
-        }
+        //[HttpGet]
+        //[RequiresToken(Lib.DAL.Roles.User, Lib.DAL.Roles.Admin)]
+        //public async Task<IActionResult> Get()
+        //{
+        //    var rng = new Random();
+        //    return Ok(Enumerable.Range(1, 5).Select(index => new WeatherForecast
+        //    {
+        //        Date = DateTime.Now.AddDays(index),
+        //        TemperatureC = rng.Next(-20, 55),
+        //        Summary = Summaries[rng.Next(Summaries.Length)]
+        //    })
+        //    .ToArray());
+        //}
     }
 }

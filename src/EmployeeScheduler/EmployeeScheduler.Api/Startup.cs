@@ -39,6 +39,7 @@ namespace EmployeeScheduler.Api
                                         "https://matt12388.github.io");
 
                     builder.WithHeaders("Content-Type");
+                    builder.WithHeaders("authentication-token");
                 });
             });
 

@@ -20,14 +20,18 @@ namespace EmployeeScheduler.Api.Controllers
         }
 
         [HttpPost]
-        //[Microsoft.AspNetCore.Mvc.Filters.]
-        public async Task<IActionResult> GetToken(string password)
+        public async Task<IActionResult> GetToken(RequestData data)
         {
             var ipAddress = HttpContext.Connection.RemoteIpAddress;
-            var token = await _authService.GetTokenAsync(ipAddress.ToString(), password);
+            var token = await _authService.GetTokenAsync(ipAddress.ToString(), data.password);
             if (token == null) return Unauthorized();
 
             return Ok(token);
+        }
+
+        public class RequestData
+        {
+            public string password { get; set; }
         }
     }
 }

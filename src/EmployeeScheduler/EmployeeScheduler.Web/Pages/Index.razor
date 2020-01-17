@@ -36,6 +36,7 @@ Welcome to your new app.
 @inject Lib.Services.IToastService Toast
 @inject NavigationManager Nav
 @inject Microsoft.JSInterop.IJSRuntime JS
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 @code
 {
     private const string URL = "https://localhost:44378/weatherforecast";
@@ -46,14 +47,15 @@ Welcome to your new app.
         try
         {
             var obj = new Newtonsoft.Json.Linq.JObject();
-            obj.Add("method", "POST");
+            obj.Add("method", "GET");
             obj.Add("cache", "no-cache");
-            obj.Add("body", "{\"password\":\"AdminPassword\"}");
+            //obj.Add("body", "{\"password\":\"AdminPassword\"}");
             //obj.Add("body", "AdminPassword");
 
             var headers = new Newtonsoft.Json.Linq.JObject();
             headers.Add("Accept", "application/json");
             headers.Add("Content-Type", "application/json");
+            headers.Add("authentication-token", await LocalStorage.GetItemAsync<string>("EmployeeScheduler_token"));
             obj.Add("headers", headers);
 
 
@@ -63,9 +65,10 @@ Welcome to your new app.
             {
                 ResponseValue = Newtonsoft.Json.JsonConvert.DeserializeObject<WeatherForecast[]>(result.json);
             }
-            else
+            else if (result.status == 401)
             {
                 await Logger.LogAsync(Newtonsoft.Json.JsonConvert.DeserializeObject<FetchError>(result.json));
+                Nav.NavigateTo($"{Nav.BaseUri}auth");
             }
         }
         catch (Exception ex)
