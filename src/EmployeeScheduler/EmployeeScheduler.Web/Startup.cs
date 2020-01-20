@@ -16,6 +16,7 @@ namespace EmployeeScheduler.Web
             services.AddScoped<ISchedulingService, LocalStorageSchedulingService>();
             services.AddScoped<IAlertService, SessionStorageAlertService>();
             services.AddScoped<IToastService, ToastService>();
+            services.AddScoped<IFetchService, JavaScriptFetchService>();
             services.AddScoped<ILogger, JavaScriptConsoleLogger>();
         }
 

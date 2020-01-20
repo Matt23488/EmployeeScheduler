@@ -10,8 +10,9 @@
 @inject Lib.Services.ILogger Logger
 @inject Lib.Services.IToastService Toast
 @inject NavigationManager Nav
-@inject Microsoft.JSInterop.IJSRuntime JS
+@*@inject Microsoft.JSInterop.IJSRuntime JS*@
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject Lib.Services.IFetchService Fetch
 @code
 {
     private const string URL = "https://localhost:44378/authentication";
@@ -22,24 +23,38 @@
     {
         try
         {
-            var obj = new Newtonsoft.Json.Linq.JObject();
-            obj.Add("method", "POST");
-            obj.Add("cache", "no-cache");
-            obj.Add("body", $"{{\"password\":\"{Password}\"}}");
-
-            var headers = new Newtonsoft.Json.Linq.JObject();
-            headers.Add("Accept", "application/json");
-            headers.Add("Content-Type", "application/json");
-            obj.Add("headers", headers);
-
-
-            var result = await JS.InvokeAsync<FetchResult>("wrappedFetch", URL, obj.ToString());
+            var result = await Fetch.PostAsync<FetchResult>(URL, new { password = Password });
+            await Logger.LogAsync(result);
             if (result.status == 200)
             {
-                await LocalStorage.SetItemAsync("EmployeeScheduler_token", Newtonsoft.Json.JsonConvert.DeserializeObject<string>(result.json));
-                Nav.NavigateTo($"{Nav.BaseUri}");
+                //await LocalStorage.SetItemAsync("EmployeeScheduler_token", Newtonsoft.Json.JsonConvert.DeserializeObject<string>(result.json));
+                await LocalStorage.SetItemAsync("EmployeeScheduler_token", result.json);
+                Nav.NavigateTo(Nav.BaseUri);
             }
             // TODO: Validation message
+            else if (result.status == 401)
+            {
+                await Logger.LogAsync(Newtonsoft.Json.JsonConvert.DeserializeObject<FetchError>(result.json));
+                Nav.NavigateTo($"{Nav.BaseUri}auth");
+            }
+
+            //var obj = new Newtonsoft.Json.Linq.JObject();
+            //obj.Add("method", "POST");
+            //obj.Add("cache", "no-cache");
+            //obj.Add("body", $"{{\"password\":\"{Password}\"}}");
+
+            //var headers = new Newtonsoft.Json.Linq.JObject();
+            //headers.Add("Accept", "application/json");
+            //headers.Add("Content-Type", "application/json");
+            //obj.Add("headers", headers);
+
+
+            //var result = await JS.InvokeAsync<FetchResult>("wrappedFetch", URL, obj.ToString());
+            //if (result.status == 200)
+            //{
+            //    await LocalStorage.SetItemAsync("EmployeeScheduler_token", Newtonsoft.Json.JsonConvert.DeserializeObject<string>(result.json));
+            //    Nav.NavigateTo($"{Nav.BaseUri}");
+            //}
             //else if (result.status == 401)
             //{
             //    await Logger.LogAsync(Newtonsoft.Json.JsonConvert.DeserializeObject<FetchError>(result.json));
