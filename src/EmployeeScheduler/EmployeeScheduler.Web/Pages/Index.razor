@@ -34,8 +34,8 @@ Welcome to your new app.
 
 @inject Lib.Services.ILogger Logger
 @inject Lib.Services.IToastService Toast
+@inject Lib.Services.IFetchService Fetch
 @inject NavigationManager Nav
-@inject Microsoft.JSInterop.IJSRuntime JS
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 @code
 {
@@ -46,28 +46,18 @@ Welcome to your new app.
     {
         try
         {
-            var obj = new Newtonsoft.Json.Linq.JObject();
-            obj.Add("method", "GET");
-            obj.Add("cache", "no-cache");
-            //obj.Add("body", "{\"password\":\"AdminPassword\"}");
-            //obj.Add("body", "AdminPassword");
+            var result = await Fetch.GetAsync<FetchResult>(URL, null, new Dictionary<string, string>
+            {
+                { "authentication-token", await LocalStorage.GetItemAsync<string>("EmployeeScheduler_token") }
+            });
 
-            var headers = new Newtonsoft.Json.Linq.JObject();
-            headers.Add("Accept", "application/json");
-            headers.Add("Content-Type", "application/json");
-            headers.Add("authentication-token", await LocalStorage.GetItemAsync<string>("EmployeeScheduler_token"));
-            obj.Add("headers", headers);
-
-
-            //ResponseValue = await JS.InvokeAsync<WeatherForecast[]>("wrappedFetch", URL, obj.ToString());
-            var result = await JS.InvokeAsync<FetchResult>("wrappedFetch", URL, obj.ToString());
             if (result.status == 200)
             {
                 ResponseValue = Newtonsoft.Json.JsonConvert.DeserializeObject<WeatherForecast[]>(result.json);
             }
             else if (result.status == 401)
             {
-                await Logger.LogAsync(Newtonsoft.Json.JsonConvert.DeserializeObject<FetchError>(result.json));
+                await Toast.ShowAsync("You are not authorized. Please input your password.", Lib.Services.ToastType.Warning);
                 Nav.NavigateTo($"{Nav.BaseUri}auth");
             }
         }
@@ -76,11 +66,6 @@ Welcome to your new app.
             await Logger.LogExceptionAsync(ex);
         }
 
-    }
-
-    private class RequestData
-    {
-        public string password { get; set; }
     }
 
     private class FetchResult
@@ -96,16 +81,6 @@ Welcome to your new app.
         public double temperatureF { get; set; }
         public string summary { get; set; }
     }
-
-
-    public class FetchError
-    {
-        public string type { get; set; }
-        public string title { get; set; }
-        public int status { get; set; }
-        public string traceId { get; set; }
-    }
-
 
     protected override void OnInitialized()
     {
