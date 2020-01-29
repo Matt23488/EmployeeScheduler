@@ -35,5 +35,7 @@ namespace EmployeeScheduler.Lib.Services
 
         Task SetTimeZoneOffsetAsync(int offset);
         Task<int> GetTimeZoneOffsetAsync();
+
+        Task<bool> HasData();
     }
 }

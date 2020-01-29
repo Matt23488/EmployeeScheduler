@@ -183,5 +183,10 @@ namespace EmployeeScheduler.Lib.BLL
         {
             throw new NotImplementedException();
         }
+
+        public Task<bool> HasData()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

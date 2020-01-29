@@ -12,7 +12,7 @@ namespace EmployeeScheduler.Test.Services
 
         public SqliteAuthServiceTest()
         {
-            _authService = new SqliteAuthService("adminPassword", "userPassword");
+            _authService = new SqliteAuthService("adminPassword", "userPassword", new ClaimsService());
         }
 
         [TestMethod]
@@ -20,7 +20,7 @@ namespace EmployeeScheduler.Test.Services
         {
             var result = default(bool);
             var token = await _authService.GetTokenAsync("1.2.3.4", "userPassword");
-            result = await _authService.ValidateTokenAsync("1.2.3.4", token, Lib.DAL.Roles.User);
+            result = await _authService.ValidateTokenAsync("1.2.3.4", token.Token, Lib.DAL.Roles.User);
 
             Assert.IsTrue(result);
         }
@@ -30,7 +30,7 @@ namespace EmployeeScheduler.Test.Services
         {
             var result = default(bool);
             var token = await _authService.GetTokenAsync("1.2.3.4", "adminPassword");
-            result = await _authService.ValidateTokenAsync("1.2.3.4", token, Lib.DAL.Roles.Admin);
+            result = await _authService.ValidateTokenAsync("1.2.3.4", token.Token, Lib.DAL.Roles.Admin);
 
             Assert.IsTrue(result);
         }
@@ -40,11 +40,11 @@ namespace EmployeeScheduler.Test.Services
         {
             var userResult = default(bool);
             var userToken = await _authService.GetTokenAsync("1.2.3.4", "userPassword");
-            userResult = await _authService.ValidateTokenAsync("1.2.3.4", userToken, Lib.DAL.Roles.User, Lib.DAL.Roles.Admin);
+            userResult = await _authService.ValidateTokenAsync("1.2.3.4", userToken.Token, Lib.DAL.Roles.User, Lib.DAL.Roles.Admin);
 
             var adminResult = default(bool);
             var adminToken = await _authService.GetTokenAsync("1.2.3.4", "adminPassword");
-            adminResult = await _authService.ValidateTokenAsync("1.2.3.4", adminToken, Lib.DAL.Roles.User, Lib.DAL.Roles.Admin);
+            adminResult = await _authService.ValidateTokenAsync("1.2.3.4", adminToken.Token, Lib.DAL.Roles.User, Lib.DAL.Roles.Admin);
 
             Assert.IsTrue(userResult);
             Assert.IsTrue(adminResult);
@@ -55,11 +55,11 @@ namespace EmployeeScheduler.Test.Services
         {
             var userResult = default(bool);
             var userToken = await _authService.GetTokenAsync("1.2.3.4", "userPassword");
-            userResult = await _authService.ValidateTokenAsync("1.2.3.4", userToken, Lib.DAL.Roles.Admin);
+            userResult = await _authService.ValidateTokenAsync("1.2.3.4", userToken.Token, Lib.DAL.Roles.Admin);
 
             var adminResult = default(bool);
             var adminToken = await _authService.GetTokenAsync("1.2.3.4", "adminPassword");
-            adminResult = await _authService.ValidateTokenAsync("1.2.3.4", adminToken, Lib.DAL.Roles.User);
+            adminResult = await _authService.ValidateTokenAsync("1.2.3.4", adminToken.Token, Lib.DAL.Roles.User);
 
             Assert.IsFalse(userResult);
             Assert.IsFalse(adminResult);

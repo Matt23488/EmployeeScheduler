@@ -48,7 +48,7 @@ Welcome to your new app.
         {
             var result = await Fetch.GetAsync<FetchResult>(URL, null, new Dictionary<string, string>
             {
-                { "authentication-token", await LocalStorage.GetItemAsync<string>("EmployeeScheduler_token") }
+                { "authentication-token", (await LocalStorage.GetItemAsync<Lib.DTO.ClientToken>("EmployeeScheduler_token"))?.Token }
             });
 
             if (result.status == 200)

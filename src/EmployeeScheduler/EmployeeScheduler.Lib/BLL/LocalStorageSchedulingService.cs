@@ -158,5 +158,13 @@ namespace EmployeeScheduler.Lib.BLL
 
         public async Task<int> GetTimeZoneOffsetAsync()
             => await _localStorage.GetItemAsync<int>(KEY_TIMEZONE_OFFSET);
+
+        public async Task<bool> HasData()
+        {
+            var employees = await _localStorage.GetItemAsync<Employee[]>(KEY_EMPLOYEES) ?? new Employee[0];
+            var schedules = await _localStorage.GetItemAsync<ScheduleWeek[]>(KEY_SCHEDULES) ?? new ScheduleWeek[0];
+
+            return employees.Length > 0 || schedules.Length > 0;
+        }
     }
 }

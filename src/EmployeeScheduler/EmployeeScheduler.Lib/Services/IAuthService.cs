@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EmployeeScheduler.Lib.DTO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ namespace EmployeeScheduler.Lib.Services
 {
     public interface IAuthService
     {
-        Task<string> GetTokenAsync(string ipAddress, string password);
+        Task<ClientToken> GetTokenAsync(string ipAddress, string password);
         Task<bool> ValidateTokenAsync(string ipAddress, string token, params DAL.Roles[] roles);
     }
 }

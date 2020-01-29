@@ -1,4 +1,5 @@
 ﻿using EmployeeScheduler.Lib.DAL;
+using EmployeeScheduler.Lib.DTO;
 using EmployeeScheduler.Lib.Services;
 using System;
 using System.Collections.Generic;
@@ -10,17 +11,20 @@ namespace EmployeeScheduler.Lib.BLL
 {
     public class SqliteAuthService : IAuthService
     {
-        private readonly string _adminPassword;
-        private readonly string _userPassword;
         private const int _tokenLifeInSeconds = 60 * 60 * 24 * 30;
 
-        public SqliteAuthService(string adminPassword, string userPassword)
+        private readonly string _adminPassword;
+        private readonly string _userPassword;
+        private readonly IClaimsService _claimsService;
+
+        public SqliteAuthService(string adminPassword, string userPassword, IClaimsService claimsService)
         {
             _adminPassword = adminPassword;
             _userPassword = userPassword;
+            _claimsService = claimsService;
         }
 
-        public async Task<string> GetTokenAsync(string ipAddress, string password)
+        public async Task<ClientToken> GetTokenAsync(string ipAddress, string password)
         {
             var type = Roles.None;
             if (AdminPasswordIsValid(password)) type = Roles.Admin;
@@ -34,7 +38,7 @@ namespace EmployeeScheduler.Lib.BLL
                 { "expires", expiration.Ticks }
             };
 
-            var tokenValue = Jwt.JsonWebToken.Encode(data, password, Jwt.JwtHashAlgorithm.HS256);
+            var tokenValue = _claimsService.EncodeClaims(data, password);
 
             var token = new Token
             {
@@ -48,7 +52,12 @@ namespace EmployeeScheduler.Lib.BLL
             context.Tokens.Add(token);
             await context.SaveChangesAsync();
 
-            return tokenValue;
+            return new ClientToken
+            {
+                Token = tokenValue,
+                Expires = expiration,
+                Role = type
+            };
         }
 
         private bool AdminPasswordIsValid(string password)
@@ -59,6 +68,8 @@ namespace EmployeeScheduler.Lib.BLL
 
         public async Task<bool> ValidateTokenAsync(string ipAddress, string token, params Roles[] roles)
         {
+            if (string.IsNullOrEmpty(token)) return false;
+
             using var context = new SchedulerContext();
             var existingToken = await context.Tokens.AsAsyncEnumerable().SingleOrDefaultAsync(t => t.TokenValue == token && t.IpAddress == ipAddress);
             if (existingToken == null) return false;
@@ -68,11 +79,7 @@ namespace EmployeeScheduler.Lib.BLL
             foreach (var role in roles)
             {
                 var password = GetPasswordForRole(role);
-                try
-                {
-                    if (ValidateToken(token, existingToken, password, role)) return true;
-                }
-                catch { }
+                if (ValidateToken(token, existingToken, password, role)) return true;
             }
 
             return false;
@@ -90,28 +97,27 @@ namespace EmployeeScheduler.Lib.BLL
 
         private bool ValidateToken(string token, Token existingToken, string password, Roles role)
         {
-            var data = default(Dictionary<string, object>);
             try
             {
-                data = Jwt.JsonWebToken.DecodeToObject<Dictionary<string, object>>(token, password);
+                var data = _claimsService.DecodeClaims(token, password);
+
+                if (!data.ContainsKey("type")) return false;
+                if (!data.ContainsKey("expires")) return false;
+
+                var type = Convert.ToInt32(data["type"]);
+                if (type != (int)role) return false;
+                if (type != existingToken.Role) return false;
+
+                var expires = Convert.ToInt64(data["expires"]);
+                if (expires != existingToken.Expires.Ticks) return false;
+                if (expires < DateTime.Now.Ticks) return false;
+
+                return true;
             }
             catch
             {
                 return false;
             }
-
-            if (!data.ContainsKey("type")) return false;
-            if (!data.ContainsKey("expires")) return false;
-
-            var type = Convert.ToInt32(data["type"]);
-            if (type != (int)role) return false;
-            if (type != existingToken.Role) return false;
-
-            var expires = Convert.ToInt64(data["expires"]);
-            if (expires != existingToken.Expires.Ticks) return false;
-            if (expires < DateTime.Now.Ticks) return false;
-
-            return true;
         }
     }
 }

@@ -24,17 +24,32 @@
     <input type="number" class="form-control" value="@TimeZoneOffset" @onchange="TimeZoneChanged" />
 </div>
 
+@if (ShowMigrationButton)
+{
+    <h3>Data Migration</h3>
+    <p>You have data stored locally that hasn't been migrated to the Cloud. Click the button below to migrate your data.</p>
+    <button class="btn btn-outline-primary" @onclick="Migrate">Migrate</button>
+}
+
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 @inject Lib.Services.ISchedulingService Scheduler
+@inject Lib.Services.IMigrationService Migration
 @inject Lib.Services.IToastService Toast
+@inject Lib.Services.ILogger Logger
 @code
 {
     private int WeekStartDay { get; set; }
     private int TimeZoneOffset { get; set; }
+    private bool ShowMigrationButton { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
+        var hasMigrated = await LocalStorage.ContainKeyAsync("EmployeeScheduler_migrated") && await LocalStorage.GetItemAsync<bool>("EmployeeScheduler_migrated");
+        var token = await LocalStorage.GetItemAsync<Lib.DTO.ClientToken>("EmployeeScheduler_token");
+
         WeekStartDay = await Scheduler.GetWeekStartAsync();
         TimeZoneOffset = await Scheduler.GetTimeZoneOffsetAsync();
+        ShowMigrationButton = !hasMigrated && await Scheduler.HasData() && token?.Role == Lib.DAL.Roles.Admin;
     }
 
     private async Task WeekStartDayChanged(ChangeEventArgs e)
@@ -49,5 +64,22 @@
         TimeZoneOffset = (int)(Convert.ToSingle(e.Value));
         await Scheduler.SetTimeZoneOffsetAsync(TimeZoneOffset);
         await Toast.ShowAsync("Time Zone Offset updated successfully!", Lib.Services.ToastType.Success);
+    }
+
+    private async Task Migrate()
+    {
+        try
+        {
+            await Migration.MigrateAsync();
+            await Toast.ShowAsync("Your data has been migrated to the Cloud!", Lib.Services.ToastType.Success);
+            await LocalStorage.SetItemAsync("EmployeeScheduler_migrated", true);
+            ShowMigrationButton = false;
+        }
+        catch (Exception ex)
+        {
+            await Logger.LogExceptionAsync(ex);
+            await Toast.ShowAsync("There was a problem migrating your data to the cloud. You can try again from Settings.", Lib.Services.ToastType.Error);
+            await LocalStorage.SetItemAsync("EmployeeScheduler_migrated", false);
+        }
     }
 }

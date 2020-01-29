@@ -12,6 +12,7 @@
 @inject NavigationManager Nav
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 @inject Lib.Services.IFetchService Fetch
+@inject Lib.Services.IMigrationService Migration
 @code
 {
     private const string URL = "https://localhost:44378/authentication";
@@ -25,7 +26,29 @@
             var result = await Fetch.PostAsync<FetchResult>(URL, new { password = Password });
             if (result.status == 200)
             {
-                await LocalStorage.SetItemAsync("EmployeeScheduler_token", Newtonsoft.Json.JsonConvert.DeserializeObject<string>(result.json));
+                var token = Newtonsoft.Json.JsonConvert.DeserializeObject<Lib.DTO.ClientToken>(result.json);
+                await LocalStorage.SetItemAsync("EmployeeScheduler_token", token);
+
+                // Migrate to API first time admin password is entered
+                if (!await LocalStorage.ContainKeyAsync("EmployeeScheduler_migrated") || !await LocalStorage.GetItemAsync<bool>("EmployeeScheduler_migrated"))
+                {
+                    try
+                    {
+                        if (token.Role == Lib.DAL.Roles.Admin)
+                        {
+                            await Migration.MigrateAsync();
+                            await Toast.ShowAsync("Your data has automatically been migrated to the cloud!", Lib.Services.ToastType.Success);
+                        }
+                        await LocalStorage.SetItemAsync("EmployeeScheduler_migrated", true);
+                    }
+                    catch (Exception ex)
+                    {
+                        await Logger.LogExceptionAsync(ex);
+                        await Toast.ShowAsync("There was a problem migrating your data to the cloud. You can try again from Settings.", Lib.Services.ToastType.Error);
+                        await LocalStorage.SetItemAsync("EmployeeScheduler_migrated", false);
+                    }
+                }
+
                 Nav.NavigateTo(Nav.BaseUri);
             }
             else if (result.status == 401)
