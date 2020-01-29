@@ -62,6 +62,7 @@ namespace EmployeeScheduler.Lib.BLL
             using var context = new SchedulerContext();
             var existingToken = await context.Tokens.AsAsyncEnumerable().SingleOrDefaultAsync(t => t.TokenValue == token && t.IpAddress == ipAddress);
             if (existingToken == null) return false;
+            if (existingToken.TokenValue != token) return false;
             if (existingToken.IpAddress != ipAddress) return false;
 
             foreach (var role in roles)
