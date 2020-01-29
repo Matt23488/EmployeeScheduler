@@ -36,18 +36,17 @@ namespace EmployeeScheduler.Lib.BLL
 
             var tokenValue = Jwt.JsonWebToken.Encode(data, password, Jwt.JwtHashAlgorithm.HS256);
 
-            // TODO: Figure out how Sqlite works
-            //var token = new Token
-            //{
-            //    IpAddress = ipAddress,
-            //    Role = (int)type,
-            //    TokenValue = tokenValue,
-            //    Expires = expiration
-            //};
+            var token = new Token
+            {
+                IpAddress = ipAddress,
+                Role = (int)type,
+                TokenValue = tokenValue,
+                Expires = expiration
+            };
 
-            //using var context = new SchedulerContext();
-            //context.Tokens.Add(token);
-            //await context.SaveChangesAsync();
+            using var context = new SchedulerContext();
+            context.Tokens.Add(token);
+            await context.SaveChangesAsync();
 
             return tokenValue;
         }
@@ -60,17 +59,17 @@ namespace EmployeeScheduler.Lib.BLL
 
         public async Task<bool> ValidateTokenAsync(string ipAddress, string token, params Roles[] roles)
         {
-            // TODO: Figure out how Sqlite works
-            //using var context = new SchedulerContext();
-            //var existingToken = context.Tokens.SingleOrDefault(t => t.TokenValue == token && t.IpAddress == ipAddress);
-            //if (existingToken == null) return false;
+            using var context = new SchedulerContext();
+            var existingToken = await context.Tokens.AsAsyncEnumerable().SingleOrDefaultAsync(t => t.TokenValue == token && t.IpAddress == ipAddress);
+            if (existingToken == null) return false;
+            if (existingToken.IpAddress != ipAddress) return false;
 
             foreach (var role in roles)
             {
                 var password = GetPasswordForRole(role);
                 try
                 {
-                    if (ValidateToken(token, password, role)) return true;
+                    if (ValidateToken(token, existingToken, password, role)) return true;
                 }
                 catch { }
             }
@@ -88,7 +87,7 @@ namespace EmployeeScheduler.Lib.BLL
             }
         }
 
-        private bool ValidateToken(string token, string password, Roles role)
+        private bool ValidateToken(string token, Token existingToken, string password, Roles role)
         {
             var data = default(Dictionary<string, object>);
             try
@@ -105,8 +104,10 @@ namespace EmployeeScheduler.Lib.BLL
 
             var type = Convert.ToInt32(data["type"]);
             if (type != (int)role) return false;
+            if (type != existingToken.Role) return false;
 
             var expires = Convert.ToInt64(data["expires"]);
+            if (expires != existingToken.Expires.Ticks) return false;
             if (expires < DateTime.Now.Ticks) return false;
 
             return true;
