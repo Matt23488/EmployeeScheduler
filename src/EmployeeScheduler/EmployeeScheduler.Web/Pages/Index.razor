@@ -65,6 +65,7 @@ Welcome to your new app.
         }
         catch (Exception ex)
         {
+            await Toast.ShowAsync("Something went wrong. Check the console with F12 and alert Matt.", Lib.Services.ToastType.Error);
             await Logger.LogExceptionAsync(ex);
         }
     }
