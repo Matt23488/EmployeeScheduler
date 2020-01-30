@@ -17,7 +17,20 @@ namespace EmployeeScheduler.Web
             services.AddScoped<IMigrationService, LocalToApiMigrationService>();
             services.AddScoped<IAlertService, SessionStorageAlertService>();
             services.AddScoped<IToastService, ToastService>();
-            services.AddScoped<IFetchService, JavaScriptFetchService>();
+            services.AddScoped<IFetchService, JavaScriptFetchService>(factory =>
+            {
+                var localStorage = factory.GetService<ILocalStorageService>();
+                var js = factory.GetService<Microsoft.JSInterop.IJSRuntime>();
+                var logger = factory.GetService<ILogger>();
+
+                var service = new JavaScriptFetchService(js, logger);
+                service.AddAdditionalHeader("authentication-token", async () =>
+                {
+                    return (await localStorage.GetItemAsync<Lib.DTO.ClientToken>("EmployeeScheduler_token"))?.Token;
+                });
+
+                return service;
+            });
             services.AddScoped<ILogger, JavaScriptConsoleLogger>();
         }
 

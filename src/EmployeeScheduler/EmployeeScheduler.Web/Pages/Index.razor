@@ -46,24 +46,27 @@ Welcome to your new app.
     {
         try
         {
-            await Fetch.GetAsync<WeatherForecast[]>(URL, null, new Dictionary<string, string>
-            {
-                { "authentication-token", (await LocalStorage.GetItemAsync<Lib.DTO.ClientToken>("EmployeeScheduler_token"))?.Token }
-            }, data =>
-            {
-                ResponseValue = data;
-                return Task.CompletedTask;
-            }, async () =>
+            var result = await Fetch.GetAsync<WeatherForecast[]>(URL);
+            if (result.Status == 401)
             {
                 await Toast.ShowAsync("You are not authorized. Please input your password.", Lib.Services.ToastType.Warning);
                 Nav.NavigateTo($"{Nav.BaseUri}auth");
-            });
+                return;
+            }
+
+            if (result.Status != 200)
+            {
+                await Toast.ShowAsync("Something went wrong. Check the console with F12 and alert Matt.", Lib.Services.ToastType.Error);
+                await Logger.LogAsync("Data:", result.UnParsedData);
+                return;
+            }
+
+            ResponseValue = result.Data;
         }
         catch (Exception ex)
         {
             await Logger.LogExceptionAsync(ex);
         }
-
     }
 
     private class FetchResult

@@ -10,5 +10,6 @@ namespace EmployeeScheduler.Lib.DTO
     {
         public int Status { get; set; }
         public T Data { get; set; }
+        public object UnParsedData { get; set; }
     }
 }
