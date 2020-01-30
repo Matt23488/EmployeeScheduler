@@ -6,7 +6,7 @@
         const r = await fetch(url, obj);
         return {
             status: r.status,
-            json: await r.text()
+            data: await r.json()
         };
     };
 

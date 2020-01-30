@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EmployeeScheduler.Lib.DTO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,5 +15,9 @@ namespace EmployeeScheduler.Lib.Services
         Task<T> PostAsync<T>(string url);
         Task<T> PostAsync<T>(string url, object body);
         Task<T> PostAsync<T>(string url, object body, Dictionary<string, string> additionalHeaders);
+
+        Task GetAsync<T>(string url, object body, Dictionary<string, string> additionalHeaders, Func<T, Task> onSuccessAsync, Func<Task> onFailureAsync);
+        Task PostAsync<T>(string url, object body, Func<T, Task> onSuccessAsync, Func<Task> onFailureAsync);
+        Task PostAsync<T>(string url, object body, Dictionary<string, string> additionalHeaders, Func<T, Task> onSuccessAsync, Func<Task> onFailureAsync);
     }
 }

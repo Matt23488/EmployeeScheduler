@@ -23,39 +23,37 @@
     {
         try
         {
-            var result = await Fetch.PostAsync<FetchResult>(URL, new { password = Password });
-            if (result.status == 200)
-            {
-                var token = Newtonsoft.Json.JsonConvert.DeserializeObject<Lib.DTO.ClientToken>(result.json);
-                await LocalStorage.SetItemAsync("EmployeeScheduler_token", token);
-
-                // Migrate to API first time admin password is entered
-                if (!await LocalStorage.ContainKeyAsync("EmployeeScheduler_migrated") || !await LocalStorage.GetItemAsync<bool>("EmployeeScheduler_migrated"))
+            await Fetch.PostAsync<Lib.DTO.ClientToken>(URL, new { password = Password },
+                async token =>
                 {
-                    try
-                    {
-                        if (token.Role == Lib.DAL.Roles.Admin)
-                        {
-                            await Migration.MigrateAsync();
-                            await Toast.ShowAsync("Your data has automatically been migrated to the cloud!", Lib.Services.ToastType.Success);
-                        }
-                        await LocalStorage.SetItemAsync("EmployeeScheduler_migrated", true);
-                    }
-                    catch (Exception ex)
-                    {
-                        await Logger.LogExceptionAsync(ex);
-                        await Toast.ShowAsync("There was a problem migrating your data to the cloud. You can try again from Settings.", Lib.Services.ToastType.Error);
-                        await LocalStorage.SetItemAsync("EmployeeScheduler_migrated", false);
-                    }
-                }
+                    await LocalStorage.SetItemAsync("EmployeeScheduler_token", token);
 
-                Nav.NavigateTo(Nav.BaseUri);
-            }
-            else if (result.status == 401)
-            {
-                await Toast.ShowAsync("Incorrect password", Lib.Services.ToastType.Error);
-                Password = "";
-            }
+                    // Migrate to API first time admin password is entered
+                    if (!await LocalStorage.ContainKeyAsync("EmployeeScheduler_migrated") || !await LocalStorage.GetItemAsync<bool>("EmployeeScheduler_migrated"))
+                    {
+                        try
+                        {
+                            if (token.Role == Lib.DAL.Roles.Admin)
+                            {
+                                await Migration.MigrateAsync();
+                                await Toast.ShowAsync("Your data has automatically been migrated to the cloud!", Lib.Services.ToastType.Success);
+                            }
+                            await LocalStorage.SetItemAsync("EmployeeScheduler_migrated", true);
+                        }
+                        catch (Exception ex)
+                        {
+                            await Logger.LogExceptionAsync(ex);
+                            await Toast.ShowAsync("There was a problem migrating your data to the cloud. You can try again from Settings.", Lib.Services.ToastType.Error);
+                            await LocalStorage.SetItemAsync("EmployeeScheduler_migrated", false);
+                        }
+                    }
+                    Nav.NavigateTo(Nav.BaseUri);
+                },
+                async () =>
+                {
+                    await Toast.ShowAsync("Incorrect password", Lib.Services.ToastType.Error);
+                    Password = "";
+                });
         }
         catch (Exception ex)
         {
