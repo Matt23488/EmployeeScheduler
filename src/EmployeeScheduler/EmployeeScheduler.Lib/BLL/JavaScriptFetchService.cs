@@ -73,7 +73,7 @@ namespace EmployeeScheduler.Lib.BLL
 
         private async Task<FetchResult<T>> Fetch<T>(FetchData data, string url, Dictionary<string, string> additionalHeaders)
         {
-            await foreach (var kvp in _additionalHeaders.ToAsyncEnumerable())
+            foreach (var kvp in _additionalHeaders)
             {
                 data.Headers[kvp.Key] = await kvp.Value();
             }
