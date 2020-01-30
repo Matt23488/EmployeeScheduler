@@ -56,7 +56,7 @@ namespace EmployeeScheduler.Lib.BLL
             {
                 Method = "GET"
             };
-            return await Fetch<T>(data, newUrlBuilder.ToString(), additionalHeaders);
+            return await FetchAsync<T>(data, newUrlBuilder.ToString(), additionalHeaders);
         }
 
         public async Task<FetchResult<T>> PostAsync<T>(string url) => await PostAsync<T>(url, null, null);
@@ -68,10 +68,10 @@ namespace EmployeeScheduler.Lib.BLL
                 Method = "POST",
                 Body = JsonConvert.SerializeObject(body)
             };
-            return await Fetch<T>(data, url, additionalHeaders);
+            return await FetchAsync<T>(data, url, additionalHeaders);
         }
 
-        private async Task<FetchResult<T>> Fetch<T>(FetchData data, string url, Dictionary<string, string> additionalHeaders)
+        private async Task<FetchResult<T>> FetchAsync<T>(FetchData data, string url, Dictionary<string, string> additionalHeaders)
         {
             foreach (var kvp in _additionalHeaders)
             {
