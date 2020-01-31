@@ -1,4 +1,5 @@
-﻿using EmployeeScheduler.Lib.Services;
+﻿using Blazored.LocalStorage;
+using EmployeeScheduler.Lib.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,12 +10,12 @@ namespace EmployeeScheduler.Lib.BLL
 {
     public class LocalToApiMigrationService : IMigrationService
     {
-        private readonly ISchedulingService _schedulingService;
+        private readonly ILocalStorageService _localStorage;
         private readonly IFetchService _fetchService;
 
-        public LocalToApiMigrationService(ISchedulingService schedulingService, IFetchService fetchService)
+        public LocalToApiMigrationService(ILocalStorageService localStorage, IFetchService fetchService)
         {
-            _schedulingService = schedulingService;
+            _localStorage = localStorage;
             _fetchService = fetchService;
         }
 

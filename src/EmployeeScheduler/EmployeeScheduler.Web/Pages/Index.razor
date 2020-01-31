@@ -47,6 +47,7 @@ Welcome to your new app.
         try
         {
             var result = await Fetch.GetAsync<WeatherForecast[]>(URL);
+            await Logger.LogAsync("result:", result);
             if (result.Status == 401)
             {
                 await Toast.ShowAsync("You are not authorized. Please input your password.", Lib.Services.ToastType.Warning);

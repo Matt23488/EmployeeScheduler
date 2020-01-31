@@ -15,5 +15,8 @@ namespace EmployeeScheduler.Lib.Services
         Task<FetchResult<T>> PostAsync<T>(string url);
         Task<FetchResult<T>> PostAsync<T>(string url, object body);
         Task<FetchResult<T>> PostAsync<T>(string url, object body, Dictionary<string, string> additionalHeaders);
+        Task<FetchResult<T>> PutAsync<T>(string url);
+        Task<FetchResult<T>> PutAsync<T>(string url, object body);
+        Task<FetchResult<T>> PutAsync<T>(string url, object body, Dictionary<string, string> additionalHeaders);
     }
 }

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace EmployeeScheduler.Lib.Migrations
 {
-    public partial class initial : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -28,7 +28,6 @@ namespace EmployeeScheduler.Lib.Migrations
                 columns: table => new
                 {
                     ScheduleWeekID = table.Column<long>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true)
                 },
                 constraints: table =>
                 {

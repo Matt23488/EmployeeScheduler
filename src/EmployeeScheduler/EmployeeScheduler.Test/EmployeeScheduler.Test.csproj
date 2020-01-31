@@ -7,16 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="test.db" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="test.db">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -30,6 +20,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EmployeeScheduler.Lib\EmployeeScheduler.Lib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="test.db">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

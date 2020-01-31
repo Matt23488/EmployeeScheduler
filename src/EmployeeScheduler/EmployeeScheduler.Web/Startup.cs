@@ -2,6 +2,7 @@ using Blazored.LocalStorage;
 using Blazored.SessionStorage;
 using EmployeeScheduler.Lib.BLL;
 using EmployeeScheduler.Lib.Services;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,11 +10,18 @@ namespace EmployeeScheduler.Web
 {
     public class Startup
     {
+#if DEBUG
+        private const string API_URL = "https://localhost:44378/";
+#else
+        private const string API_URL = "";
+#error Need to update the URL!
+#endif
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddBlazoredLocalStorage();
             services.AddBlazoredSessionStorage();
-            services.AddScoped<ISchedulingService, LocalStorageSchedulingService>();
+            //services.AddScoped<ISchedulingService, LocalStorageSchedulingService>();
             services.AddScoped<IMigrationService, LocalToApiMigrationService>();
             services.AddScoped<IAlertService, SessionStorageAlertService>();
             services.AddScoped<IToastService, ToastService>();
@@ -29,6 +37,16 @@ namespace EmployeeScheduler.Web
                     return (await localStorage.GetItemAsync<Lib.DTO.ClientToken>("EmployeeScheduler_token"))?.Token;
                 });
 
+                return service;
+            });
+            services.AddScoped<ISchedulingService, ApiSchedulingService>(factory =>
+            {
+                var nav = factory.GetService<NavigationManager>();
+                var logger = factory.GetService<ILogger>();
+                var fetch = factory.GetService<IFetchService>();
+                var toast = factory.GetService<IToastService>();
+
+                var service = new ApiSchedulingService(API_URL, nav, logger, fetch, toast);
                 return service;
             });
             services.AddScoped<ILogger, JavaScriptConsoleLogger>();

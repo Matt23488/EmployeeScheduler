@@ -71,6 +71,18 @@ namespace EmployeeScheduler.Lib.BLL
             return await FetchAsync<T>(data, url, additionalHeaders);
         }
 
+        public async Task<FetchResult<T>> PutAsync<T>(string url) => await PutAsync<T>(url, null, null);
+        public async Task<FetchResult<T>> PutAsync<T>(string url, object body) => await PutAsync<T>(url, body, null);
+        public async Task<FetchResult<T>> PutAsync<T>(string url, object body, Dictionary<string, string> additionalHeaders)
+        {
+            var data = new FetchData
+            {
+                Method = "PUT",
+                Body = JsonConvert.SerializeObject(body)
+            };
+            return await FetchAsync<T>(data, url, additionalHeaders);
+        }
+
         private async Task<FetchResult<T>> FetchAsync<T>(FetchData data, string url, Dictionary<string, string> additionalHeaders)
         {
             foreach (var kvp in _additionalHeaders)
@@ -81,7 +93,12 @@ namespace EmployeeScheduler.Lib.BLL
             additionalHeaders?.ToList()?.ForEach(kvp => data.Headers[kvp.Key] = kvp.Value);
 
             var incompleteResult = await _js.InvokeAsync<IncompleteFetchResult>("blazorFetchService.fetch", url, data);
-            var requestedData = incompleteResult.Status == 200 ? JsonConvert.DeserializeObject<T>(incompleteResult.Json.ToString()) : default;
+            var requestedData = default(T);
+            try
+            {
+                requestedData = JsonConvert.DeserializeObject<T>(incompleteResult.Json.ToString());
+            }
+            catch { }
             return new FetchResult<T>
             {
                 Status = incompleteResult.Status,

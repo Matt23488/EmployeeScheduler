@@ -19,17 +19,14 @@ namespace EmployeeScheduler.Api.Controllers
         };
 
         private readonly ILogger<WeatherForecastController> _logger;
-        private readonly IAuthService _passwordService;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger, IAuthService passwordService)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger)
         {
             _logger = logger;
-            _passwordService = passwordService;
         }
 
         [HttpGet]
         [RequiresToken(Lib.DAL.Roles.User, Lib.DAL.Roles.Admin)]
-        //public IEnumerable<WeatherForecast> Get()
         public IActionResult Get()
         {
             var rng = new Random();
@@ -41,19 +38,5 @@ namespace EmployeeScheduler.Api.Controllers
             })
             .ToArray());
         }
-
-        //[HttpGet]
-        //[RequiresToken(Lib.DAL.Roles.User, Lib.DAL.Roles.Admin)]
-        //public async Task<IActionResult> Get()
-        //{
-        //    var rng = new Random();
-        //    return Ok(Enumerable.Range(1, 5).Select(index => new WeatherForecast
-        //    {
-        //        Date = DateTime.Now.AddDays(index),
-        //        TemperatureC = rng.Next(-20, 55),
-        //        Summary = Summaries[rng.Next(Summaries.Length)]
-        //    })
-        //    .ToArray());
-        //}
     }
 }

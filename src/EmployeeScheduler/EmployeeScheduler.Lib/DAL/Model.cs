@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,6 +20,12 @@ namespace EmployeeScheduler.Lib.DAL
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
             => options.UseSqlite("Data Source=test.db");
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+            => modelBuilder.Entity<ScheduleWeek>()
+                .Property(e => e.ScheduleWeekID)
+                .ValueGeneratedNever()
+                .HasAnnotation("DatabaseGenerated", DatabaseGeneratedOption.None);
     }
 
     public class Employee

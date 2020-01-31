@@ -43,6 +43,7 @@ namespace EmployeeScheduler.Api
                 });
             });
 
+            services.AddScoped<ISchedulingService, SqliteSchedulingService>();
             services.AddScoped<IClaimsService, ClaimsService>();
             services.AddScoped<IAuthService, SqliteAuthService>(factory =>
             {
