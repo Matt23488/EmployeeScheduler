@@ -17,8 +17,6 @@ namespace EmployeeScheduler.Lib.BLL.Api
             context.Employees.Add(employee);
             await context.SaveChangesAsync();
 
-            employee.TypicalSchedule.Employee = null;
-
             return employee;
         }
 
@@ -27,8 +25,6 @@ namespace EmployeeScheduler.Lib.BLL.Api
             using var context = new DAL.SchedulerContext();
             var entity = await context.Employees.Include(e => e.TypicalSchedule).ThenInclude(e => e.Days).AsAsyncEnumerable().SingleOrDefaultAsync(e => e.EmployeeID == employeeID);
             if (entity == null) return null;
-
-            entity.TypicalSchedule.Employee = null;
 
             return entity;
         }
@@ -53,8 +49,6 @@ namespace EmployeeScheduler.Lib.BLL.Api
             }
 
             await context.SaveChangesAsync();
-
-            entity.TypicalSchedule.Employee = null;
 
             return entity;
         }

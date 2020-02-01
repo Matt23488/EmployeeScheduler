@@ -28,14 +28,6 @@ namespace EmployeeScheduler.Lib.DAL
                   .Property(e => e.ScheduleWeekID)
                   .ValueGeneratedNever()
                   .HasAnnotation("DatabaseGenerated", DatabaseGeneratedOption.None);
-
-            modelBuilder.Entity<Employee>()
-                .HasOne(e => e.TypicalSchedule)
-                .WithOne(e => e.Employee)
-                .HasForeignKey<TypicalWeek>(e => e.EmployeeID);
-            //modelBuilder.Entity<Employee>()
-            //    .Property(e => e.TypicalScheduleIDs)
-            //    .HasComputedColumnSql("SELECT s.EmployeeScheduleID FROM EmployeeSchedules s WHERE s.EmployeeID = [EmployeeID] AND s.SchedulaDayID IS NULL");
         }
     }
 
@@ -47,8 +39,6 @@ namespace EmployeeScheduler.Lib.DAL
         public string EmailAddress { get; set; }
         public bool Active { get; set; }
 
-        //public List<int> TypicalScheduleIDs { get; set; } = new List<int>();
-        //public List<EmployeeSchedule> TypicalSchedule { get; set; } = new List<EmployeeSchedule>();
         public int TypicalWeekID { get; set; }
         public TypicalWeek TypicalSchedule { get; set; }
     }
@@ -64,8 +54,7 @@ namespace EmployeeScheduler.Lib.DAL
         public int EmployeeID { get; set; }
         public Employee Employee { get; set; }
 
-        public int? ScheduleDayID { get; set; }
-        public ScheduleDay ScheduleDay { get; set; }
+        public int ScheduleDayID { get; set; }
     }
 
     public class TypicalDay
@@ -77,14 +66,12 @@ namespace EmployeeScheduler.Lib.DAL
         public int LunchType { get; set; }
 
         public int TypicalWeekID { get; set; }
-        //public TypicalWeek TypicalWeek { get; set; }
     }
 
     public class TypicalWeek
     {
         public int TypicalWeekID { get; set; }
         public int EmployeeID { get; set; }
-        public Employee Employee { get; set; }
 
         public List<TypicalDay> Days { get; set; } = new List<TypicalDay>();
     }
@@ -96,7 +83,6 @@ namespace EmployeeScheduler.Lib.DAL
         public List<EmployeeSchedule> EmployeeSchedules { get; set; } = new List<EmployeeSchedule>();
 
         public long ScheduleWeekID { get; set; }
-        public ScheduleWeek ScheduleWeek { get; set; }
     }
 
     public class ScheduleWeek
