@@ -81,7 +81,7 @@
         EmployeeWeeks = Employees.Select(e => new Schedule.EmployeeWeek
         {
             Employee = e,
-            Days = Schedule.Days.Select((d, i) => d.EmployeeSchedules.SingleOrDefault(s => s.EmployeeID == e.EmployeeID) ?? e.TypicalSchedule.Days[i]).ToList()
+            Days = Schedule.Days.Select((d, i) => d.EmployeeSchedules.SingleOrDefault(s => s.EmployeeID == e.EmployeeID) ?? e.TypicalSchedule.Days[i].ToEmployeeSchedule(e)).ToList()
         }).ToList();
     }
 

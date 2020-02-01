@@ -11,7 +11,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace EmployeeScheduler.Lib.BLL
+namespace EmployeeScheduler.Lib.BLL.Web
 {
     public class JavaScriptFetchService : IFetchService
     {

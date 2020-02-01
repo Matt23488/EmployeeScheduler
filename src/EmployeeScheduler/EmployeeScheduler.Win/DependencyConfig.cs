@@ -11,12 +11,12 @@ namespace EmployeeScheduler.Win
     {
         public static void RegisterDependencies(DependencyResolver dependencyResolver)
         {
-            dependencyResolver.RegisterDependency<Lib.Services.ISchedulingService, Lib.BLL.JsonFileSchedulingService>(service =>
+            dependencyResolver.RegisterDependency<Lib.Services.ISchedulingService, Lib.BLL.Win.JsonFileSchedulingService>(service =>
             {
                 service.JsonFilePath = @"data\employees.json";
             });
 
-            dependencyResolver.RegisterDependency<Lib.Services.IJsonFileService, Lib.BLL.JsonFileService>();
+            dependencyResolver.RegisterDependency<Lib.Services.IJsonFileService, Lib.BLL.Win.JsonFileService>();
             dependencyResolver.RegisterDependency<Views.IEmployeeView, UserControls.Employee>();
             dependencyResolver.RegisterDependency<Views.IEmployeeListView, UserControls.EmployeeList>();
         }

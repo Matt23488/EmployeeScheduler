@@ -32,8 +32,8 @@ namespace EmployeeScheduler.Lib.Services
         Task<int> GetWeekStartAsync();
 
         Task SetTimeZoneOffsetAsync(int offset);
-        Task<int> GetTimeZoneOffsetAsync();
+        Task<double> GetTimeZoneOffsetAsync();
 
-        Task<bool> HasData();
+        Task<bool> HasLocalData();
     }
 }

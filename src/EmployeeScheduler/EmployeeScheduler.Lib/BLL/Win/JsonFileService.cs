@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EmployeeScheduler.Lib.BLL
+namespace EmployeeScheduler.Lib.BLL.Win
 {
     public class JsonFileService : IJsonFileService
     {

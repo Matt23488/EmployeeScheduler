@@ -1,4 +1,5 @@
-﻿using EmployeeScheduler.Lib.DAL;
+﻿using Blazored.LocalStorage;
+using EmployeeScheduler.Lib.DAL;
 using EmployeeScheduler.Lib.Services;
 using Microsoft.AspNetCore.Components;
 using System;
@@ -7,23 +8,30 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EmployeeScheduler.Lib.BLL
+namespace EmployeeScheduler.Lib.BLL.Web
 {
     public class ApiSchedulingService : ISchedulingService
     {
+        private const string KEY_EMPLOYEES = "EmployeeScheduler_Employees";
+        private const string KEY_SCHEDULES = "EmployeeScheduler_Schedules";
+        private const string KEY_WEEK_START = "EmployeeScheduler_WeekStart";
+        private const string KEY_TIMEZONE_OFFSET = "EmployeeScheduler_TimeZoneOffset";
+
         private readonly string _apiUrl;
         private readonly NavigationManager _nav;
         private readonly ILogger _logger;
         private readonly IFetchService _fetch;
         private readonly IToastService _toast;
+        private readonly ILocalStorageService _localStorage;
 
-        public ApiSchedulingService(string apiUrl, NavigationManager nav, ILogger logger, IFetchService fetch, IToastService toast)
+        public ApiSchedulingService(string apiUrl, NavigationManager nav, ILogger logger, IFetchService fetch, IToastService toast, ILocalStorageService localStorage)
         {
             _apiUrl = apiUrl;
             _nav = nav;
             _logger = logger;
             _fetch = fetch;
             _toast = toast;
+            _localStorage = localStorage;
         }
 
         private async Task OnUnauthorizedAsync()
@@ -128,7 +136,8 @@ namespace EmployeeScheduler.Lib.BLL
 
         public async Task<long> GetScheduleIDAsync(DateTime dateWithinWeek)
         {
-            var fixedDate = dateWithinWeek.ToUniversalTime().AddHours(await GetTimeZoneOffsetAsync());
+            var settingsResult = await _fetch.GetAsync<AdminSettings>($"{_apiUrl}settings");
+            //var fixedDate = dateWithinWeek.ToUniversalTime().AddHours(await GetTimeZoneOffsetAsync());
             //var weekStartDay = await _localStorage.GetItemAsync<int>(KEY_WEEK_START);
 
             // TODO: Create private overload of GetTimeZoneOffsetAsync() that takes in the settings to optimize
@@ -137,9 +146,9 @@ namespace EmployeeScheduler.Lib.BLL
             // And build implementations of ISettingsService for Web and Api.
             // And hide link to Settings.razor if user isn't admin.
             // More stuff of course. Just trying to jot down a quick list of futures.
-            var settings = await _fetch.GetAsync<AdminSettings>($"{_apiUrl}settings");
 
-            var dayOffset = settings.Data.WeekStartOffset - (int)fixedDate.Date.DayOfWeek;
+            var fixedDate = dateWithinWeek.ToUniversalTime().AddHours(settingsResult.Data.TimeZoneOffset);
+            var dayOffset = settingsResult.Data.WeekStartOffset - (int)fixedDate.Date.DayOfWeek;
 
             if (dayOffset > 0) dayOffset -= 7;
 
@@ -161,19 +170,19 @@ namespace EmployeeScheduler.Lib.BLL
             throw new NotImplementedException();
         }
 
+        private static readonly string[] DAY_NAMES = new[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
         public string GetDayOfWeek(int dayIndex)
-        {
-            throw new NotImplementedException();
-        }
+            => DAY_NAMES[dayIndex % 7];
 
         public Task SetWeekStartAsync(int dayIndex)
         {
             throw new NotImplementedException();
         }
 
-        public Task<int> GetWeekStartAsync()
+        public async Task<int> GetWeekStartAsync()
         {
-            throw new NotImplementedException();
+            var settingsResult = await _fetch.GetAsync<AdminSettings>($"{_apiUrl}settings");
+            return settingsResult.Data.WeekStartOffset;
         }
 
         public Task SetTimeZoneOffsetAsync(int offset)
@@ -181,14 +190,20 @@ namespace EmployeeScheduler.Lib.BLL
             throw new NotImplementedException();
         }
 
-        public Task<int> GetTimeZoneOffsetAsync()
-        {
-            throw new NotImplementedException();
+        public async Task<double> GetTimeZoneOffsetAsync()
+        { 
+            var settingsResult = await _fetch.GetAsync<AdminSettings>($"{_apiUrl}settings");
+            return settingsResult.Data.TimeZoneOffset;
         }
 
-        public Task<bool> HasData()
+        public async Task<bool> HasLocalData()
         {
-            throw new NotImplementedException();
+            var employees = await _localStorage.GetItemAsync<Employee[]>(KEY_EMPLOYEES) ?? new Employee[0];
+            var schedules = await _localStorage.GetItemAsync<ScheduleWeek[]>(KEY_SCHEDULES) ?? new ScheduleWeek[0];
+            var hasTimeZoneOffset = await _localStorage.ContainKeyAsync(KEY_TIMEZONE_OFFSET);
+            var hasWeekStart = await _localStorage.ContainKeyAsync(KEY_WEEK_START);
+
+            return employees.Length > 0 || schedules.Length > 0 || hasTimeZoneOffset || hasWeekStart;
         }
     }
 }

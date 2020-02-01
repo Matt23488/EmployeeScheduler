@@ -68,13 +68,25 @@ namespace EmployeeScheduler.Lib.DAL
         public ScheduleDay ScheduleDay { get; set; }
     }
 
+    public class TypicalDay
+    {
+        public int TypicalDayID { get; set; }
+        public bool IsOff { get; set; }
+        public DateTime From { get; set; }
+        public DateTime To { get; set; }
+        public int LunchType { get; set; }
+
+        public int TypicalWeekID { get; set; }
+        //public TypicalWeek TypicalWeek { get; set; }
+    }
+
     public class TypicalWeek
     {
         public int TypicalWeekID { get; set; }
         public int EmployeeID { get; set; }
         public Employee Employee { get; set; }
 
-        public List<EmployeeSchedule> Days { get; set; } = new List<EmployeeSchedule>();
+        public List<TypicalDay> Days { get; set; } = new List<TypicalDay>();
     }
 
     public class ScheduleDay
@@ -99,6 +111,9 @@ namespace EmployeeScheduler.Lib.DAL
 
         [System.ComponentModel.DataAnnotations.Range(0, 6)]
         public int WeekStartOffset { get; set; }
+
+        [System.ComponentModel.DataAnnotations.Range(-12.0, 14.0)]
+        public double TimeZoneOffset { get; set; }
     }
 
     public class Token

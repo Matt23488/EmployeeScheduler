@@ -135,7 +135,7 @@ else
         EmployeeWeeks = Employees.Select(e => new EmployeeWeek
         {
             Employee = e,
-            Days = Schedule_.Days.Select((d, i) => d.EmployeeSchedules?.SingleOrDefault(s => s.EmployeeID == e.EmployeeID) ?? e.TypicalSchedule.Days[i]).ToList()
+            Days = Schedule_.Days.Select((d, i) => d.EmployeeSchedules?.SingleOrDefault(s => s.EmployeeID == e.EmployeeID) ?? e.TypicalSchedule.Days[i].ToEmployeeSchedule(e)).ToList()
         }).ToList();
     }
 

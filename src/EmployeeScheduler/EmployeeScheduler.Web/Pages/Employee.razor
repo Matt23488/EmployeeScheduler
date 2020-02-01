@@ -1,5 +1,6 @@
 ﻿@page "/employee"
 @page "/employee/{ID:int}"
+@using Lib.Extensions
 
 @if (Employee_ == null)
 {
@@ -44,22 +45,23 @@ else
 
     protected override async Task OnParametersSetAsync()
     {
-        if (PageMode == Mode.Insert) Employee_ = new Lib.DAL.Employee
-        {
-            TypicalSchedule = new Lib.DAL.TypicalWeek
+        if (PageMode == Mode.Insert)
+            Employee_ = new Lib.DAL.Employee
             {
-                Days = new List<Lib.DAL.EmployeeSchedule>
+                TypicalSchedule = new Lib.DAL.TypicalWeek
                 {
-                        new Lib.DAL.EmployeeSchedule(),
-                        new Lib.DAL.EmployeeSchedule(),
-                        new Lib.DAL.EmployeeSchedule(),
-                        new Lib.DAL.EmployeeSchedule(),
-                        new Lib.DAL.EmployeeSchedule(),
-                        new Lib.DAL.EmployeeSchedule(),
-                        new Lib.DAL.EmployeeSchedule()
+                    Days = new List<Lib.DAL.TypicalDay>
+                    {
+                        new Lib.DAL.TypicalDay(),
+                        new Lib.DAL.TypicalDay(),
+                        new Lib.DAL.TypicalDay(),
+                        new Lib.DAL.TypicalDay(),
+                        new Lib.DAL.TypicalDay(),
+                        new Lib.DAL.TypicalDay(),
+                        new Lib.DAL.TypicalDay()
+                    }
                 }
-            }
-        };
+            };
 
         else Employee_ = await SchedulingService.GetEmployeeAsync(ID);
 
@@ -67,7 +69,7 @@ else
         EmployeeWeek = new Schedule.EmployeeWeek
         {
             Employee = Employee_,
-            Days = Employee_.TypicalSchedule.Days
+            Days = Employee_.TypicalSchedule.Days.Select(d => d.ToEmployeeSchedule(Employee_)).ToList()
         };
     }
 

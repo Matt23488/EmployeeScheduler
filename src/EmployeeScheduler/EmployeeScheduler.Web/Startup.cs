@@ -1,6 +1,6 @@
 using Blazored.LocalStorage;
 using Blazored.SessionStorage;
-using EmployeeScheduler.Lib.BLL;
+using EmployeeScheduler.Lib.BLL.Web;
 using EmployeeScheduler.Lib.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Builder;
@@ -45,8 +45,19 @@ namespace EmployeeScheduler.Web
                 var logger = factory.GetService<ILogger>();
                 var fetch = factory.GetService<IFetchService>();
                 var toast = factory.GetService<IToastService>();
+                var localStorage = factory.GetService<ILocalStorageService>();
 
-                var service = new ApiSchedulingService(API_URL, nav, logger, fetch, toast);
+                var service = new ApiSchedulingService(API_URL, nav, logger, fetch, toast, localStorage);
+                return service;
+            });
+            services.AddScoped<ISettingsService, ApiSettingsService>(factory =>
+            {
+                var nav = factory.GetService<NavigationManager>();
+                var logger = factory.GetService<ILogger>();
+                var fetch = factory.GetService<IFetchService>();
+                var toast = factory.GetService<IToastService>();
+
+                var service = new ApiSettingsService(API_URL, nav, logger, fetch, toast);
                 return service;
             });
             services.AddScoped<ILogger, JavaScriptConsoleLogger>();

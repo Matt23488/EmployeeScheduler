@@ -8,7 +8,7 @@ namespace EmployeeScheduler.Lib.Services
 {
     public interface ISettingsService
     {
-        Task<Lib.DAL.AdminSettings> GetSettings();
-        Task<Lib.DAL.AdminSettings> SaveSettings(Lib.DAL.AdminSettings settings);
+        Task<DAL.AdminSettings> GetSettingsAsync();
+        Task<DAL.AdminSettings> SaveSettingsAsync(DAL.AdminSettings settings);
     }
 }

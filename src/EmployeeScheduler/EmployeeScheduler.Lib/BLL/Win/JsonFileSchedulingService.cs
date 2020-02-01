@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EmployeeScheduler.Lib.BLL
+namespace EmployeeScheduler.Lib.BLL.Win
 {
     public class JsonFileSchedulingService : ISchedulingService
     {
@@ -179,12 +179,12 @@ namespace EmployeeScheduler.Lib.BLL
             throw new NotImplementedException();
         }
 
-        public Task<int> GetTimeZoneOffsetAsync()
+        public Task<double> GetTimeZoneOffsetAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> HasData()
+        public Task<bool> HasLocalData()
         {
             throw new NotImplementedException();
         }

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EmployeeScheduler.Lib.BLL
+namespace EmployeeScheduler.Lib.BLL.Web
 {
     public class LocalStorageSchedulingService : ISchedulingService
     {
@@ -156,10 +156,10 @@ namespace EmployeeScheduler.Lib.BLL
         public async Task SetTimeZoneOffsetAsync(int offset)
             => await _localStorage.SetItemAsync(KEY_TIMEZONE_OFFSET, offset);
 
-        public async Task<int> GetTimeZoneOffsetAsync()
+        public async Task<double> GetTimeZoneOffsetAsync()
             => await _localStorage.GetItemAsync<int>(KEY_TIMEZONE_OFFSET);
 
-        public async Task<bool> HasData()
+        public async Task<bool> HasLocalData()
         {
             var employees = await _localStorage.GetItemAsync<Employee[]>(KEY_EMPLOYEES) ?? new Employee[0];
             var schedules = await _localStorage.GetItemAsync<ScheduleWeek[]>(KEY_SCHEDULES) ?? new ScheduleWeek[0];

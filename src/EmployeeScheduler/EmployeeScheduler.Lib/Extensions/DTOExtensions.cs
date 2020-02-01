@@ -51,5 +51,16 @@ namespace EmployeeScheduler.Lib.Extensions
 
         public static DateTime Date(this DAL.ScheduleWeek schedule)
             => new DateTime(schedule.ScheduleWeekID);
+
+        public static DAL.EmployeeSchedule ToEmployeeSchedule(this DAL.TypicalDay day, DAL.Employee employee)
+            => new DAL.EmployeeSchedule
+            {
+                Employee = employee,
+                EmployeeID = employee.EmployeeID,
+                IsOff = day.IsOff,
+                From = day.From,
+                To = day.To,
+                LunchType = day.LunchType
+            };
     }
 }

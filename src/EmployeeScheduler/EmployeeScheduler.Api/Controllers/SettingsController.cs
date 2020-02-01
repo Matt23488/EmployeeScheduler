@@ -25,7 +25,7 @@ namespace EmployeeScheduler.Api.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetSettings()
         {
-            return Ok(await _settingsService.GetSettings());
+            return Ok(await _settingsService.GetSettingsAsync());
         }
 
         [HttpPost]
@@ -33,7 +33,7 @@ namespace EmployeeScheduler.Api.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> SaveSettings(Lib.DAL.AdminSettings settings)
         {
-            return Ok(await _settingsService.SaveSettings(settings));
+            return Ok(await _settingsService.SaveSettingsAsync(settings));
         }
     }
 }

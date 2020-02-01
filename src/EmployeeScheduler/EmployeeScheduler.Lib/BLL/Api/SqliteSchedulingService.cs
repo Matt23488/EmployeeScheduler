@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EmployeeScheduler.Lib.BLL
+namespace EmployeeScheduler.Lib.BLL.Api
 {
     public class SqliteSchedulingService : ISchedulingService
     {
@@ -19,6 +19,9 @@ namespace EmployeeScheduler.Lib.BLL
             //    LastName = employee.LastName,
             //    EmailAddress = employee.EmailAddress
             //};
+
+            //employee.TypicalSchedule.Days.ForEach(d => d.Employee = employee);
+            //employee.TypicalSchedule.Days.ForEach(d => d. = employee);
 
             using var context = new DAL.SchedulerContext();
             //context.Employees.Add(entity);
@@ -130,12 +133,12 @@ namespace EmployeeScheduler.Lib.BLL
             throw new NotImplementedException();
         }
 
-        public Task<int> GetTimeZoneOffsetAsync()
+        public Task<double> GetTimeZoneOffsetAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> HasData()
+        public Task<bool> HasLocalData()
         {
             throw new NotImplementedException();
         }

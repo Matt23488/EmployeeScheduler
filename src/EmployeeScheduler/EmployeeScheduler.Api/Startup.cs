@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EmployeeScheduler.Lib.BLL;
+using EmployeeScheduler.Lib.BLL.Api;
 using EmployeeScheduler.Lib.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -43,6 +43,7 @@ namespace EmployeeScheduler.Api
                 });
             });
 
+            services.AddScoped<ISettingsService, SqliteSettingsService>();
             services.AddScoped<ISchedulingService, SqliteSchedulingService>();
             services.AddScoped<IClaimsService, ClaimsService>();
             services.AddScoped<IAuthService, SqliteAuthService>(factory =>
