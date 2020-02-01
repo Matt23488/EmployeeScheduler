@@ -3,3 +3,4 @@
 /src/**/obj/
 /**/secrets.json
 /**/test.db
+/src/EmployeeScheduler/EmployeeScheduler.Lib/Migrations/*
