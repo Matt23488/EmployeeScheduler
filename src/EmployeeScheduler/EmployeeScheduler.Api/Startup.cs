@@ -40,6 +40,7 @@ namespace EmployeeScheduler.Api
 
                     builder.WithHeaders("Content-Type");
                     builder.WithHeaders("authentication-token");
+                    builder.AllowAnyMethod();
                 });
             });
 

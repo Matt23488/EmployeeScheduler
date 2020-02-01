@@ -62,5 +62,13 @@ namespace EmployeeScheduler.Lib.Extensions
                 To = day.To,
                 LunchType = day.LunchType
             };
+
+        public static void PopulateFromEmployeeSchedule(this DAL.TypicalDay day, DAL.EmployeeSchedule schedule)
+        {
+            day.From = schedule.From;
+            day.To = schedule.To;
+            day.IsOff = schedule.IsOff;
+            day.LunchType = schedule.LunchType;
+        }
     }
 }

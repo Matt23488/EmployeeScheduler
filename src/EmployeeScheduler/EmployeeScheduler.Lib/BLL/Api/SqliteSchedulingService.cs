@@ -1,5 +1,6 @@
 ﻿using EmployeeScheduler.Lib.DAL;
 using EmployeeScheduler.Lib.Services;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,23 +13,11 @@ namespace EmployeeScheduler.Lib.BLL.Api
     {
         public async Task<Employee> AddEmployeeAsync(Employee employee)
         {
-            //var entity = new DAL.Employee
-            //{
-            //    Active = employee.Active,
-            //    FirstName = employee.FirstName,
-            //    LastName = employee.LastName,
-            //    EmailAddress = employee.EmailAddress
-            //};
-
-            //employee.TypicalSchedule.Days.ForEach(d => d.Employee = employee);
-            //employee.TypicalSchedule.Days.ForEach(d => d. = employee);
-
             using var context = new DAL.SchedulerContext();
-            //context.Employees.Add(entity);
             context.Employees.Add(employee);
             await context.SaveChangesAsync();
 
-            //employee.ID = entity.EmployeeID;
+            employee.TypicalSchedule.Employee = null;
 
             return employee;
         }
@@ -36,31 +25,36 @@ namespace EmployeeScheduler.Lib.BLL.Api
         public async Task<Employee> GetEmployeeAsync(int employeeID)
         {
             using var context = new DAL.SchedulerContext();
-            var entity = await context.Employees.AsAsyncEnumerable().SingleOrDefaultAsync(e => e.EmployeeID == employeeID);
+            var entity = await context.Employees.Include(e => e.TypicalSchedule).ThenInclude(e => e.Days).AsAsyncEnumerable().SingleOrDefaultAsync(e => e.EmployeeID == employeeID);
             if (entity == null) return null;
 
+            entity.TypicalSchedule.Employee = null;
+
             return entity;
-            //return new DTO.Employee
-            //{
-            //    ID = entity.EmployeeID,
-            //    Active = entity.Active,
-            //    FirstName = entity.FirstName,
-            //    LastName = entity.LastName,
-            //    EmailAddress = entity.EmailAddress
-            //};
         }
 
         public async Task<Employee> UpdateEmployeeAsync(Employee employee)
         {
             using var context = new DAL.SchedulerContext();
-            var entity = await context.Employees.AsAsyncEnumerable().SingleOrDefaultAsync(e => e.EmployeeID == employee.EmployeeID);
+            var entity = await context.Employees.Include(e => e.TypicalSchedule).ThenInclude(e => e.Days).AsAsyncEnumerable().SingleOrDefaultAsync(e => e.EmployeeID == employee.EmployeeID);
             if (entity == null) return null;
 
             entity.Active = employee.Active;
             entity.FirstName = employee.FirstName;
             entity.LastName = employee.LastName;
             entity.EmailAddress = employee.EmailAddress;
+
+            for (int i = 0; i < entity.TypicalSchedule.Days.Count; i++)
+            {
+                entity.TypicalSchedule.Days[i].From = employee.TypicalSchedule.Days[i].From;
+                entity.TypicalSchedule.Days[i].To = employee.TypicalSchedule.Days[i].To;
+                entity.TypicalSchedule.Days[i].IsOff = employee.TypicalSchedule.Days[i].IsOff;
+                entity.TypicalSchedule.Days[i].LunchType = employee.TypicalSchedule.Days[i].LunchType;
+            }
+
             await context.SaveChangesAsync();
+
+            entity.TypicalSchedule.Employee = null;
 
             return entity;
         }
@@ -70,18 +64,7 @@ namespace EmployeeScheduler.Lib.BLL.Api
             using var context = new DAL.SchedulerContext();
             var entities = await context.Employees.AsAsyncEnumerable().Where(e => includeDeleted || e.Active).ToListAsync();
 
-            //var employees = new List<DTO.Employee>();
-            //entities.ForEach(e => employees.Add(new DTO.Employee
-            //{
-            //    ID = e.EmployeeID,
-            //    Active = e.Active,
-            //    FirstName = e.FirstName,
-            //    LastName = e.LastName,
-            //    EmailAddress = e.EmailAddress
-            //}));
-
             return entities;
-            //return employees;
         }
 
         public Employee AddEmployee(Employee employee)

@@ -11,7 +11,6 @@ using Microsoft.Extensions.Logging;
 namespace EmployeeScheduler.Api.Controllers
 {
     [ApiController]
-    //[Route("[controller]")]
     public class EmployeeController : ControllerBase
     {
 
