@@ -1,5 +1,5 @@
 ﻿using Blazored.LocalStorage;
-using EmployeeScheduler.Lib.DTO;
+using EmployeeScheduler.Lib.DAL;
 using EmployeeScheduler.Lib.Services;
 using System;
 using System.Collections.Generic;
@@ -31,7 +31,7 @@ namespace EmployeeScheduler.Lib.BLL
         {
             var employees = (await _localStorage.GetItemAsync<Employee[]>(KEY_EMPLOYEES))?.ToList() ?? new List<Employee>();
 
-            employee.ID = employees.Count > 0 ? employees.Max(e => e.ID) + 1 : 1;
+            employee.EmployeeID = employees.Count > 0 ? employees.Max(e => e.EmployeeID) + 1 : 1;
             employee.Active = true;
             employees.Add(employee);
 
@@ -43,13 +43,13 @@ namespace EmployeeScheduler.Lib.BLL
         {
             var employees = await _localStorage.GetItemAsync<Employee[]>(KEY_EMPLOYEES) ?? new Employee[0];
 
-            return employees.SingleOrDefault(e => e.ID == employeeID);
+            return employees.SingleOrDefault(e => e.EmployeeID == employeeID);
         }
 
         public async Task<Employee> UpdateEmployeeAsync(Employee employee)
         {
             var employees = await _localStorage.GetItemAsync<Employee[]>(KEY_EMPLOYEES) ?? new Employee[0];
-            var employeesExceptEditedOne = employees.Where(e => e.ID != employee.ID).ToList();
+            var employeesExceptEditedOne = employees.Where(e => e.EmployeeID != employee.EmployeeID).ToList();
             employeesExceptEditedOne.Add(employee);
 
             await _localStorage.SetItemAsync(KEY_EMPLOYEES, employeesExceptEditedOne.ToArray());
@@ -59,7 +59,7 @@ namespace EmployeeScheduler.Lib.BLL
         public async Task<Employee> DeleteEmployeeAsync(int employeeID)
         {
             var employees = await _localStorage.GetItemAsync<Employee[]>(KEY_EMPLOYEES) ?? new Employee[0];
-            var employee = employees.Single(e => e.ID == employeeID);
+            var employee = employees.Single(e => e.EmployeeID == employeeID);
             employee.Active = false;
 
             await _localStorage.SetItemAsync(KEY_EMPLOYEES, employees);
@@ -120,9 +120,9 @@ namespace EmployeeScheduler.Lib.BLL
 
             var schedules = await _localStorage.GetItemAsync<ScheduleWeek[]>(KEY_SCHEDULES) ?? new ScheduleWeek[0];
 
-            return schedules.SingleOrDefault(s => s.ID == scheduleID) ?? new ScheduleWeek
+            return schedules.SingleOrDefault(s => s.ScheduleWeekID == scheduleID) ?? new ScheduleWeek
             {
-                ID = scheduleID
+                ScheduleWeekID = scheduleID
             };
         }
 
@@ -131,14 +131,14 @@ namespace EmployeeScheduler.Lib.BLL
             if (IsTooOld(schedule)) return schedule;
 
             var schedules = await _localStorage.GetItemAsync<ScheduleWeek[]>(KEY_SCHEDULES) ?? new ScheduleWeek[0];
-            var schedulesExceptEditedOne = schedules.Where(IsNotTooOld).Where(s => s.ID != schedule.ID).ToList();
+            var schedulesExceptEditedOne = schedules.Where(IsNotTooOld).Where(s => s.ScheduleWeekID != schedule.ScheduleWeekID).ToList();
             schedulesExceptEditedOne.Add(schedule);
             await _localStorage.SetItemAsync(KEY_SCHEDULES, schedulesExceptEditedOne.ToArray());
             return schedule;
         }
 
         private bool IsTooOld(ScheduleWeek schedule)
-            => (DateTime.Now.ToUniversalTime().AddHours(_syncLocalStorage.GetItem<int>(KEY_TIMEZONE_OFFSET)) - new DateTime(schedule.ID)).TotalDays >= 16 * 7;
+            => (DateTime.Now.ToUniversalTime().AddHours(_syncLocalStorage.GetItem<int>(KEY_TIMEZONE_OFFSET)) - new DateTime(schedule.ScheduleWeekID)).TotalDays >= 16 * 7;
 
         private bool IsNotTooOld(ScheduleWeek schedule)
             => !IsTooOld(schedule);

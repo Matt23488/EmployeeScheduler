@@ -66,8 +66,8 @@
     [Parameter]
     public long ID { get; set; }
 
-    private List<Lib.DTO.Employee> Employees { get; set; }
-    private Lib.DTO.ScheduleWeek Schedule { get; set; }
+    private List<Lib.DAL.Employee> Employees { get; set; }
+    private Lib.DAL.ScheduleWeek Schedule { get; set; }
     private int WeekStartDay { get; set; }
     private List<Schedule.EmployeeWeek> EmployeeWeeks { get; set; }
     private List<bool> DayClosures => Schedule.Days.Select(d => d.IsClosed).ToList();
@@ -81,19 +81,19 @@
         EmployeeWeeks = Employees.Select(e => new Schedule.EmployeeWeek
         {
             Employee = e,
-            Days = Schedule.Days.Select((d, i) => d.EmployeeSchedules.SingleOrDefault(s => s.EmployeeID == e.ID) ?? e.TypicalSchedule[i]).ToList()
+            Days = Schedule.Days.Select((d, i) => d.EmployeeSchedules.SingleOrDefault(s => s.EmployeeID == e.EmployeeID) ?? e.TypicalSchedule.Days[i]).ToList()
         }).ToList();
     }
 
     private int GetDayIndexFromOffset(int offset)
         => (WeekStartDay + offset) % 7;
 
-    private double GetLunchOffset(Lib.DTO.EmployeeSchedule day)
+    private double GetLunchOffset(Lib.DAL.EmployeeSchedule day)
         => day.LunchType == 0
         ? 0d
         : (day.LunchType == 1 ? -0.5d : -1d);
 
-    private string GetLunchString(Lib.DTO.EmployeeSchedule day)
+    private string GetLunchString(Lib.DAL.EmployeeSchedule day)
         => day.LunchType == 0
         ? "No Lunch"
         : (day.LunchType == 1 ? "Half-Hour Lunch" : "Hour Lunch");
@@ -108,7 +108,7 @@
     private string GetTotalHours()
     => Schedule.Days.SelectMany(day =>
     {
-        if (day.IsClosed) return Enumerable.Empty<Lib.DTO.EmployeeSchedule>();
+        if (day.IsClosed) return Enumerable.Empty<Lib.DAL.EmployeeSchedule>();
         else return day.EmployeeSchedules;
     })
     .Select(schedule =>

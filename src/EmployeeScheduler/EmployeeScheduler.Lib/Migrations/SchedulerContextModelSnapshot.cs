@@ -35,6 +35,9 @@ namespace EmployeeScheduler.Lib.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("TypicalWeekID")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("EmployeeID");
 
                     b.ToTable("Employees");
@@ -58,17 +61,22 @@ namespace EmployeeScheduler.Lib.Migrations
                     b.Property<int>("LunchType")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("ScheduleDayID")
+                    b.Property<int?>("ScheduleDayID")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("To")
                         .HasColumnType("TEXT");
+
+                    b.Property<int?>("TypicalWeekID")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("EmployeeScheduleID");
 
                     b.HasIndex("EmployeeID");
 
                     b.HasIndex("ScheduleDayID");
+
+                    b.HasIndex("TypicalWeekID");
 
                     b.ToTable("EmployeeSchedules");
                 });
@@ -126,6 +134,23 @@ namespace EmployeeScheduler.Lib.Migrations
                     b.ToTable("Tokens");
                 });
 
+            modelBuilder.Entity("EmployeeScheduler.Lib.DAL.TypicalWeek", b =>
+                {
+                    b.Property<int>("TypicalWeekID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("EmployeeID")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("TypicalWeekID");
+
+                    b.HasIndex("EmployeeID")
+                        .IsUnique();
+
+                    b.ToTable("TypicalWeek");
+                });
+
             modelBuilder.Entity("EmployeeScheduler.Lib.DAL.EmployeeSchedule", b =>
                 {
                     b.HasOne("EmployeeScheduler.Lib.DAL.Employee", "Employee")
@@ -136,9 +161,11 @@ namespace EmployeeScheduler.Lib.Migrations
 
                     b.HasOne("EmployeeScheduler.Lib.DAL.ScheduleDay", "ScheduleDay")
                         .WithMany("EmployeeSchedules")
-                        .HasForeignKey("ScheduleDayID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ScheduleDayID");
+
+                    b.HasOne("EmployeeScheduler.Lib.DAL.TypicalWeek", null)
+                        .WithMany("Days")
+                        .HasForeignKey("TypicalWeekID");
                 });
 
             modelBuilder.Entity("EmployeeScheduler.Lib.DAL.ScheduleDay", b =>
@@ -146,6 +173,15 @@ namespace EmployeeScheduler.Lib.Migrations
                     b.HasOne("EmployeeScheduler.Lib.DAL.ScheduleWeek", "ScheduleWeek")
                         .WithMany("Days")
                         .HasForeignKey("ScheduleWeekID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("EmployeeScheduler.Lib.DAL.TypicalWeek", b =>
+                {
+                    b.HasOne("EmployeeScheduler.Lib.DAL.Employee", "Employee")
+                        .WithOne("TypicalSchedule")
+                        .HasForeignKey("EmployeeScheduler.Lib.DAL.TypicalWeek", "EmployeeID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

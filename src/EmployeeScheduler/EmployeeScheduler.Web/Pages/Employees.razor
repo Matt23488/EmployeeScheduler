@@ -22,7 +22,7 @@ else
         <div class="list-group mb-3">
             @foreach (var employee in EmployeeList)
             {
-                <a href="employee/@employee.ID" class="list-group-item list-group-item-action @(employee.Active ? "" : "list-group-item-secondary")">
+                <a href="employee/@employee.EmployeeID" class="list-group-item list-group-item-action @(employee.Active ? "" : "list-group-item-secondary")">
                     <i class="oi oi-person"></i>
                     @employee.FormattedName()
                     @if (!employee.Active)
@@ -40,7 +40,7 @@ else
 
 @inject Lib.Services.ISchedulingService SchedulingService
 @code {
-    public List<Lib.DTO.Employee> EmployeeList { get; private set; }
+    public List<Lib.DAL.Employee> EmployeeList { get; private set; }
 
     protected override async Task OnInitializedAsync()
     {

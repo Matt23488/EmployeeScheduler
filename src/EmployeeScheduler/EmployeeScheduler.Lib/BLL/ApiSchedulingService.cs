@@ -1,4 +1,4 @@
-﻿using EmployeeScheduler.Lib.DTO;
+﻿using EmployeeScheduler.Lib.DAL;
 using EmployeeScheduler.Lib.Services;
 using Microsoft.AspNetCore.Components;
 using System;
@@ -44,7 +44,7 @@ namespace EmployeeScheduler.Lib.BLL
             await _logger.LogExceptionAsync(ex);
         }
 
-        private async Task<T> ParseResult<T>(FetchResult<T> result) where T : class
+        private async Task<T> ParseResult<T>(DTO.FetchResult<T> result) where T : class
         {
             if (result.Status == 401)
             {
@@ -126,9 +126,24 @@ namespace EmployeeScheduler.Lib.BLL
         public Employee UpdateEmployee(Employee employee) => throw new NotImplementedException();
         public List<Employee> GetEmployees(bool includeDeleted) => throw new NotImplementedException();
 
-        public Task<long> GetScheduleIDAsync(DateTime dateWithinWeek)
+        public async Task<long> GetScheduleIDAsync(DateTime dateWithinWeek)
         {
-            throw new NotImplementedException();
+            var fixedDate = dateWithinWeek.ToUniversalTime().AddHours(await GetTimeZoneOffsetAsync());
+            //var weekStartDay = await _localStorage.GetItemAsync<int>(KEY_WEEK_START);
+
+            // TODO: Create private overload of GetTimeZoneOffsetAsync() that takes in the settings to optimize
+            // API calls.
+            // I also need to add the TimeZoneOffset column to the AdminSettings entity.
+            // And build implementations of ISettingsService for Web and Api.
+            // And hide link to Settings.razor if user isn't admin.
+            // More stuff of course. Just trying to jot down a quick list of futures.
+            var settings = await _fetch.GetAsync<AdminSettings>($"{_apiUrl}settings");
+
+            var dayOffset = settings.Data.WeekStartOffset - (int)fixedDate.Date.DayOfWeek;
+
+            if (dayOffset > 0) dayOffset -= 7;
+
+            return fixedDate.Date.AddDays(dayOffset).Ticks;
         }
 
         public Task<ScheduleWeek> GetCurrentScheduleAsync()

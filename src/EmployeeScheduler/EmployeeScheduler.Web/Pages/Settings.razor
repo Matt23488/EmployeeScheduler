@@ -32,6 +32,7 @@
 }
 
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject Lib.Services.ISettingsService SettingsService
 @inject Lib.Services.ISchedulingService Scheduler
 @inject Lib.Services.IMigrationService Migration
 @inject Lib.Services.IToastService Toast
@@ -47,8 +48,8 @@
         var hasMigrated = await LocalStorage.ContainKeyAsync("EmployeeScheduler_migrated") && await LocalStorage.GetItemAsync<bool>("EmployeeScheduler_migrated");
         var token = await LocalStorage.GetItemAsync<Lib.DTO.ClientToken>("EmployeeScheduler_token");
 
-        WeekStartDay = await Scheduler.GetWeekStartAsync();
-        TimeZoneOffset = await Scheduler.GetTimeZoneOffsetAsync();
+        //WeekStartDay = await Scheduler.GetWeekStartAsync();
+        //TimeZoneOffset = await Scheduler.GetTimeZoneOffsetAsync();
         ShowMigrationButton = !hasMigrated && await Scheduler.HasData() && token?.Role == Lib.DAL.Roles.Admin;
     }
 

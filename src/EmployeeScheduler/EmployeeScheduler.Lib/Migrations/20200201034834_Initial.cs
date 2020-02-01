@@ -16,7 +16,8 @@ namespace EmployeeScheduler.Lib.Migrations
                     FirstName = table.Column<string>(nullable: true),
                     LastName = table.Column<string>(nullable: true),
                     EmailAddress = table.Column<string>(nullable: true),
-                    Active = table.Column<bool>(nullable: false)
+                    Active = table.Column<bool>(nullable: false),
+                    TypicalWeekID = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -51,6 +52,25 @@ namespace EmployeeScheduler.Lib.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TypicalWeek",
+                columns: table => new
+                {
+                    TypicalWeekID = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    EmployeeID = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TypicalWeek", x => x.TypicalWeekID);
+                    table.ForeignKey(
+                        name: "FK_TypicalWeek_Employees_EmployeeID",
+                        column: x => x.EmployeeID,
+                        principalTable: "Employees",
+                        principalColumn: "EmployeeID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ScheduleDays",
                 columns: table => new
                 {
@@ -81,7 +101,8 @@ namespace EmployeeScheduler.Lib.Migrations
                     To = table.Column<DateTime>(nullable: false),
                     LunchType = table.Column<int>(nullable: false),
                     EmployeeID = table.Column<int>(nullable: false),
-                    ScheduleDayID = table.Column<int>(nullable: false)
+                    ScheduleDayID = table.Column<int>(nullable: true),
+                    TypicalWeekID = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -97,7 +118,13 @@ namespace EmployeeScheduler.Lib.Migrations
                         column: x => x.ScheduleDayID,
                         principalTable: "ScheduleDays",
                         principalColumn: "ScheduleDayID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_EmployeeSchedules_TypicalWeek_TypicalWeekID",
+                        column: x => x.TypicalWeekID,
+                        principalTable: "TypicalWeek",
+                        principalColumn: "TypicalWeekID",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -111,9 +138,20 @@ namespace EmployeeScheduler.Lib.Migrations
                 column: "ScheduleDayID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_EmployeeSchedules_TypicalWeekID",
+                table: "EmployeeSchedules",
+                column: "TypicalWeekID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ScheduleDays_ScheduleWeekID",
                 table: "ScheduleDays",
                 column: "ScheduleWeekID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TypicalWeek_EmployeeID",
+                table: "TypicalWeek",
+                column: "EmployeeID",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -125,13 +163,16 @@ namespace EmployeeScheduler.Lib.Migrations
                 name: "Tokens");
 
             migrationBuilder.DropTable(
-                name: "Employees");
-
-            migrationBuilder.DropTable(
                 name: "ScheduleDays");
 
             migrationBuilder.DropTable(
+                name: "TypicalWeek");
+
+            migrationBuilder.DropTable(
                 name: "ScheduleWeeks");
+
+            migrationBuilder.DropTable(
+                name: "Employees");
         }
     }
 }

@@ -42,7 +42,7 @@ namespace EmployeeScheduler.Win
             _employeeListView.AddNewEmployee += (s, e) =>
             {
                 _employeeView.EditingMode = EditingMode.Insert;
-                _employeeView.Employee = new Lib.DTO.Employee();
+                _employeeView.Employee = new Lib.DAL.Employee();
                 _container.CurrentView = _employeeView;
             };
 

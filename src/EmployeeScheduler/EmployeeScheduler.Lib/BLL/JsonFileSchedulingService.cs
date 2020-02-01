@@ -1,4 +1,4 @@
-﻿using EmployeeScheduler.Lib.DTO;
+﻿using EmployeeScheduler.Lib.DAL;
 using EmployeeScheduler.Lib.Services;
 using System;
 using System.Collections.Generic;
@@ -37,7 +37,7 @@ namespace EmployeeScheduler.Lib.BLL
         {
             var employees = (await _jsonService.ReadJsonAsync<Employee[]>(_jsonFilePath)).ToList();
 
-            employee.ID = employees.Count > 0 ? employees.Max(e => e.ID) + 1 : 1;
+            employee.EmployeeID = employees.Count > 0 ? employees.Max(e => e.EmployeeID) + 1 : 1;
             employee.Active = true;
             employees.Add(employee);
 
@@ -49,13 +49,13 @@ namespace EmployeeScheduler.Lib.BLL
         {
             var employees = await _jsonService.ReadJsonAsync<Employee[]>(_jsonFilePath);
 
-            return employees.SingleOrDefault(e => e.ID == employeeID);
+            return employees.SingleOrDefault(e => e.EmployeeID == employeeID);
         }
 
         public async Task<Employee> UpdateEmployeeAsync(Employee employee)
         {
             var employees = await _jsonService.ReadJsonAsync<Employee[]>(_jsonFilePath);
-            var employeesExceptEditedOne = employees.Where(e => e.ID != employee.ID).ToList();
+            var employeesExceptEditedOne = employees.Where(e => e.EmployeeID != employee.EmployeeID).ToList();
             employeesExceptEditedOne.Add(employee);
 
             await _jsonService.WriteJsonAsync(_jsonFilePath, employeesExceptEditedOne.ToArray());
@@ -65,7 +65,7 @@ namespace EmployeeScheduler.Lib.BLL
         public async Task<Employee> DeleteEmployeeAsync(int employeeID)
         {
             var employees = await _jsonService.ReadJsonAsync<Employee[]>(_jsonFilePath);
-            var employee = employees.Single(e => e.ID == employeeID);
+            var employee = employees.Single(e => e.EmployeeID == employeeID);
             employee.Active = false;
 
             await _jsonService.WriteJsonAsync(_jsonFilePath, employees);
@@ -85,7 +85,7 @@ namespace EmployeeScheduler.Lib.BLL
         {
             var employees = _jsonService.ReadJson<Employee[]>(_jsonFilePath).ToList();
 
-            employee.ID = employees.Count > 0 ? employees.Max(e => e.ID) + 1 : 1;
+            employee.EmployeeID = employees.Count > 0 ? employees.Max(e => e.EmployeeID) + 1 : 1;
             employee.Active = true;
             employees.Add(employee);
 
@@ -97,13 +97,13 @@ namespace EmployeeScheduler.Lib.BLL
         {
             var employees = _jsonService.ReadJson<Employee[]>(_jsonFilePath);
 
-            return employees.SingleOrDefault(e => e.ID == employeeID);
+            return employees.SingleOrDefault(e => e.EmployeeID == employeeID);
         }
 
         public Employee UpdateEmployee(Employee employee)
         {
             var employees = _jsonService.ReadJson<Employee[]>(_jsonFilePath);
-            var employeesExceptEditedOne = employees.Where(e => e.ID != employee.ID).ToList();
+            var employeesExceptEditedOne = employees.Where(e => e.EmployeeID != employee.EmployeeID).ToList();
             employeesExceptEditedOne.Add(employee);
 
             _jsonService.WriteJson(_jsonFilePath, employeesExceptEditedOne.ToArray());
@@ -113,7 +113,7 @@ namespace EmployeeScheduler.Lib.BLL
         public Employee DeleteEmployee(int employeeID)
         {
             var employees = _jsonService.ReadJson<Employee[]>(_jsonFilePath);
-            var employee = employees.Single(e => e.ID == employeeID);
+            var employee = employees.Single(e => e.EmployeeID == employeeID);
             employee.Active = false;
 
             _jsonService.WriteJson(_jsonFilePath, employees);

@@ -13,11 +13,11 @@ namespace EmployeeScheduler.Win.UserControls
 {
     public class Employee : UserControlBase, IEmployeeView
     {
-        private Lib.DTO.Employee _employee;
+        private Lib.DAL.Employee _employee;
 
         //Control IViewBase.AsControl => this;
         private IEmployeeView AsView => this;
-        Lib.DTO.Employee IEmployeeView.Employee
+        Lib.DAL.Employee IEmployeeView.Employee
         {
             get => _employee;
             set

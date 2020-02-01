@@ -15,6 +15,7 @@ namespace EmployeeScheduler.Lib.DAL
         public DbSet<EmployeeSchedule> EmployeeSchedules { get; set; }
         public DbSet<ScheduleDay> ScheduleDays { get; set; }
         public DbSet<ScheduleWeek> ScheduleWeeks { get; set; }
+        public DbSet<AdminSettings> AdminSettings { get; set; }
         public DbSet<Token> Tokens { get; set; }
 
 
@@ -22,10 +23,20 @@ namespace EmployeeScheduler.Lib.DAL
             => options.UseSqlite("Data Source=test.db");
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-            => modelBuilder.Entity<ScheduleWeek>()
-                .Property(e => e.ScheduleWeekID)
-                .ValueGeneratedNever()
-                .HasAnnotation("DatabaseGenerated", DatabaseGeneratedOption.None);
+        {
+            modelBuilder.Entity<ScheduleWeek>()
+                  .Property(e => e.ScheduleWeekID)
+                  .ValueGeneratedNever()
+                  .HasAnnotation("DatabaseGenerated", DatabaseGeneratedOption.None);
+
+            modelBuilder.Entity<Employee>()
+                .HasOne(e => e.TypicalSchedule)
+                .WithOne(e => e.Employee)
+                .HasForeignKey<TypicalWeek>(e => e.EmployeeID);
+            //modelBuilder.Entity<Employee>()
+            //    .Property(e => e.TypicalScheduleIDs)
+            //    .HasComputedColumnSql("SELECT s.EmployeeScheduleID FROM EmployeeSchedules s WHERE s.EmployeeID = [EmployeeID] AND s.SchedulaDayID IS NULL");
+        }
     }
 
     public class Employee
@@ -35,6 +46,11 @@ namespace EmployeeScheduler.Lib.DAL
         public string LastName { get; set; }
         public string EmailAddress { get; set; }
         public bool Active { get; set; }
+
+        //public List<int> TypicalScheduleIDs { get; set; } = new List<int>();
+        //public List<EmployeeSchedule> TypicalSchedule { get; set; } = new List<EmployeeSchedule>();
+        public int TypicalWeekID { get; set; }
+        public TypicalWeek TypicalSchedule { get; set; }
     }
 
     public class EmployeeSchedule
@@ -48,8 +64,17 @@ namespace EmployeeScheduler.Lib.DAL
         public int EmployeeID { get; set; }
         public Employee Employee { get; set; }
 
-        public int ScheduleDayID { get; set; }
+        public int? ScheduleDayID { get; set; }
         public ScheduleDay ScheduleDay { get; set; }
+    }
+
+    public class TypicalWeek
+    {
+        public int TypicalWeekID { get; set; }
+        public int EmployeeID { get; set; }
+        public Employee Employee { get; set; }
+
+        public List<EmployeeSchedule> Days { get; set; } = new List<EmployeeSchedule>();
     }
 
     public class ScheduleDay
@@ -66,6 +91,14 @@ namespace EmployeeScheduler.Lib.DAL
     {
         public long ScheduleWeekID { get; set; }
         public List<ScheduleDay> Days { get; set; } = new List<ScheduleDay>();
+    }
+
+    public class AdminSettings
+    {
+        public int AdminSettingsID { get; set; }
+
+        [System.ComponentModel.DataAnnotations.Range(0, 6)]
+        public int WeekStartOffset { get; set; }
     }
 
     public class Token

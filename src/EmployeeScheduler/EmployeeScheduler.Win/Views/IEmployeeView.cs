@@ -1,4 +1,4 @@
-﻿using EmployeeScheduler.Lib.DTO;
+﻿using EmployeeScheduler.Lib.DAL;
 using EmployeeScheduler.Win.Utilities;
 using System;
 using System.Collections.Generic;

@@ -12,15 +12,15 @@ namespace EmployeeScheduler.Win.UserControls
 {
     public class EmployeeList : UserControlBase, IEmployeeListView
     {
-        public List<Lib.DTO.Employee> Employees
+        public List<Lib.DAL.Employee> Employees
         {
-            get => _employeeListBox.Items.OfType<Lib.DTO.Employee>().ToList();
+            get => _employeeListBox.Items.OfType<Lib.DAL.Employee>().ToList();
             set => _employeeListBox.DataSource = value;
         }
 
-        public Lib.DTO.Employee SelectedEmployee
+        public Lib.DAL.Employee SelectedEmployee
         {
-            get => _employeeListBox.SelectedItem as Lib.DTO.Employee;
+            get => _employeeListBox.SelectedItem as Lib.DAL.Employee;
             set => _employeeListBox.SelectedItem = value;
         }
 

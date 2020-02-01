@@ -1,4 +1,5 @@
-﻿using EmployeeScheduler.Lib.Services;
+﻿using EmployeeScheduler.Lib.DAL;
+using EmployeeScheduler.Lib.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,45 +10,47 @@ namespace EmployeeScheduler.Lib.BLL
 {
     public class SqliteSchedulingService : ISchedulingService
     {
-        public async Task<DTO.Employee> AddEmployeeAsync(DTO.Employee employee)
+        public async Task<Employee> AddEmployeeAsync(Employee employee)
         {
-            var entity = new DAL.Employee
-            {
-                Active = employee.Active,
-                FirstName = employee.FirstName,
-                LastName = employee.LastName,
-                EmailAddress = employee.EmailAddress
-            };
+            //var entity = new DAL.Employee
+            //{
+            //    Active = employee.Active,
+            //    FirstName = employee.FirstName,
+            //    LastName = employee.LastName,
+            //    EmailAddress = employee.EmailAddress
+            //};
 
             using var context = new DAL.SchedulerContext();
-            context.Employees.Add(entity);
+            //context.Employees.Add(entity);
+            context.Employees.Add(employee);
             await context.SaveChangesAsync();
 
-            employee.ID = entity.EmployeeID;
+            //employee.ID = entity.EmployeeID;
 
             return employee;
         }
 
-        public async Task<DTO.Employee> GetEmployeeAsync(int employeeID)
+        public async Task<Employee> GetEmployeeAsync(int employeeID)
         {
             using var context = new DAL.SchedulerContext();
             var entity = await context.Employees.AsAsyncEnumerable().SingleOrDefaultAsync(e => e.EmployeeID == employeeID);
             if (entity == null) return null;
 
-            return new DTO.Employee
-            {
-                ID = entity.EmployeeID,
-                Active = entity.Active,
-                FirstName = entity.FirstName,
-                LastName = entity.LastName,
-                EmailAddress = entity.EmailAddress
-            };
+            return entity;
+            //return new DTO.Employee
+            //{
+            //    ID = entity.EmployeeID,
+            //    Active = entity.Active,
+            //    FirstName = entity.FirstName,
+            //    LastName = entity.LastName,
+            //    EmailAddress = entity.EmailAddress
+            //};
         }
 
-        public async Task<DTO.Employee> UpdateEmployeeAsync(DTO.Employee employee)
+        public async Task<Employee> UpdateEmployeeAsync(Employee employee)
         {
             using var context = new DAL.SchedulerContext();
-            var entity = await context.Employees.AsAsyncEnumerable().SingleOrDefaultAsync(e => e.EmployeeID == employee.ID);
+            var entity = await context.Employees.AsAsyncEnumerable().SingleOrDefaultAsync(e => e.EmployeeID == employee.EmployeeID);
             if (entity == null) return null;
 
             entity.Active = employee.Active;
@@ -56,34 +59,35 @@ namespace EmployeeScheduler.Lib.BLL
             entity.EmailAddress = employee.EmailAddress;
             await context.SaveChangesAsync();
 
-            return employee;
+            return entity;
         }
 
-        public async Task<List<DTO.Employee>> GetEmployeesAsync(bool includeDeleted)
+        public async Task<List<Employee>> GetEmployeesAsync(bool includeDeleted)
         {
             using var context = new DAL.SchedulerContext();
             var entities = await context.Employees.AsAsyncEnumerable().Where(e => includeDeleted || e.Active).ToListAsync();
 
-            var employees = new List<DTO.Employee>();
-            entities.ForEach(e => employees.Add(new DTO.Employee
-            {
-                ID = e.EmployeeID,
-                Active = e.Active,
-                FirstName = e.FirstName,
-                LastName = e.LastName,
-                EmailAddress = e.EmailAddress
-            }));
+            //var employees = new List<DTO.Employee>();
+            //entities.ForEach(e => employees.Add(new DTO.Employee
+            //{
+            //    ID = e.EmployeeID,
+            //    Active = e.Active,
+            //    FirstName = e.FirstName,
+            //    LastName = e.LastName,
+            //    EmailAddress = e.EmailAddress
+            //}));
 
-            return employees;
+            return entities;
+            //return employees;
         }
 
-        public DTO.Employee AddEmployee(DTO.Employee employee)
+        public Employee AddEmployee(Employee employee)
             => throw new NotImplementedException();
-        public DTO.Employee GetEmployee(int employeeID)
+        public Employee GetEmployee(int employeeID)
             => throw new NotImplementedException();
-        public DTO.Employee UpdateEmployee(DTO.Employee employee)
+        public Employee UpdateEmployee(Employee employee)
             => throw new NotImplementedException();
-        public List<DTO.Employee> GetEmployees(bool includeDeleted)
+        public List<Employee> GetEmployees(bool includeDeleted)
             => throw new NotImplementedException();
 
         public Task<long> GetScheduleIDAsync(DateTime dateWithinWeek)
@@ -91,17 +95,17 @@ namespace EmployeeScheduler.Lib.BLL
             throw new NotImplementedException();
         }
 
-        public Task<DTO.ScheduleWeek> GetCurrentScheduleAsync()
+        public Task<ScheduleWeek> GetCurrentScheduleAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<DTO.ScheduleWeek> GetScheduleAsync(long scheduleID)
+        public Task<ScheduleWeek> GetScheduleAsync(long scheduleID)
         {
             throw new NotImplementedException();
         }
 
-        public Task<DTO.ScheduleWeek> SaveScheduleAsync(DTO.ScheduleWeek schedule)
+        public Task<ScheduleWeek> SaveScheduleAsync(ScheduleWeek schedule)
         {
             throw new NotImplementedException();
         }

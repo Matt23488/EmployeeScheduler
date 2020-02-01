@@ -63,8 +63,8 @@ else
     [Parameter]
     public long ID { get; set; }
 
-    private Lib.DTO.ScheduleWeek Schedule_ { get; set; }
-    private List<Lib.DTO.Employee> Employees { get; set; }
+    private Lib.DAL.ScheduleWeek Schedule_ { get; set; }
+    private List<Lib.DAL.Employee> Employees { get; set; }
     private List<EmployeeWeek> EmployeeWeeks { get; set; }
     private int WeekStartDay { get; set; }
 
@@ -129,22 +129,22 @@ else
 
         PreviousWeekID = await Scheduler.GetScheduleIDAsync(Schedule_.Date().AddDays(-1));
         NextWeekID = await Scheduler.GetScheduleIDAsync(Schedule_.Date().AddDays(8));
-        IsCurrentWeek = await Scheduler.GetScheduleIDAsync(DateTime.Now) == Schedule_.ID;
+        IsCurrentWeek = await Scheduler.GetScheduleIDAsync(DateTime.Now) == Schedule_.ScheduleWeekID;
         WeekStartDay = await Scheduler.GetWeekStartAsync();
 
         EmployeeWeeks = Employees.Select(e => new EmployeeWeek
         {
             Employee = e,
-            Days = Schedule_.Days.Select((d, i) => d.EmployeeSchedules?.SingleOrDefault(s => s.EmployeeID == e.ID) ?? e.TypicalSchedule[i]).ToList()
+            Days = Schedule_.Days.Select((d, i) => d.EmployeeSchedules?.SingleOrDefault(s => s.EmployeeID == e.EmployeeID) ?? e.TypicalSchedule.Days[i]).ToList()
         }).ToList();
     }
 
-    private List<Shared.Schedule.EmployeeDay.EmployeeDayDTO> GetDay(Func<EmployeeWeek, Lib.DTO.EmployeeSchedule> accessor)
+    private List<Shared.Schedule.EmployeeDay.EmployeeDayDTO> GetDay(Func<EmployeeWeek, Lib.DAL.EmployeeSchedule> accessor)
     {
         return EmployeeWeeks.Select(w =>
         {
             var day = accessor(w);
-            day.EmployeeID = w.Employee.ID;
+            day.EmployeeID = w.Employee.EmployeeID;
             return new Shared.Schedule.EmployeeDay.EmployeeDayDTO
             {
                 Employee = w.Employee,
@@ -175,7 +175,7 @@ else
     private async Task PrintSchedule()
     {
         await SaveSchedule(false);
-        Nav.NavigateTo($"{Nav.BaseUri}print/{Schedule_.ID}");
+        Nav.NavigateTo($"{Nav.BaseUri}print/{Schedule_.ScheduleWeekID}");
     }
 
     private async Task NavigatePreviousWeek()
@@ -200,7 +200,7 @@ else
 
     public class EmployeeWeek
     {
-        public Lib.DTO.Employee Employee { get; set; }
-        public List<Lib.DTO.EmployeeSchedule> Days { get; set; }
+        public Lib.DAL.Employee Employee { get; set; }
+        public List<Lib.DAL.EmployeeSchedule> Days { get; set; }
     }
 }

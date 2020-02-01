@@ -28,7 +28,7 @@ namespace EmployeeScheduler.Api.Controllers
         [Route("employee")]
         [RequiresToken(Lib.DAL.Roles.User, Lib.DAL.Roles.Admin)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> AddEmployee(Lib.DTO.Employee employee)
+        public async Task<IActionResult> AddEmployee(Lib.DAL.Employee employee)
         {
             return Ok(await _scheduler.AddEmployeeAsync(employee));
         }
@@ -62,10 +62,10 @@ namespace EmployeeScheduler.Api.Controllers
         [RequiresToken(Lib.DAL.Roles.User, Lib.DAL.Roles.Admin)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateEmployee(Lib.DTO.Employee employee)
+        public async Task<IActionResult> UpdateEmployee(Lib.DAL.Employee employee)
         {
             if (employee == null) return BadRequest();
-            if (employee.ID <= 0) return BadRequest();
+            if (employee.EmployeeID <= 0) return BadRequest();
 
             var updatedEmployee = await _scheduler.UpdateEmployeeAsync(employee);
             if (updatedEmployee == null) return BadRequest();

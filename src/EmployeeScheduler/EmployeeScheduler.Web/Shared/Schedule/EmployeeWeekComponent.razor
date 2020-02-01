@@ -45,10 +45,10 @@
 
     private double TotalHours => Week.Days.Select(GetDayHours).Sum();
 
-    private double GetDayHours(Lib.DTO.EmployeeSchedule day, int index)
+    private double GetDayHours(Lib.DAL.EmployeeSchedule day, int index)
         => (day.IsOff || DayClosures[index]) ? 0d : ((day.To.TimeOfDay - day.From.TimeOfDay).TotalHours + GetLunchModifier(day));
 
-    private double GetLunchModifier(Lib.DTO.EmployeeSchedule day)
+    private double GetLunchModifier(Lib.DAL.EmployeeSchedule day)
     {
         switch (day.LunchType)
         {

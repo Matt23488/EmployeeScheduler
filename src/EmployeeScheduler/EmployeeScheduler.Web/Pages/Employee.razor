@@ -38,20 +38,36 @@ else
     public int ID { get; set; }
     private Mode PageMode => ID == 0 ? Mode.Insert : Mode.Update;
 
-    private Lib.DTO.Employee Employee_ { get; set; }
+    private Lib.DAL.Employee Employee_ { get; set; }
     private int WeekStartDay { get; set; }
     private Schedule.EmployeeWeek EmployeeWeek { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
-        if (PageMode == Mode.Insert) Employee_ = new Lib.DTO.Employee();
+        if (PageMode == Mode.Insert) Employee_ = new Lib.DAL.Employee
+        {
+            TypicalSchedule = new Lib.DAL.TypicalWeek
+            {
+                Days = new List<Lib.DAL.EmployeeSchedule>
+                {
+                        new Lib.DAL.EmployeeSchedule(),
+                        new Lib.DAL.EmployeeSchedule(),
+                        new Lib.DAL.EmployeeSchedule(),
+                        new Lib.DAL.EmployeeSchedule(),
+                        new Lib.DAL.EmployeeSchedule(),
+                        new Lib.DAL.EmployeeSchedule(),
+                        new Lib.DAL.EmployeeSchedule()
+                }
+            }
+        };
+
         else Employee_ = await SchedulingService.GetEmployeeAsync(ID);
 
         WeekStartDay = await SchedulingService.GetWeekStartAsync();
         EmployeeWeek = new Schedule.EmployeeWeek
         {
             Employee = Employee_,
-            Days = Employee_.TypicalSchedule
+            Days = Employee_.TypicalSchedule.Days
         };
     }
 
@@ -60,7 +76,7 @@ else
         if (PageMode == Mode.Insert)
         {
             Employee_ = await SchedulingService.AddEmployeeAsync(Employee_);
-            ID = Employee_.ID;
+            ID = Employee_.EmployeeID;
         }
         else
         {
