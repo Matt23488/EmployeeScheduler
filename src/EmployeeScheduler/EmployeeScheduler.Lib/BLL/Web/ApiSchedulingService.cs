@@ -155,19 +155,37 @@ namespace EmployeeScheduler.Lib.BLL.Web
             return fixedDate.Date.AddDays(dayOffset).Ticks;
         }
 
-        public Task<ScheduleWeek> GetCurrentScheduleAsync()
+        public async Task<ScheduleWeek> GetCurrentScheduleAsync()
+            => await GetScheduleAsync(await GetScheduleIDAsync(DateTime.Now));
+
+        public async Task<ScheduleWeek> GetScheduleAsync(long scheduleID)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var result = await _fetch.GetAsync<ScheduleWeek>($"{_apiUrl}schedule/{scheduleID}");
+
+                return await ParseResult(result);
+            }
+            catch (Exception ex)
+            {
+                await OnErrorAsync(ex);
+                return null;
+            }
         }
 
-        public Task<ScheduleWeek> GetScheduleAsync(long scheduleID)
+        public async Task<ScheduleWeek> SaveScheduleAsync(ScheduleWeek schedule)
         {
-            throw new NotImplementedException();
-        }
+            try
+            {
+                var result = await _fetch.PutAsync<ScheduleWeek>($"{_apiUrl}schedule", schedule);
 
-        public Task<ScheduleWeek> SaveScheduleAsync(ScheduleWeek schedule)
-        {
-            throw new NotImplementedException();
+                return await ParseResult(result);
+            }
+            catch (Exception ex)
+            {
+                await OnErrorAsync(ex);
+                return null;
+            }
         }
 
         private static readonly string[] DAY_NAMES = new[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };

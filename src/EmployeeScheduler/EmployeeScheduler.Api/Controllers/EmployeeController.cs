@@ -25,7 +25,7 @@ namespace EmployeeScheduler.Api.Controllers
 
         [HttpPost]
         [Route("employee")]
-        [RequiresToken(Lib.DAL.Roles.User, Lib.DAL.Roles.Admin)]
+        [RequiresToken(Lib.DAL.Roles.Admin)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> AddEmployee(Lib.DAL.Employee employee)
         {
@@ -58,7 +58,7 @@ namespace EmployeeScheduler.Api.Controllers
 
         [HttpPut]
         [Route("employee")]
-        [RequiresToken(Lib.DAL.Roles.User, Lib.DAL.Roles.Admin)]
+        [RequiresToken(Lib.DAL.Roles.Admin)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateEmployee(Lib.DAL.Employee employee)

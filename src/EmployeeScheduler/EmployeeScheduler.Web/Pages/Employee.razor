@@ -4,7 +4,16 @@
 
 @if (Employee_ == null)
 {
-    <h1 style="color: red;">Employee not found.</h1>
+    if (EmployeeNotFound)
+    {
+        <h1 style="color: red;">Employee not found.</h1>
+    }
+    else
+    {
+        <p>
+            <em>Loading employee...</em>
+        </p>
+    }
 }
 else
 {
@@ -39,6 +48,8 @@ else
     public int ID { get; set; }
     private Mode PageMode => ID == 0 ? Mode.Insert : Mode.Update;
 
+    private bool EmployeeNotFound { get; set; }
+
     private Lib.DAL.Employee Employee_ { get; set; }
     private int WeekStartDay { get; set; }
     private Schedule.EmployeeWeek EmployeeWeek { get; set; }
@@ -51,7 +62,7 @@ else
                 TypicalSchedule = new Lib.DAL.TypicalWeek
                 {
                     Days = new List<Lib.DAL.TypicalDay>
-                    {
+                {
                         new Lib.DAL.TypicalDay(),
                         new Lib.DAL.TypicalDay(),
                         new Lib.DAL.TypicalDay(),
@@ -64,6 +75,12 @@ else
             };
 
         else Employee_ = await SchedulingService.GetEmployeeAsync(ID);
+
+        if (Employee_ == null)
+        {
+            EmployeeNotFound = true;
+            return;
+        }
 
         WeekStartDay = await SchedulingService.GetWeekStartAsync();
         EmployeeWeek = new Schedule.EmployeeWeek

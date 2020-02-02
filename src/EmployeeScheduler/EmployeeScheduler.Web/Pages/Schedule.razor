@@ -137,6 +137,7 @@ else
             Employee = e,
             Days = Schedule_.Days.Select((d, i) => d.EmployeeSchedules?.SingleOrDefault(s => s.EmployeeID == e.EmployeeID) ?? e.TypicalSchedule.Days[i].ToEmployeeSchedule(e)).ToList()
         }).ToList();
+        //EmployeeWeeks = Schedule_.
     }
 
     private List<Shared.Schedule.EmployeeDay.EmployeeDayDTO> GetDay(Func<EmployeeWeek, Lib.DAL.EmployeeSchedule> accessor)
@@ -153,6 +154,8 @@ else
         }).ToList();
     }
 
+    // TODO: There is apparently a bug, that sometimes causes every day to be closed when clicking print while in employee view?
+    // I'm not sure exactly what's causing it but fuck it's going to be a bitch to figure out probably.
     private async Task SaveSchedule(bool showToast = true)
     {
         for (int i = 0; i < 7; i++)
