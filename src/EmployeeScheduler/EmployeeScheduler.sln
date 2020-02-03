@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29521.150
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmployeeScheduler.Web", "EmployeeScheduler.Web\EmployeeScheduler.Web.csproj", "{20146320-5FA4-4185-9C56-E9899418BFE2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmployeeScheduler.Old.Web", "EmployeeScheduler.Old.Web\EmployeeScheduler.Old.Web.csproj", "{20146320-5FA4-4185-9C56-E9899418BFE2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmployeeScheduler.Lib", "EmployeeScheduler.Lib\EmployeeScheduler.Lib.csproj", "{B371DAD2-4AE0-4FA3-9A5C-50C4C054731F}"
 EndProject

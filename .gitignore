@@ -1,9 +1,4 @@
-﻿/src/EmployeeScheduler/.vs/EmployeeScheduler/v16/Server/sqlite3/db.lock
-
-/src/EmployeeScheduler/EmployeeScheduler.Win/bin/
-/src/EmployeeScheduler/EmployeeScheduler.Win/obj/
-/src/EmployeeScheduler/EmployeeScheduler.Web/bin/
-/src/EmployeeScheduler/EmployeeScheduler.Web/obj/
-/src/EmployeeScheduler/EmployeeScheduler.Lib/bin/
-/src/EmployeeScheduler/EmployeeScheduler.Lib/obj/
+﻿/src/**/bin/
+/src/**/obj/
 /src/EmployeeScheduler/.vs/
+/src/**/test.db
